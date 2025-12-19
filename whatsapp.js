@@ -37,17 +37,28 @@ const isSessionExists = (sessionId) => sessions.has(sessionId);
 // };
 
 // new auto reconnect unlimited
-const logger = pino();
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      translateTime: 'HH:MM:ss',
+      ignore: 'pid,hostname',
+    },
+  },
+});
+
 const shouldReconnect = (sessionId) => {
-  logger.info('Auto-reconnecting session: ' + sessionId);
+  logger.info(`Auto-reconnecting session: ${sessionId}`);
   return true;
 };
 
 
 const createSession = async (sessionId, isLegacy = false, res = null, pairingCode = null) => {
   const sessionPath = (isLegacy ? 'legacy_' : 'md_') + sessionId + (isLegacy ? '' : '');
-  const logger = pino({ level: 'debug' });
-  const store = makeInMemoryStore({ logger });
+  // Logger untuk internal Baileys (kita buat silent agar tidak nyampah)
+  const baileysLogger = pino({ level: 'silent' });
+  const store = makeInMemoryStore({ logger: baileysLogger });
 
   let state, saveCreds;
 
@@ -60,7 +71,7 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
     // version: [2, 3000, 1015901307], 
     // IMPORTANT: Must be false for phone pairing
     printQRInTerminal: false,
-    logger,
+    logger: baileysLogger,
     // Use consistent browser identifier
     browser: ['Ubuntu', 'Chrome', '20.0.04'],
     patchMessageBeforeSending: (message) => {
@@ -150,15 +161,14 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
 
     if (connection === 'close') {
       const reason = lastDisconnect?.error?.output?.statusCode;
-      console.log('Connection closed, reason:', reason);
+      logger.info(`Connection closed, reason: ${reason}`);
 
       if (reason === DisconnectReason.loggedOut) {
-        console.log('Logged out, deleting session...');
+        logger.error('Logged out, deleting session...');
         if (res && !res.headersSent) sendResponse(res, 500, false, 'Unable to create session.');
         deleteSession(sessionId, isLegacy);
       } else {
-        // Add a delay before reconnecting to avoid spamming
-        console.log('Reconnecting in 5 seconds...');
+        logger.info('Reconnecting in 5 seconds...');
         setTimeout(() => createSession(sessionId, isLegacy, res, pairingCode), 5000);
       }
     }
@@ -166,7 +176,7 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
     // Handle QR code (only if not using phone pairing)
     if (qr && !pairingCode) {
       logger.info('QR code generated (no phone pairing)');
-      console.log('QR Code String Length:', qr.length);
+      logger.info(`QR Code String Length: ${qr.length}`);
       if (res && !res.headersSent) {
         try {
           const qrDataUrl = await toDataURL(qr);
@@ -378,7 +388,7 @@ const sendMessage = async (sock, jid, message, delayMs = 1000) => {
 
     return await sock.sendMessage(jid, message);
   } catch (error) {
-    console.error('Send message error:', error);
+    logger.error(`Send message error: ${error.message}`);
     return Promise.reject(null);
   }
 };
@@ -396,7 +406,7 @@ const formatGroup = (id) => {
 };
 
 const cleanup = () => {
-  console.log('Running cleanup before exit.');
+  logger.info('Running cleanup before exit.');
   sessions.forEach((session, sessionId) => {
     if (!session.isLegacy) {
       session.store.writeToFile(sessionsDir(sessionId + '_store.json'));
@@ -427,5 +437,6 @@ export {
   formatPhone,
   formatGroup,
   cleanup,
-  init
+  init,
+  logger
 };

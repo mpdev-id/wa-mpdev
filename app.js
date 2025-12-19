@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 import nodeCleanup from 'node-cleanup'
 import routes from './routes.js'
-import { init, cleanup } from './whatsapp.js'
+import { init, cleanup, logger } from './whatsapp.js'
 import cors from 'cors'
 
 const app = express()
@@ -19,7 +19,7 @@ app.use('/', routes)
 
 const listenerCallback = () => {
     init()
-    console.log(`Server is listening on http://${host ? host : 'localhost'}:${port}`)
+    logger.info(`Server is listening on http://${host ? host : 'localhost'}:${port}`)
 }
 
 if (host) {
