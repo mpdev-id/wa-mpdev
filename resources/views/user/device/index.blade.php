@@ -1,0 +1,179 @@
+@extends('layouts.main.app')
+@section('head')
+@include('layouts.main.headersection',[
+'title'=>__('My Devices'),
+'buttons'=>[
+[
+'name'=>'<i class="material-icons text-sm">add</i>&nbsp'.__('Create Device'),
+'url'=> route('user.device.create'),
+]
+]])
+@endsection
+
+@section('content')
+<div x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 1000)">
+  
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <!-- Total Devices -->
+    <div class="stats-card animate-slide-up">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Devices') }}</p>
+          <div x-show="loading" class="skeleton h-8 w-20"></div>
+          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-gray-900" id="total-device">0</h3>
+        </div>
+        <div class="stats-card-icon bg-gradient-to-br from-blue-500 to-blue-600">
+          <span class="material-icons">devices</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Devices -->
+    <div class="stats-card animate-slide-up" style="animation-delay: 0.1s">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Active Devices') }}</p>
+          <div x-show="loading" class="skeleton h-8 w-20"></div>
+          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-green-600" id="total-active">0</h3>
+        </div>
+        <div class="stats-card-icon bg-gradient-to-br from-green-500 to-green-600">
+          <span class="material-icons">check_circle</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inactive Devices -->
+    <div class="stats-card animate-slide-up" style="animation-delay: 0.2s">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Inactive Devices') }}</p>
+          <div x-show="loading" class="skeleton h-8 w-20"></div>
+          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-orange-600" id="total-inactive">0</h3>
+        </div>
+        <div class="stats-card-icon bg-gradient-to-br from-orange-500 to-orange-600">
+          <span class="material-icons">error</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Devices Grid -->
+  @if(count($devices ?? []) > 0)
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    @foreach($devices ?? [] as $device)
+    <div class="card bg-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex-1">
+            <h3 class="card-title text-lg font-bold text-gray-900 mb-2">{{ $device->name }}</h3>
+            <div class="space-y-1 text-sm text-gray-600">
+              <div class="flex items-center gap-2">
+                <span class="material-icons text-sm">phone</span>
+                @if(!empty($device->phone))
+                <a href="{{ route('user.device.scan',$device->uuid) }}" class="hover:text-primary">
+                  {{ $device->phone }}
+                </a>
+                @else
+                <span class="text-gray-400">{{ __('Not connected') }}</span>
+                @endif
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="material-icons text-sm">chat</span>
+                <span>{{ number_format($device->smstransaction_count) }} {{ __('messages') }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Dropdown Menu -->
+          <div class="dropdown dropdown-end">
+            <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
+              <span class="material-icons">more_vert</span>
+            </button>
+            <ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-xl w-56 border border-gray-200">
+              <li>
+                <a href="{{ route('user.device.scan',$device->uuid) }}" class="flex items-center gap-2">
+                  <span class="material-icons text-sm">qr_code_scanner</span>
+                  {{ __('Scan QR') }}
+                </a>
+              </li>
+              @if($device->status == 1)
+              <li>
+                <a href="{{ url('/user/device/chats/'.$device->uuid) }}" class="flex items-center gap-2">
+                  <span class="material-icons text-sm">chat</span>
+                  {{ __('Chats') }}
+                </a>
+              </li>
+              <li>
+                <a href="{{ url('/user/device/groups/'.$device->uuid) }}" class="flex items-center gap-2">
+                  <span class="material-icons text-sm">groups</span>
+                  {{ __('Groups') }}
+                </a>
+              </li>
+              @endif
+              <li>
+                <a href="{{ route('user.device.edit',$device->uuid) }}" class="flex items-center gap-2">
+                  <span class="material-icons text-sm">edit</span>
+                  {{ __('Edit Device') }}
+                </a>
+              </li>
+              <li>
+                <a href="{{ route('user.device.show',$device->uuid) }}" class="flex items-center gap-2">
+                  <span class="material-icons text-sm">history</span>
+                  {{ __('View Log') }}
+                </a>
+              </li>
+              <div class="divider my-0"></div>
+              <li>
+                <a href="javascript:void(0)" 
+                   class="delete-confirm text-red-600 hover:bg-red-50 flex items-center gap-2" 
+                   data-action="{{ route('user.device.destroy',$device->uuid) }}">
+                  <span class="material-icons text-sm">delete</span>
+                  {{ __('Remove') }}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Status Badge -->
+        <div class="card-actions">
+          <a href="{{ route('user.device.scan',$device->uuid) }}" class="w-full">
+            <div class="flex items-center justify-between p-3 rounded-xl {{ $device->status == 1 ? 'bg-green-50' : 'bg-orange-50' }}">
+              <span class="text-sm font-medium text-gray-700">{{ __('Status') }}</span>
+              <span class="badge {{ $device->status == 1 ? 'badge-success' : 'badge-warning' }} gap-2">
+                <span class="material-icons text-xs">{{ $device->status == 1 ? 'check_circle' : 'error' }}</span>
+                {{ $device->status == 1 ? __('Active') : __('Inactive') }}
+              </span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    @endforeach
+  </div>
+  @else
+  <!-- Empty State -->
+  <div class="flex flex-col items-center justify-center py-16 px-4">
+    <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+      <span class="material-icons text-6xl text-gray-400">phone_disabled</span>
+    </div>
+    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('No Devices Found') }}</h3>
+    <p class="text-gray-600 mb-6 text-center">{{ __('Create your first device to start sending WhatsApp messages') }}</p>
+    <a href="{{ route('user.device.create') }}" class="btn btn-primary gap-2">
+      <span class="material-icons text-sm">add</span>
+      {{ __('Create Device') }}
+    </a>
+  </div>
+  @endif
+
+</div>
+
+<input type="hidden" id="base_url" value="{{ url('/') }}">
+
+@endsection
+
+@push('js')
+<script src="{{ asset('assets/js/pages/user/device.js') }}"></script>
+@endpush
