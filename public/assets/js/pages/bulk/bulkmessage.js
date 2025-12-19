@@ -25,63 +25,79 @@ slider.noUiSlider.on('update', function(values, handle) {
 
 const maxlenght= 1000;
 const base_url= $('#base_url').val();
-const csrf = $("input[name=_token]").val();
+const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 const form_link=$('#bulk_message_link').val();
 
-$('.csv').on('change',function(){
+$(document).on('change', '#wa-template', function() {
+	var template = $(this).find(':selected').data('template');
+	if (template) {
+		var text = '';
+		if (typeof template === 'string') {
+			try {
+				template = JSON.parse(template);
+			} catch (e) {}
+		}
+		
+		text = template.text || template.caption || '';
+		
+		$('#wa_message').val(text);
+		$('#wa_temp_message').val(text);
+	}
+});
+
+$(document).on('change', '.csv', function(event) {
 	$('.tbody').html('');	
 	var files = event.target.files;
 	var file = files[0];
-
 
 	var reader = new FileReader();
 	reader.readAsText(file);
 	reader.onload = function(event){
 		var csv = event.target.result;
 		var data = $.csv.toArrays(csv);
-		var totalRows=data.length;
+		var rows = $('.rows').length;
 
-		
-		var rows= $('.rows').length;
-
-		let device=$('#device_import').val();
-		let device_number=$("#device_import option:selected").text();
-		var isCrossed = false;
+		let device = $('#device_import').val();
+		let device_number = $("#device_import option:selected").text();
 
 		$.each(data, function (key, item) 
 		{
-
 			var is_valid = true;
-
 			if (isExist(item[0]) == false) {
 				is_valid = false;
 			}
-
 			
 			if (is_valid == true) {
-				key = rows++;
-				var html=`<tr class="row${key} rows" data-row="${key}">
-
-				<td class="col-3"><span class="receiver_user">${item[0]}</span>
-				<a href="javascript:void(0)" data-target=".row${key}" class="btn btn-outline-danger remove btn-sm remove_btn_${key}"><i class="fa fa-trash"></i></a>
-				<input type="hidden" name="phone" value="${item[0]}" class="number_${key}" required="">
-				</td>
-				<td class="col-2">
-				${device_number}
-				<input type="hidden" name="device" value="${device}" class="device_${key}" required="">
-				</td>
-				<td class="col-5"><textarea class="form-control message_${key}" name="message" required="">${item[1]}</textarea></td>
-				<td class="col-2"><span class="badge badge-warning badge_${key}">Waiting</span></td>
-
+				var rowId = rows++;
+				var html = `<tr class="row${rowId} rows group hover:bg-base-200/30 transition-colors" data-row="${rowId}">
+					<td class="py-6">
+						<div class="flex items-center gap-3">
+							<span class="font-bold text-sm receiver_user">${item[0]}</span>
+							<button type="button" data-target=".row${rowId}" class="btn btn-ghost btn-xs text-error remove remove_btn_${rowId}">
+								<span class="material-symbols-outlined text-sm">delete</span>
+							</button>
+							<input type="hidden" name="phone" value="${item[0]}" class="number_${rowId}">
+						</div>
+					</td>
+					<td class="py-6">
+						<div class="flex items-center gap-2">
+							<span class="material-symbols-outlined text-xs text-base-content/30">devices</span>
+							<span class="text-xs font-bold text-base-content/60">${device_number}</span>
+							<input type="hidden" name="device" value="${device}" class="device_${rowId}">
+						</div>
+					</td>
+					<td class="py-6">
+						<textarea class="textarea textarea-bordered textarea-sm w-full bg-base-100/50 message_${rowId}" name="message" required>${item[1]}</textarea>
+					</td>
+					<td class="py-6 text-right">
+						<span class="badge badge-warning font-bold text-[10px] uppercase tracking-wider px-3 badge_${rowId}">Waiting</span>
+					</td>
 				</tr>`;
 
 				$('.tbody').append(html);
 			}
-
 		});
 		$('.total_records').html($('.rows').length);
-
-		
 	}
 });
 
@@ -92,84 +108,72 @@ $(document).on('click','.remove',function(){
 });
 
 
-$(document).on('click','.add_custom_row',function(){
-	var is_valid=true;
+$(document).on('click', '.add_custom_row', function() {
+	var toVal = $('#to').val();
+	var msgVal = $('#wa_message').val();
+	var deviceId = $('#device_custom').val();
+	var deviceName = $("#device_custom option:selected").text();
 
-	if ($('#to').val() == null || $('#to').val() == '') {
-		is_valid=false;
+	if (!toVal) {
 		$('.to_alert').show();
-	}
-	else{
-		$('.to_alert').hide();	
+		return;
+	} else {
+		$('.to_alert').hide();
 	}
 
-	if ($('#wa_message').val() == null || $('#wa_message').val() == '') {
-		is_valid=false;
+	if (!msgVal) {
 		$('.message_alert').show();
+		return;
+	} else {
+		$('.message_alert').hide();
 	}
 
-	else{
-		$('.message_alert').hide();	
-	}
+	var numbersArr = toVal.split(",");
+	var addedCount = 0;
 
-	let device=$('#device_custom').val();
-	let device_number=$("#device_custom option:selected").text();;
-	
-
-	if (isExist($('#to').val()) == false) {
-		is_valid = false;
-	}
-
-	if (is_valid == true) {
-		var numbers = $('#to').val();
-		var numbersArr = numbers.split(",");
-
-		console.log(numbersArr);
-
-		$(numbersArr).each(function (numberKey, number){
-			var numberWithSpace = number;
-			var numberWitOutSpace = numberWithSpace.replace(/\s/g, "");
-			var parsedPhone = parseInt(numberWitOutSpace);
-
-			
-
-			if (!isNaN(parsedPhone) && parsedPhone.toString() === number) {
-				console.log(parsedPhone);
-				if (isExist(parsedPhone)) {
-					var rows= $('.rows').length;
-					rows++;
-
-					var html=`<tr class="row${rows} rows" data-row="${rows}">
-					
-					<td class="col-3"><span class="receiver_user">${parsedPhone}</span>
-					<a href="javascript:void(0)" data-target=".row${rows}" class="btn btn-outline-danger remove btn-sm remove_btn_${rows}"><i class="fa fa-trash"></i></a>
-					<input type="hidden" name="phone" value="${parsedPhone}" class="number_${rows}" required="">
+	$(numbersArr).each(function(index, number) {
+		var cleanNumber = number.trim().replace(/\s/g, "");
+		if (cleanNumber !== "" && /^\d+$/.test(cleanNumber)) {
+			if (isExist(cleanNumber)) {
+				var rowsCount = $('.rows').length + 1;
+				var html = `<tr class="row${rowsCount} rows group hover:bg-base-200/30 transition-colors" data-row="${rowsCount}">
+					<td class="py-6">
+						<div class="flex items-center gap-3">
+							<span class="font-bold text-sm receiver_user">${cleanNumber}</span>
+							<button type="button" data-target=".row${rowsCount}" class="btn btn-ghost btn-xs text-error remove remove_btn_${rowsCount}">
+								<span class="material-symbols-outlined text-sm">delete</span>
+							</button>
+							<input type="hidden" name="phone" value="${cleanNumber}" class="number_${rowsCount}">
+						</div>
 					</td>
-					<td class="col-2">
-					${device_number}
-					<input type="hidden" name="device" value="${device}" class="device_${rows}" required="">
+					<td class="py-6">
+						<div class="flex items-center gap-2">
+							<span class="material-symbols-outlined text-xs text-base-content/30">devices</span>
+							<span class="text-xs font-bold text-base-content/60">${deviceName}</span>
+							<input type="hidden" name="device" value="${deviceId}" class="device_${rowsCount}">
+						</div>
 					</td>
-					<td class="col-5"><textarea class="form-control message_${rows}" name="message" required="">${$('#wa_message').val()}</textarea></td>
-					<td class="col-2 "><span class="badge badge-warning badge_${rows}">Waiting</span></td>
+					<td class="py-6">
+						<textarea class="textarea textarea-bordered textarea-sm w-full bg-base-100/50 message_${rowsCount}" name="message" required>${msgVal}</textarea>
+					</td>
+					<td class="py-6 text-right">
+						<span class="badge badge-warning font-bold text-[10px] uppercase tracking-wider px-3 badge_${rowsCount}">Waiting</span>
+					</td>
+				</tr>`;
 
-					</tr>`;
-
-					$('.tbody').append(html);
-					
-					$('.total_records').html($('.rows').length);
-				}
+				$('.tbody').append(html);
+				addedCount++;
 			}
+		}
+	});
 
-
-		});
-
+	if (addedCount > 0) {
+		$('.total_records').html($('.rows').length);
 		$('#to').val('');
 		$('#wa_message').val('');
-		ToastAlert('success','New Contact Added Successfully');
+		ToastAlert('success', 'New Contact Added Successfully');
+		document.getElementById('addRecord').close();
 	}
-	
-
-
 });
 
 var sendble_rows=[];
@@ -182,118 +186,140 @@ function arrayRemove(value) {
 
 function isExist(to) {
 	var is_valid = true;
-	var is_crossed= false;
-
-	var rows=0;
-	$('.receiver_user').each(function (key, item){
-		if ($(this).text().replace(' ','') == to) {
-			ToastAlert('error',`(${to}) contact number already added`);
+	var cleanTo = to.toString().trim().replace(/\s/g, "");
+	
+	$('.receiver_user').each(function() {
+		if ($(this).text().trim().replace(/\s/g, "") === cleanTo) {
+			ToastAlert('error', `(${cleanTo}) contact number already added`);
 			is_valid = false;
-		}
-		else{
-			rows++;
-			if (rows >= maxlenght) {
-				is_valid = false;
-				ToastAlert('error','Maximum Sender Limit is '+maxlenght)
-			}
+			return false; // break each
 		}
 	});
+
+	if (is_valid && $('.rows').length >= maxlenght) {
+		is_valid = false;
+		ToastAlert('error', 'Maximum Sender Limit is ' + maxlenght);
+	}
 
 	return is_valid;
 }
 
 $(document).on('click','.send_now',function(){
-
+	sendble_rows = [];
 	$('.rows').each(function(index, row){
 		sendble_rows.push($(this).data('row'));
 	});
+	
 	if (sendble_rows.length > 0) {
-		$('.send_now').attr('disabled','disable');
-		submitRequests(sendble_rows[0]);
+		Swal.fire({
+			title: 'Launch Campaign?',
+			text: `You are about to send ${sendble_rows.length} messages.`,
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, Launch!',
+			confirmButtonColor: '#10b981',
+			cancelButtonColor: '#6b7280',
+			background: 'rgba(255, 255, 255, 0.9)',
+			backdrop: `rgba(0,0,123,0.4)`
+		}).then((result) => {
+			if (result.isConfirmed) {
+				$('.send_now').attr('disabled','disable').addClass('loading');
+				submitRequests(sendble_rows[0]);
+			}
+		});
 	}
 	else{
 		$('.send_now').removeAttr('disabled');
-		ToastAlert('error', 'No Record Avaible For Sent A Request');
+		Swal.fire({
+			title: 'Empty Queue',
+			text: 'Please add some recipients before launching.',
+			icon: 'warning',
+			confirmButtonColor: '#10b981'
+		});
 	}
-	
 });
 
-$('#device_import').on('change',function(){
+$(document).on('change', '#device_import', function() {
 	$(this).val() != '' ? $('.csv_row').show() : $('.csv_row').hide();
 });
 
-$('#selectall').on('change',function(){
-	
+$(document).on('change', '#selectall', function() {
 	if ($(this).is(':checked')) {
 		$('.receivers-list').hide();
-	}else{
-		
-		$('.receivers-list').show()
-	}  
-
+	} else {
+		$('.receivers-list').show();
+	}
 });
 
-$('.contact-list-form').on('submit',function(e){
+$(document).on('submit', '.contact-list-form', function(e) {
 	e.preventDefault();
-	var contacts = $('#wa-contacts').find(':selected').data('contacts');
-	
-
 	var contactsNumbers = [];
-
-	$(contacts).each(function (index, row) { 
-		
-		contactsNumbers.push(row.phone);
-	});
+	var selectedOptions = $('#wa-contacts').find(':selected');
 	
+	selectedOptions.each(function() {
+		var data = $(this).data('contacts');
+		if (data) {
+			if (Array.isArray(data)) {
+				// It's a group (array of contacts)
+				$(data).each(function(index, row) {
+					contactsNumbers.push(row.phone);
+				});
+			} else if (data.phone) {
+				// It's a single contact object
+				contactsNumbers.push(data.phone);
+			}
+		}
+	});
 
 	if (contactsNumbers.length == 0) {
-		ToastAlert('error','No receivers found');
-		
+		Swal.fire({
+			title: 'No Recipients',
+			text: 'Please select at least one contact or group.',
+			icon: 'warning',
+			confirmButtonColor: '#10b981'
+		});
 		return false;
 	}
 
-
-	var rows= $('.rows').length;
-
-	let device=$('#wa-device').val();
-	let device_number=$("#wa-device option:selected").text();
-	var isCrossed = false;
+	var rows = $('.rows').length;
+	let device = $('#wa-device').val();
+	let device_number = $("#wa-device option:selected").text();
 
 	$.each(contactsNumbers, function (key, item) 
 	{
-
-		var is_valid = true;
-
-		if (isExist(item) == false) {
-			is_valid = false;
-		}
-
-		
-		if (is_valid == true) {
-			key = rows++;
-			var html=`<tr class="row${key+1000} rows" data-row="${key+1000}">
-
-			<td class="col-3"><span class="receiver_user">${item}</span>
-			<a href="javascript:void(0)" data-target=".row${key+1000}" class="btn btn-outline-danger remove btn-sm remove_btn_${key+1000}"><i class="fa fa-trash"></i></a>
-			<input type="hidden" name="phone" value="${item}" class="number_${key+1000}" required="">
-			</td>
-			<td class="col-2">
-			${device_number}
-			<input type="hidden" name="device" value="${device}" class="device_${key+1000}" required="">
-			</td>
-			<td class="col-5"><textarea class="form-control message_${key+1000}" name="message" required="">${$('#wa_temp_message').val()}</textarea></td>
-			<td class="col-2"><span class="badge badge-warning badge_${key+1000}">Waiting</span></td>
-
+		if (isExist(item)) {
+			var rowId = rows++;
+			var html = `<tr class="row${rowId+1000} rows group hover:bg-base-200/30 transition-colors" data-row="${rowId+1000}">
+				<td class="py-6">
+					<div class="flex items-center gap-3">
+						<span class="font-bold text-sm receiver_user">${item}</span>
+						<button type="button" data-target=".row${rowId+1000}" class="btn btn-ghost btn-xs text-error remove remove_btn_${rowId+1000}">
+							<span class="material-symbols-outlined text-sm">delete</span>
+						</button>
+						<input type="hidden" name="phone" value="${item}" class="number_${rowId+1000}">
+					</div>
+				</td>
+				<td class="py-6">
+					<div class="flex items-center gap-2">
+						<span class="material-symbols-outlined text-xs text-base-content/30">devices</span>
+						<span class="text-xs font-bold text-base-content/60">${device_number}</span>
+						<input type="hidden" name="device" value="${device}" class="device_${rowId+1000}">
+					</div>
+				</td>
+				<td class="py-6">
+					<textarea class="textarea textarea-bordered textarea-sm w-full bg-base-100/50 message_${rowId+1000}" name="message" required>${$('#wa_temp_message').val()}</textarea>
+				</td>
+				<td class="py-6 text-right">
+					<span class="badge badge-warning font-bold text-[10px] uppercase tracking-wider px-3 badge_${rowId+1000}">Waiting</span>
+				</td>
 			</tr>`;
 
 			$('.tbody').append(html);
 		}
-
 	});
 	$('.total_records').html($('.rows').length);
-
-	
-})
+	document.getElementById('import_from_contact').close();
+});
 
 var total_sent=0;
 
@@ -336,26 +362,28 @@ function submitRequests(param) {
 		success: function(response){ 
 			
 			arrayRemove(param);
-			$('.badge_'+param).removeClass('badge-warning');
-			$('.badge_'+param).removeClass('badge-danger');
+			$('.badge_'+param).removeClass('badge-warning badge-error badge-info');
 			$('.badge_'+param).addClass('badge-success');
-			$('.badge_'+param).html('Sent..');
+			$('.badge_'+param).html('Sent');
 			$('.remove_btn_'+param).remove();
 			$('.row'+param).removeClass('rows');
 			$('.number_'+param).removeClass('number_'+param);
 			$('.message_'+param).removeClass('message_'+param);
 
 			if (sendble_rows.length != 0) {
-				
-
-				var randomTime = Math.floor(Math.random() * Math.floor(endSec - startSec + 1)) + startSec/2;
-
+				var randomTime = Math.floor(Math.random() * (endSec - startSec + 1)) + parseInt(startSec);
 				setTimeout(function() {
-					
 					submitRequests(sendble_rows[0]);
-					console.log(randomTime)
-				}, randomTime * 100);
-				
+				}, randomTime * 1000);
+			} else {
+				$('.send_now').removeAttr('disabled').removeClass('loading');
+				Swal.fire({
+					title: 'Campaign Finished!',
+					text: `Successfully sent ${total_sent} messages.`,
+					icon: 'success',
+					confirmButtonColor: '#10b981'
+				});
+				if (typeof congratulations === 'function') congratulations();
 			}
 			total_sent++;
 			$('.total_sent').text(total_sent);
@@ -368,31 +396,31 @@ function submitRequests(param) {
 		{
 
 			$('.message_'+param).removeAttr('disabled');
-			$('.badge_'+param).removeClass('badge-warning');
-			$('.badge_'+param).addClass('badge-danger');
-			$('.badge_'+param).html('Request Failed :(');
+			$('.badge_'+param).removeClass('badge-warning badge-success badge-info');
+			$('.badge_'+param).addClass('badge-error');
+			$('.badge_'+param).html('Failed');
 			$('.send_now').removeAttr('disabled');
 			$('#add_record').removeAttr('disabled');
 			$('#import_record').removeAttr('disabled');
 			//Notify('error', xhr);
 			arrayRemove(param);
 			if (sendble_rows.length != 0) {
-								
-				
-				var randomTime = Math.floor(Math.random() * Math.floor(endSec - startSec + 1)) + startSec/2;
-				
+				var randomTime = Math.floor(Math.random() * (endSec - startSec + 1)) + parseInt(startSec);
 				setTimeout(function() {
-					
 					submitRequests(sendble_rows[0]);
-					console.log(randomTime)
-					
 				}, randomTime * 1000);
+			} else {
+				$('.send_now').removeAttr('disabled').removeClass('loading');
+				Swal.fire({
+					title: 'Campaign Completed',
+					text: 'All messages in queue have been processed.',
+					icon: 'info',
+					confirmButtonColor: '#10b981'
+				});
 			}
 			total_sent++;
+			$('.total_sent').text(total_sent);
 		}
 	});
 }
-
-
-
 
