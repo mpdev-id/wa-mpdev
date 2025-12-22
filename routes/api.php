@@ -20,6 +20,6 @@ Route::group(['middleware' => ['throttle:api']], function (){
     Route::get('create-message','App\Http\Controllers\Api\BulkController@submitRequest')->name('api.create.message.get');
     Route::post('/set-device-status/{device_id}/{status}','App\Http\Controllers\Api\BulkController@setStatus');
     Route::post('/send-webhook/{device_id}','App\Http\Controllers\Api\BulkController@webHook');
-
+    Route::post('/ai-response/generate','App\Http\Controllers\Api\AiResponseController@generate');
 
 });

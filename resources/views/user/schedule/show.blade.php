@@ -12,11 +12,11 @@
       <p class="text-base-content/60">{{ __('Scheduled message information') }}</p>
     </div>
     <div class="flex gap-2">
-      <a href="{{ route('user.schedule.edit', $schedule->id) }}" class="btn btn-outline gap-2">
+      <a href="{{ route('user.schedule-message.edit', $schedule->id) }}" class="btn btn-outline gap-2">
         <span class="material-icons text-sm">edit</span>
         {{ __('Edit') }}
       </a>
-      <a href="{{ route('user.schedule.index') }}" class="btn btn-outline gap-2">
+      <a href="{{ route('user.schedule-message.index') }}" class="btn btn-outline gap-2">
         <span class="material-icons text-sm">arrow_back</span>
         {{ __('Back') }}
       </a>

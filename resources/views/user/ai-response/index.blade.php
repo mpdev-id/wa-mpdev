@@ -110,18 +110,38 @@
                   <!-- Left Column -->
                   <div class="space-y-5">
                     
-                    <!-- API Key -->
+                    <!-- AI Type -->
                     <div>
                       <label class="block mb-2">
-                        <span class="font-semibold text-base-content">{{ __('Gemini API Key') }}</span>
+                        <span class="font-semibold text-base-content">{{ __('AI Type') }}</span>
                         <span class="text-error">*</span>
+                      </label>
+                      <select name="ai_type" class="select select-bordered w-full ai-type-select">
+                        <option value="default" {{ ($aiSetting->ai_type ?? 'default') == 'default' ? 'selected' : '' }}>
+                          🆓 Default AI (Free Gemini)
+                        </option>
+                        <option value="custom" {{ ($aiSetting->ai_type ?? '') == 'custom' ? 'selected' : '' }}>
+                          🔑 Custom AI (Your API Key)
+                        </option>
+                      </select>
+                      <label class="label">
+                        <span class="label-text-alt text-info">
+                          {{ __('Default AI is free but may have limitations') }}
+                        </span>
+                      </label>
+                    </div>
+
+                    <!-- API Key (Only for Custom AI) -->
+                    <div class="api-key-field {{ ($aiSetting->ai_type ?? 'default') == 'default' ? 'hidden' : '' }}">
+                      <label class="block mb-2">
+                        <span class="font-semibold text-base-content">{{ __('Gemini API Key') }}</span>
+                        <span class="text-error api-key-required">*</span>
                       </label>
                       <input type="text" 
                              name="gemini_api_key"
                              value="{{ $aiSetting->gemini_api_key ?? '' }}"
                              class="input input-bordered w-full" 
-                             placeholder="AIzaSy..." 
-                             required />
+                             placeholder="AIzaSy..." />
                       <label class="label">
                         <span class="label-text-alt">
                           <a href="https://makersuite.google.com/app/apikey" target="_blank" class="link link-primary">
@@ -131,8 +151,8 @@
                       </label>
                     </div>
 
-                    <!-- Model -->
-                    <div>
+                    <!-- Model (Only for Custom AI) -->
+                    <div class="model-field {{ ($aiSetting->ai_type ?? 'default') == 'default' ? 'hidden' : '' }}">
                       <label class="block mb-2">
                         <span class="font-semibold text-base-content">{{ __('AI Model') }}</span>
                       </label>
@@ -250,6 +270,25 @@
 <script>
 $(document).ready(function() {
   
+  // Toggle AI Type Fields
+  $('.ai-type-select').on('change', function() {
+    const aiType = $(this).val();
+    const form = $(this).closest('form');
+    const apiKeyField = form.find('.api-key-field');
+    const modelField = form.find('.model-field');
+    const apiKeyInput = form.find('[name="gemini_api_key"]');
+    
+    if (aiType === 'default') {
+      apiKeyField.addClass('hidden');
+      modelField.addClass('hidden');
+      apiKeyInput.removeAttr('required');
+    } else {
+      apiKeyField.removeClass('hidden');
+      modelField.removeClass('hidden');
+      apiKeyInput.attr('required', 'required');
+    }
+  });
+  
   // Save Configuration
   $('.ai-config-form').on('submit', function(e) {
     e.preventDefault();
@@ -260,15 +299,21 @@ $(document).ready(function() {
     
     submitBtn.prop('disabled', true).html('<span class="loading loading-spinner loading-sm"></span> {{ __('Saving...') }}');
     
+    const aiType = form.find('[name="ai_type"]').val();
     const formData = {
       device_id: form.data('device-id'),
-      gemini_api_key: form.find('[name="gemini_api_key"]').val(),
-      model: form.find('[name="model"]').val(),
+      ai_type: aiType,
       max_tokens: parseInt(form.find('[name="max_tokens"]').val()),
       temperature: parseFloat(form.find('[name="temperature"]').val()),
       system_prompt: form.find('[name="system_prompt"]').val(),
       reply_to_groups: form.find('[name="reply_to_groups"]').is(':checked') ? true : false
     };
+    
+    // Only include API key and model for custom AI
+    if (aiType === 'custom') {
+      formData.gemini_api_key = form.find('[name="gemini_api_key"]').val();
+      formData.model = form.find('[name="model"]').val();
+    }
     
     $.ajax({
       url: '{{ route('user.ai-response.store') }}',

@@ -144,12 +144,77 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
         const data = {};
         const jidParts = message.key.remoteJid.split('@');
         const isGroup = jidParts[1] === 'g.us';
+        
+        // Webhook for private messages only
         if (message && !isGroup) {
           data.remote_id = message.key.remoteJid;
           data.sessionId = sessionId;
           data.message_id = message.key.id;
           data.message = message.message;
           sentWebHook(sessionId, data);
+        }
+        
+        // AI Auto Response (for both private and group)
+        try {
+          const messageText = message.message?.conversation || 
+                             message.message?.extendedTextMessage?.text || '';
+          
+          logger.info('Message received', { 
+            sessionId, 
+            sender: message.key.remoteJid,
+            isGroup,
+            hasText: !!messageText,
+            messageText: messageText?.substring(0, 50)
+          });
+          
+          if (messageText) {
+            const apiUrl = `${process.env.APP_URL}/api/ai-response/generate`;
+            logger.info('Calling AI API', { apiUrl, sessionId });
+            
+            // Call Laravel API to check if AI is enabled and get response
+            const aiResponse = await axios.post(apiUrl, {
+              device_id: sessionId,
+              sender: message.key.remoteJid,
+              message: messageText
+            }, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              validateStatus: () => true // Don't throw on any status
+            });
+
+            logger.info('AI API response status', { status: aiResponse.status });
+
+            if (aiResponse.status === 200 && aiResponse.data) {
+              logger.info('AI API response data', { hasReply: !!aiResponse.data.reply });
+              
+              if (aiResponse.data.reply) {
+                // Send AI reply
+                await sock.sendMessage(message.key.remoteJid, { 
+                  text: aiResponse.data.reply 
+                });
+                logger.info('AI auto-reply sent', { 
+                  to: message.key.remoteJid, 
+                  reply: aiResponse.data.reply.substring(0, 50) + '...' 
+                });
+              } else {
+                logger.info('No AI reply generated (AI might be disabled or not configured)');
+              }
+            } else {
+              logger.error('AI API failed', { 
+                status: aiResponse.status, 
+                error: aiResponse.data 
+              });
+            }
+          } else {
+            logger.info('No text message to process for AI');
+          }
+        } catch (aiError) {
+          logger.error('AI auto-response error:', { 
+            message: aiError.message,
+            stack: aiError.stack
+          });
         }
       }
     } catch {}

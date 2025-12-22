@@ -23,22 +23,30 @@ class AiResponseController extends Controller
     {
         $validated = $request->validate([
             'device_id' => 'required|exists:devices,id',
-            'gemini_api_key' => 'required|string',
+            'ai_type' => 'required|in:default,custom',
+            'gemini_api_key' => 'nullable|string',
             'is_active' => 'nullable|boolean',
             'reply_to_groups' => 'nullable|boolean',
-            'model' => 'string',
+            'model' => 'nullable|string',
             'system_prompt' => 'nullable|string|max:1000',
             'max_tokens' => 'integer|min:100|max:2000',
             'temperature' => 'numeric|min:0|max:1',
         ]);
 
-        // Test API key with selected model
-        $testResult = $this->testGeminiApi($request->gemini_api_key, $request->model ?? 'gemini-2.5-flash');
-        
-        if (!$testResult['success']) {
-            return response()->json([
-                'message' => $testResult['message']
-            ], 400);
+        // Validate API key for custom AI
+        if ($request->ai_type === 'custom') {
+            $request->validate([
+                'gemini_api_key' => 'required|string'
+            ]);
+
+            // Test API key with selected model
+            $testResult = $this->testGeminiApi($request->gemini_api_key, $request->model ?? 'gemini-2.5-flash');
+            
+            if (!$testResult['success']) {
+                return response()->json([
+                    'message' => $testResult['message']
+                ], 400);
+            }
         }
 
         AiResponse::updateOrCreate(
@@ -47,7 +55,8 @@ class AiResponseController extends Controller
                 'device_id' => $request->device_id
             ],
             [
-                'gemini_api_key' => $request->gemini_api_key,
+                'ai_type' => $request->ai_type,
+                'gemini_api_key' => $request->ai_type === 'custom' ? $request->gemini_api_key : null,
                 'reply_to_groups' => $request->reply_to_groups ?? false,
                 'model' => $request->model ?? 'gemini-2.5-flash',
                 'system_prompt' => $request->system_prompt,
@@ -123,102 +132,156 @@ class AiResponseController extends Controller
         }
 
         try {
-            // Get conversation history (last 10 messages)
-            $history = \App\Models\AiConversationHistory::where('device_id', $deviceId)
-                ->where('sender', $sender)
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
-                ->get()
-                ->reverse(); // Oldest first
-
-            // Build conversation context
-            $contents = [];
-            
-            // Add system prompt as first message
-            $systemPrompt = $aiResponse->system_prompt ?? 'You are a helpful WhatsApp assistant. Keep responses concise and friendly.';
-            $contents[] = [
-                'role' => 'user',
-                'parts' => [['text' => $systemPrompt]]
-            ];
-            $contents[] = [
-                'role' => 'model',
-                'parts' => [['text' => 'Understood. I will be a helpful WhatsApp assistant.']]
-            ];
-
-            // Add conversation history
-            foreach ($history as $msg) {
-                $contents[] = [
-                    'role' => $msg->role === 'user' ? 'user' : 'model',
-                    'parts' => [['text' => $msg->message]]
-                ];
+            // Use Default AI (Free Gemini)
+            if ($aiResponse->ai_type === 'default') {
+                return $this->generateDefaultAiResponse($message, $aiResponse, $deviceId, $sender);
             }
+            
+            // Use Custom AI (API Key)
+            return $this->generateCustomAiResponse($message, $aiResponse, $deviceId, $sender);
+            
+        } catch (\Exception $e) {
+            \Log::error('AI Response Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return "🤖 Maaf, terjadi kesalahan. Silakan hubungi administrator.";
+        }
+    }
 
-            // Add current message
-            $contents[] = [
-                'role' => 'user',
-                'parts' => [['text' => $message]]
-            ];
-
-            $url = "https://generativelanguage.googleapis.com/v1beta/models/{$aiResponse->model}:generateContent?key={$aiResponse->gemini_api_key}";
+    private function generateDefaultAiResponse($message, $aiResponse, $deviceId, $sender)
+    {
+        try {
+            $geminiClient = new \App\Services\GeminiClient();
             
-            $payload = [
-                'contents' => $contents,
-                'generationConfig' => [
-                    'maxOutputTokens' => $aiResponse->max_tokens,
-                    'temperature' => $aiResponse->temperature,
-                ]
-            ];
+            // Build context with system prompt
+            $systemPrompt = $aiResponse->system_prompt ?? 'You are a helpful WhatsApp assistant. Keep responses concise and friendly.';
+            $fullMessage = $systemPrompt . "\n\nUser: " . $message;
             
-            \Log::info('Sending to Gemini with history', [
-                'model' => $aiResponse->model, 
-                'history_count' => count($history),
-                'sender' => $sender
-            ]);
+            $result = $geminiClient->ask($fullMessage);
             
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-            ])->post($url, $payload);
-
-            \Log::info('Gemini response', ['status' => $response->status()]);
-            
-            if ($response->successful()) {
-                $data = $response->json();
-                $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+            if ($result && isset($result['text'])) {
+                $reply = $result['text'];
                 
-                if ($reply) {
-                    // Save user message to history
-                    \App\Models\AiConversationHistory::create([
-                        'device_id' => $deviceId,
-                        'sender' => $sender,
-                        'role' => 'user',
-                        'message' => $message,
-                    ]);
+                // Save to history
+                \App\Models\AiConversationHistory::create([
+                    'device_id' => $deviceId,
+                    'sender' => $sender,
+                    'role' => 'user',
+                    'message' => $message,
+                ]);
 
-                    // Save AI response to history
-                    \App\Models\AiConversationHistory::create([
-                        'device_id' => $deviceId,
-                        'sender' => $sender,
-                        'role' => 'assistant',
-                        'message' => $reply,
-                    ]);
+                \App\Models\AiConversationHistory::create([
+                    'device_id' => $deviceId,
+                    'sender' => $sender,
+                    'role' => 'assistant',
+                    'message' => $reply,
+                ]);
 
-                    // Cleanup old messages (keep last 50 per sender)
-                    $this->cleanupOldMessages($deviceId, $sender);
-                }
+                $this->cleanupOldMessages($deviceId, $sender);
                 
                 return $reply;
-            } else {
-                \Log::error('Gemini API failed', ['status' => $response->status(), 'body' => $response->body()]);
-                
-                $errorBody = $response->json();
-                if (isset($errorBody['error']['message'])) {
-                    return "🤖 AI: " . $errorBody['error']['message'] . "\n\nPlease try again or contact support.";
-                }
-                return "🤖 AI sedang tidak tersedia. Silakan coba lagi nanti.";
             }
+            
+            return "🤖 AI sedang tidak tersedia. Silakan coba lagi nanti.";
+            
         } catch (\Exception $e) {
-            \Log::error('Gemini API Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            return "🤖 Maaf, terjadi kesalahan. Silakan hubungi administrator.";
+            \Log::error('Default AI Error: ' . $e->getMessage());
+            return "🤖 AI sedang tidak tersedia. Silakan coba lagi nanti.";
+        }
+    }
+
+    private function generateCustomAiResponse($message, $aiResponse, $deviceId, $sender)
+    {
+        // Get conversation history (last 10 messages)
+        $history = \App\Models\AiConversationHistory::where('device_id', $deviceId)
+            ->where('sender', $sender)
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->reverse(); // Oldest first
+
+        // Build conversation context
+        $contents = [];
+        
+        // Add system prompt as first message
+        $systemPrompt = $aiResponse->system_prompt ?? 'You are a helpful WhatsApp assistant. Keep responses concise and friendly.';
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [['text' => $systemPrompt]]
+        ];
+        $contents[] = [
+            'role' => 'model',
+            'parts' => [['text' => 'Understood. I will be a helpful WhatsApp assistant.']]
+        ];
+
+        // Add conversation history
+        foreach ($history as $msg) {
+            $contents[] = [
+                'role' => $msg->role === 'user' ? 'user' : 'model',
+                'parts' => [['text' => $msg->message]]
+            ];
+        }
+
+        // Add current message
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [['text' => $message]]
+        ];
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$aiResponse->model}:generateContent?key={$aiResponse->gemini_api_key}";
+        
+        $payload = [
+            'contents' => $contents,
+            'generationConfig' => [
+                'maxOutputTokens' => $aiResponse->max_tokens,
+                'temperature' => $aiResponse->temperature,
+            ]
+        ];
+        
+        \Log::info('Sending to Gemini with history', [
+            'model' => $aiResponse->model, 
+            'history_count' => count($history),
+            'sender' => $sender
+        ]);
+        
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])->post($url, $payload);
+
+        \Log::info('Gemini response', ['status' => $response->status()]);
+        
+        if ($response->successful()) {
+            $data = $response->json();
+            $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+            
+            if ($reply) {
+                // Save user message to history
+                \App\Models\AiConversationHistory::create([
+                    'device_id' => $deviceId,
+                    'sender' => $sender,
+                    'role' => 'user',
+                    'message' => $message,
+                ]);
+
+                // Save AI response to history
+                \App\Models\AiConversationHistory::create([
+                    'device_id' => $deviceId,
+                    'sender' => $sender,
+                    'role' => 'assistant',
+                    'message' => $reply,
+                ]);
+
+                // Cleanup old messages (keep last 50 per sender)
+                $this->cleanupOldMessages($deviceId, $sender);
+            }
+            
+            return $reply;
+        } else {
+            \Log::error('Gemini API failed', ['status' => $response->status(), 'body' => $response->body()]);
+            
+            $errorBody = $response->json();
+            if (isset($errorBody['error']['message'])) {
+                return "🤖 AI: " . $errorBody['error']['message'] . "\n\nPlease try again or contact support.";
+            }
+            return "🤖 AI sedang tidak tersedia. Silakan coba lagi nanti.";
         }
     }
 

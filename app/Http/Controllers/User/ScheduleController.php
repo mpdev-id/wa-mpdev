@@ -63,26 +63,37 @@ class ScheduleController extends Controller
             ],401);  
         }
 
-          $date = Carbon::parse($request->date);
-         // $time= $date->format('g:i A');
-         // $date= $date->toDate();
-         $dateTime = Carbon::createFromFormat('Y-m-d H:i:s', $date, $request->timezone);
-         $dateTime = $dateTime->copy()->tz(env('TIME_ZONE','UTC'));
+          $date = Carbon::parse($request->date . ' ' . $request->time);
+          $dateTime = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d H:i:s'), $request->timezone);
+          $dateTime = $dateTime->copy()->tz(env('TIME_ZONE','UTC'));
+          
         $validated = $request->validate([
             'device' => 'required|integer',
             'date' => 'required',
+            'time' => 'required',
             'timezone' => 'required',
             'title' => 'required|max:100',
-            'group' => 'required',
+            'recipient_type' => 'required|in:group,single',
             'message_type' => 'required'
         ]);
+        
         if ($request->message_type != 'template') {
            $validated = $request->validate([
                 'message' => 'required|max:1000',
             ]);
         }
 
-       $receivers = Group::where('user_id',Auth::id())->with('groupcontacts')->whereHas('groupcontacts')->findorFail($request->group);
+        // Validate based on recipient type
+        if ($request->recipient_type == 'group') {
+            $validated = $request->validate([
+                'group' => 'required',
+            ]);
+            $receivers = Group::where('user_id',Auth::id())->with('groupcontacts')->whereHas('groupcontacts')->findorFail($request->group);
+        } else {
+            $validated = $request->validate([
+                'phone' => 'required',
+            ]);
+        }
 
         if ($request->message_type == 'template') {
             $validated = $request->validate([
@@ -98,13 +109,29 @@ class ScheduleController extends Controller
            
            $receivers_arr=[];
 
-           foreach ($receivers->groupcontacts ?? [] as $key => $receiver) {
+           if ($request->recipient_type == 'group') {
+               foreach ($receivers->groupcontacts ?? [] as $key => $receiver) {
+                   array_push($receivers_arr, $receiver->contact_id);
+               }
+               abort_if(count($receivers_arr) == 0,404);
+           } else {
+               // For single number, create a temporary contact entry
+               $phone = preg_replace('/\D+/', '', $request->phone);
+               if (substr($phone, 0, 1) === '0') {
+                   $phone = '62' . substr($phone, 1);
+               }
                
-               array_push($receivers_arr, $receiver->contact_id);
+               // Check if contact exists, if not create it
+               $contact = Contact::where('user_id', Auth::id())->where('phone', $phone)->first();
+               if (!$contact) {
+                   $contact = new Contact();
+                   $contact->user_id = Auth::id();
+                   $contact->phone = $phone;
+                   $contact->name = $phone;
+                   $contact->save();
+               }
+               array_push($receivers_arr, $contact->id);
            }
-           abort_if(count($receivers_arr) == 0,404);
-
-           
 
             DB::beginTransaction();
             try {

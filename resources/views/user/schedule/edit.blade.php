@@ -11,7 +11,7 @@
       <h1 class="text-2xl font-bold">{{ __('Edit Schedule') }}</h1>
       <p class="text-base-content/60">{{ __('Update scheduled message') }}</p>
     </div>
-    <a href="{{ route('user.schedule.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.schedule-message.index') }}" class="btn btn-outline gap-2">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back') }}
     </a>
@@ -19,7 +19,7 @@
 
   <div class="card bg-white shadow-xl">
     <div class="card-body">
-      <form method="POST" class="space-y-4" action="{{ route('user.schedule.update', $schedule->id) }}">
+      <form method="POST" class="space-y-4" action="{{ route('user.schedule-message.update', $schedule->id) }}">
         @csrf
         @method('PUT')
         
@@ -47,7 +47,7 @@
         </div>
 
         <div class="flex justify-end gap-3 pt-6 border-t">
-          <a href="{{ route('user.schedule.index') }}" class="btn btn-outline">{{ __('Cancel') }}</a>
+          <a href="{{ route('user.schedule-message.index') }}" class="btn btn-outline">{{ __('Cancel') }}</a>
           <button type="submit" class="btn btn-primary gap-2">
             <span class="material-icons text-sm">save</span>
             {{ __('Update') }}
