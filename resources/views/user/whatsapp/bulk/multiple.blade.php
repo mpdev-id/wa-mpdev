@@ -173,8 +173,8 @@
 <!-- Modals -->
 <!-- Modals -->
 <dialog id="exampleModal" class="modal">
-  <div class="modal-box glass-card rounded-[2rem] border-0 overflow-hidden shadow-2xl p-0 max-w-2xl">
-    <div class="p-8">
+  <div class="modal-box glass-card rounded-[2rem] border-0 overflow-hidden shadow-2xl p-0 max-w-2xl max-h-[90vh] flex flex-col">
+    <div class="p-8 overflow-y-auto flex-1">
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-accent-content shadow-lg shadow-accent/20">
@@ -213,8 +213,9 @@
           <input type="file" name="csv" class="file-input file-input-bordered w-full rounded-2xl bg-base-100/50 csv" required accept=".csv">
         </div>
       </div>
+    </div>
 
-      <div class="mt-10">
+    <div class="p-8 pt-0 border-t border-base-200/50">
         <form method="dialog" class="w-full">
           <button class="btn btn-outline btn-lg w-full rounded-2xl">{{ __('Close') }}</button>
         </form>
@@ -227,9 +228,9 @@
 </dialog>
 
 <dialog id="import_from_contact" class="modal">
-  <div class="modal-box glass-card rounded-[2rem] border-0 overflow-hidden shadow-2xl p-0 max-w-2xl">
-    <form class="contact-list-form">
-      <div class="p-8">
+  <div class="modal-box glass-card rounded-[2rem] border-0 overflow-hidden shadow-2xl p-0 max-w-2xl max-h-[90vh] flex flex-col">
+    <form class="contact-list-form flex flex-col h-full">
+      <div class="p-8 overflow-y-auto flex-1">
         <div class="flex items-center justify-between mb-8">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-secondary-content shadow-lg shadow-secondary/20">
@@ -274,8 +275,9 @@
             <span class="text-error text-xs font-bold mt-2 none message_alert">{{ __('Message is required') }}</span>
           </div>
         </div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-4 mt-10">
+      <div class="grid grid-cols-2 gap-4 p-8 pt-0 border-t border-base-200/50">
           <button type="button" class="btn btn-outline btn-lg rounded-2xl" onclick="import_from_contact.close()">{{ __('Close') }}</button>
           <button type="submit" class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20">{{ __('Import Now') }}</button>
         </div>
@@ -288,8 +290,8 @@
 </dialog>
 
 <dialog id="addRecord" class="modal">
-  <div class="modal-box glass-card rounded-[2rem] border-0 overflow-hidden shadow-2xl p-0 max-w-2xl">
-    <div class="p-8">
+  <div class="modal-box glass-card rounded-[2rem] border-0 overflow-hidden shadow-2xl p-0 max-w-2xl max-h-[90vh] flex flex-col">
+    <div class="p-8 overflow-y-auto flex-1">
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
@@ -320,7 +322,7 @@
           <label class="label px-1">
             <span class="label-text font-bold text-base-content/80">{{ __('Recipient(s)') }}</span>
           </label>
-          <textarea class="textarea textarea-bordered h-24 w-full rounded-2xl bg-base-100/50" id="to" placeholder="{{ __('628xxx, 628xxx...') }}" required></textarea>
+          <textarea class="textarea textarea-bordered h-20 w-full rounded-2xl bg-base-100/50" id="to" placeholder="{{ __('628xxx, 628xxx...') }}" required></textarea>
           <label class="label">
             <span class="label-text-alt text-base-content/40 font-bold uppercase tracking-widest text-[10px]">{{ __('Use comma for multiple numbers') }}</span>
           </label>
@@ -331,17 +333,17 @@
           <label class="label px-1">
             <span class="label-text font-bold text-base-content/80">{{ __('Message') }}</span>
           </label>
-          <textarea class="textarea textarea-bordered h-48 w-full rounded-2xl bg-base-100/50" id="wa_message" maxlength="1000" placeholder="{{ __('Type your message here...') }}" required></textarea>
+          <textarea class="textarea textarea-bordered h-32 w-full rounded-2xl bg-base-100/50" id="wa_message" maxlength="1000" placeholder="{{ __('Type your message here...') }}" required></textarea>
           <span class="text-error text-xs font-bold mt-2 none message_alert">{{ __('Message is required') }}</span>
         </div>
       </div>
+    </div>
 
-      <div class="grid grid-cols-2 gap-4 mt-10">
-        <form method="dialog" class="w-full">
-          <button class="btn btn-outline btn-lg w-full rounded-2xl">{{ __('Close') }}</button>
-        </form>
-        <button class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20 add_custom_row">{{ __('Add Now') }}</button>
-      </div>
+    <div class="grid grid-cols-2 gap-4 p-8 pt-0 border-t border-base-200/50">
+      <form method="dialog" class="w-full">
+        <button class="btn btn-outline btn-lg w-full rounded-2xl">{{ __('Close') }}</button>
+      </form>
+      <button class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20 add_custom_row">{{ __('Add Now') }}</button>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
@@ -362,6 +364,6 @@
 <script src="{{ asset('assets/vendor/select2/dist/js/select2.min.js') }}"></script>
 <script src="{{ asset('assets/js/pages/bulk/jquery.csv.min.js') }}" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js" integrity="sha512-UOJe4paV6hYWBnS0c9GnIRH8PLm2nFK22uhfAvsTIqd3uwnWsVri1OPn5fJYdLtGY3wB11LGHJ4yPU1WFJeBYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="{{ asset('assets/js/pages/bulk/bulkmessage.js?v=1.4') }}" ></script>
+<script src="{{ asset('assets/js/pages/bulk/bulkmessage.js?v=2.0') }}" ></script>
 
 @endpush

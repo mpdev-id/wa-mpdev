@@ -204,7 +204,7 @@ function isExist(to) {
 	return is_valid;
 }
 
-$(document).on('click','.send_now',function(){
+$(document).on('click', '.send_now', function() {
 	sendble_rows = [];
 	$('.rows').each(function(index, row){
 		sendble_rows.push($(this).data('row'));
@@ -212,18 +212,41 @@ $(document).on('click','.send_now',function(){
 	
 	if (sendble_rows.length > 0) {
 		Swal.fire({
-			title: 'Launch Campaign?',
-			text: `You are about to send ${sendble_rows.length} messages.`,
+			title: '🚀 Launch Campaign?',
+			html: `<div class="text-base-content/70">You are about to send <strong class="text-primary">${sendble_rows.length}</strong> message${sendble_rows.length > 1 ? 's' : ''}.</div>`,
 			icon: 'question',
 			showCancelButton: true,
-			confirmButtonText: 'Yes, Launch!',
-			confirmButtonColor: '#10b981',
+			confirmButtonText: '<span class="font-bold">✓ Yes, Launch!</span>',
+			cancelButtonText: '<span class="font-bold">✕ Cancel</span>',
+			confirmButtonColor: '#8b5cf6',
 			cancelButtonColor: '#6b7280',
-			background: 'rgba(255, 255, 255, 0.9)',
-			backdrop: `rgba(0,0,123,0.4)`
+			reverseButtons: true,
+			showClass: {
+				popup: 'animate__animated animate__fadeInDown animate__faster'
+			},
+			hideClass: {
+				popup: 'animate__animated animate__fadeOutUp animate__faster'
+			},
+			customClass: {
+				confirmButton: 'btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/30 px-8',
+				cancelButton: 'btn btn-ghost btn-lg rounded-2xl px-8'
+			},
+			buttonsStyling: false
 		}).then((result) => {
-			if (result.isConfirmed) {
-				$('.send_now').attr('disabled','disable').addClass('loading');
+			if (result.value === true || result.isConfirmed === true) {
+				$('.send_now').attr('disabled', 'disabled').addClass('loading');
+				
+				Swal.fire({
+					title: 'Sending Messages...',
+					html: '<div class="text-base-content/70">Please wait while we process your campaign</div>',
+					icon: 'info',
+					showConfirmButton: false,
+					allowOutsideClick: false,
+					didOpen: () => {
+						Swal.showLoading();
+					}
+				});
+				
 				submitRequests(sendble_rows[0]);
 			}
 		});
@@ -231,10 +254,15 @@ $(document).on('click','.send_now',function(){
 	else{
 		$('.send_now').removeAttr('disabled');
 		Swal.fire({
-			title: 'Empty Queue',
-			text: 'Please add some recipients before launching.',
+			title: '📭 Empty Queue',
+			html: '<div class="text-base-content/70">Please add some recipients before launching your campaign.</div>',
 			icon: 'warning',
-			confirmButtonColor: '#10b981'
+			confirmButtonText: '<span class="font-bold">Got it!</span>',
+			confirmButtonColor: '#f59e0b',
+			customClass: {
+				confirmButton: 'btn btn-warning btn-lg rounded-2xl shadow-xl shadow-warning/30 px-8'
+			},
+			buttonsStyling: false
 		});
 	}
 });
@@ -324,24 +352,29 @@ $(document).on('submit', '.contact-list-form', function(e) {
 var total_sent=0;
 
 function submitRequests(param) {
-	
 	const phone_num=$('.number_'+param).val();
 	const message=$('.message_'+param).val();
 	const device=$('.device_'+param).val();
 
 	if (phone_num == '') {
 		$('.send_now').removeAttr('disabled');
-		return ToastAlert('error', 'Add an whatsapp phone number');
+		Swal.close();
+		return ToastAlert('error', 'Add a WhatsApp phone number');
 	}
 	if (message == '') {
 		$('.send_now').removeAttr('disabled');
-		return ToastAlert('error', 'Add some Message');
+		Swal.close();
+		return ToastAlert('error', 'Add a message');
 	}
 	if (device == '') {
 		$('.send_now').removeAttr('disabled');
-		return ToastAlert('error', 'Select a device');
+		Swal.close();
+		return ToastAlert('error', 'Please select a device');
 	}
-
+	$('.badge_'+param).removeClass('badge-warning badge-error');
+	$('.badge_'+param).addClass('badge-info');
+	$('.badge_'+param).html('Sending...');
+	$('.message_'+param).attr('disabled','disabled');
 	$.ajaxSetup({
 		headers: {
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -370,6 +403,9 @@ function submitRequests(param) {
 			$('.number_'+param).removeClass('number_'+param);
 			$('.message_'+param).removeClass('message_'+param);
 
+			total_sent++;
+			$('.total_sent').text(total_sent);
+
 			if (sendble_rows.length != 0) {
 				var randomTime = Math.floor(Math.random() * (endSec - startSec + 1)) + parseInt(startSec);
 				setTimeout(function() {
@@ -378,15 +414,20 @@ function submitRequests(param) {
 			} else {
 				$('.send_now').removeAttr('disabled').removeClass('loading');
 				Swal.fire({
-					title: 'Campaign Finished!',
-					text: `Successfully sent ${total_sent} messages.`,
+					title: '🎉 Campaign Finished!',
+					html: `<div class="text-base-content/70">Successfully sent <strong class="text-success">${total_sent}</strong> message${total_sent > 1 ? 's' : ''}!</div>`,
 					icon: 'success',
-					confirmButtonColor: '#10b981'
+					confirmButtonText: '<span class="font-bold">✓ Awesome!</span>',
+					confirmButtonColor: '#10b981',
+					showClass: {
+						popup: 'animate__animated animate__bounceIn'
+					},
+					customClass: {
+						confirmButton: 'btn btn-success btn-lg rounded-2xl shadow-xl shadow-success/30 px-8'
+					},
+					buttonsStyling: false
 				});
-				if (typeof congratulations === 'function') congratulations();
 			}
-			total_sent++;
-			$('.total_sent').text(total_sent);
 
 			$('#add_record').removeAttr('disabled');
 			$('#import_record').removeAttr('disabled');
@@ -412,10 +453,15 @@ function submitRequests(param) {
 			} else {
 				$('.send_now').removeAttr('disabled').removeClass('loading');
 				Swal.fire({
-					title: 'Campaign Completed',
-					text: 'All messages in queue have been processed.',
+					title: 'ℹ️ Campaign Completed',
+					html: '<div class="text-base-content/70">All messages in queue have been processed.</div>',
 					icon: 'info',
-					confirmButtonColor: '#10b981'
+					confirmButtonText: '<span class="font-bold">OK</span>',
+					confirmButtonColor: '#3b82f6',
+					customClass: {
+						confirmButton: 'btn btn-info btn-lg rounded-2xl shadow-xl shadow-info/30 px-8'
+					},
+					buttonsStyling: false
 				});
 			}
 			total_sent++;
