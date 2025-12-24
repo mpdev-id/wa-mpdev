@@ -65,45 +65,6 @@
     </div>
   </aside>
 
-  <!-- Mobile Sidebar Overlay -->
-  <div x-show="sidebarOpen" 
-       x-cloak
-       @click="sidebarOpen = false"
-       x-transition:enter="transition-opacity ease-linear duration-300"
-       x-transition:enter-start="opacity-0"
-       x-transition:enter-end="opacity-100"
-       x-transition:leave="transition-opacity ease-linear duration-300"
-       x-transition:leave-start="opacity-100"
-       x-transition:leave-end="opacity-0"
-       class="fixed inset-0 bg-gray-900/50 z-40 md:hidden backdrop-blur-sm">
-  </div>
-
-  <!-- Mobile Sidebar -->
-  <aside x-show="sidebarOpen"
-         x-cloak
-         @click.away="sidebarOpen = false"
-         x-transition:enter="transition ease-in-out duration-300 transform"
-         x-transition:enter-start="-translate-x-full"
-         x-transition:enter-end="translate-x-0"
-         x-transition:leave="transition ease-in-out duration-300 transform"
-         x-transition:leave-start="translate-x-0"
-         x-transition:leave-end="-translate-x-full"
-         class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl md:hidden">
-    <!-- Logo -->
-    <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-      <a href="{{ url('/user/dashboard') }}" class="flex items-center gap-3">
-        <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-8" alt="{{ env('APP_NAME') }}">
-      </a>
-      <button @click="sidebarOpen = false" class="text-gray-500 hover:text-gray-700">
-        <span class="material-icons">close</span>
-      </button>
-    </div>
-    
-    <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto scrollbar-hide py-4 px-3">
-      @include('layouts.main.sidebar')
-    </nav>
-  </aside>
 
   <!-- Main Content -->
   <div class="md:pl-64 flex flex-col min-h-screen">
@@ -114,7 +75,7 @@
     @yield('head')
     
     <!-- Page Content -->
-    <main class="flex-1 pb-20 md:pb-6">
+    <main class="flex-1 pb-24 md:pb-6">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         @yield('content')
       </div>
@@ -127,37 +88,80 @@
   </div>
 
   <!-- Mobile Bottom Navigation -->
-  <div class="btm-nav md:hidden z-50 border-t border-gray-200 bg-white shadow-lg">
-    <a href="{{ route('user.dashboard.index') }}" 
-       class="{{ Request::is('user/dashboard*') ? 'active text-primary' : 'text-gray-600' }}">
-      <span class="material-icons text-2xl">dashboard</span>
-      <span class="btm-nav-label text-xs">Dashboard</span>
-    </a>
-    
-    <a href="{{ route('user.device.index') }}" 
-       class="{{ Request::is('user/device*') ? 'active text-primary' : 'text-gray-600' }}">
-      <span class="material-icons text-2xl">devices</span>
-      <span class="btm-nav-label text-xs">Devices</span>
-    </a>
-    
-    <a href="{{ url('user/sent-text-message') }}" 
-       class="{{ Request::is('user/sent-text-message*') ? 'active text-primary' : 'text-gray-600' }}">
-      <span class="material-icons text-2xl">send</span>
-      <span class="btm-nav-label text-xs">Send</span>
-    </a>
-    
-    <a href="{{ route('user.chatbot.index') }}" 
-       class="{{ Request::is('user/chatbot*') ? 'active text-primary' : 'text-gray-600' }}">
-      <span class="material-icons text-2xl">smart_toy</span>
-      <span class="btm-nav-label text-xs">Chatbot</span>
-    </a>
-    
-    <button @click="mobileMenuOpen = !mobileMenuOpen" 
-            class="text-gray-600">
-      <span class="material-icons text-2xl">menu</span>
-      <span class="btm-nav-label text-xs">More</span>
-    </button>
+  <div class="fixed bottom-0 left-0 right-0 md:hidden z-50 border-t border-gray-200 bg-white shadow-lg">
+    <div class="flex items-center justify-around h-16">
+      <a href="{{ route('user.dashboard.index') }}" 
+         class="btm-nav-item {{ Request::is('user/dashboard*') ? 'active' : '' }}">
+        <span class="material-icons text-2xl">dashboard</span>
+        <span class="btm-nav-label text-xs">Dashboard</span>
+      </a>
+      
+      <a href="{{ route('user.device.index') }}" 
+         class="btm-nav-item {{ Request::is('user/device*') ? 'active' : '' }}">
+        <span class="material-icons text-2xl">devices</span>
+        <span class="btm-nav-label text-xs">Devices</span>
+      </a>
+      
+      <a href="{{ url('user/sent-text-message') }}" 
+         class="btm-nav-item {{ Request::is('user/sent-text-message*') ? 'active' : '' }}">
+        <span class="material-icons text-2xl">send</span>
+        <span class="btm-nav-label text-xs">Send</span>
+      </a>
+      
+      <a href="{{ route('user.chatbot.index') }}" 
+         class="btm-nav-item {{ Request::is('user/chatbot*') ? 'active' : '' }}">
+        <span class="material-icons text-2xl">smart_toy</span>
+        <span class="btm-nav-label text-xs">Chatbot</span>
+      </a>
+      
+      <a href="{{ url('/user/profile') }}" 
+         class="btm-nav-item {{ Request::is('user/profile*') ? 'active' : '' }}">
+        <span class="material-icons text-2xl">person</span>
+        <span class="btm-nav-label text-xs">Profile</span>
+      </a>
+    </div>
   </div>
+
+  <style>
+  .btm-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 12px;
+    color: rgb(107 114 128);
+    transition: all 0.2s ease;
+    position: relative;
+    flex: 1;
+    text-decoration: none;
+  }
+
+  .btm-nav-item.active {
+    background: linear-gradient(to top, rgb(147 51 234 / 0.15), transparent);
+    color: rgb(147 51 234);
+    font-weight: 600;
+  }
+
+  .btm-nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, rgb(147 51 234), rgb(126 34 206));
+    border-radius: 0 0 3px 3px;
+  }
+
+  .btm-nav-item.active .material-icons {
+    transform: scale(1.1);
+  }
+
+  .btm-nav-item:active {
+    transform: scale(0.95);
+  }
+  </style>
 
   <!-- Mobile More Menu -->
   <div x-show="mobileMenuOpen"

@@ -2,12 +2,9 @@
   
   <!-- Logo -->
   <div class="p-4 border-b border-base-300">
-    <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded bg-primary flex items-center justify-center">
-        <span class="material-icons text-white text-base">send</span>
-      </div>
-      <span class="font-bold text-sm">WASender</span>
-    </div>
+    <a href="{{ url('/user/dashboard') }}" class="flex items-center gap-3">
+      <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-8" alt="{{ env('APP_NAME') }}">
+    </a>
   </div>
 
   <!-- Menu -->
