@@ -157,8 +157,9 @@
   font-size: 13px;
   font-weight: 500;
   color: rgb(var(--bc) / 0.7);
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   text-decoration: none;
+  position: relative;
 }
 
 .nav-item .material-icons {
@@ -174,11 +175,30 @@
 .nav-item:hover {
   background: rgb(var(--b2));
   color: rgb(var(--bc));
+  transform: translateX(2px);
 }
 
 .nav-item.active {
-  background: rgb(var(--p));
+  background: linear-gradient(to right, rgb(147 51 234), rgb(126 34 206));
   color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgb(147 51 234 / 0.4);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: white;
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-item.active .material-icons {
+  transform: scale(1.1);
 }
 
 .nav-item-ai:not(.active) {
@@ -190,12 +210,15 @@
 .nav-item-ai:not(.active):hover {
   background: rgb(168 85 247 / 0.15);
   border-color: rgb(168 85 247 / 0.3);
+  transform: translateX(2px);
 }
 
 .nav-item-ai.active {
   background: linear-gradient(to right, rgb(147 51 234), rgb(126 34 206));
   color: white;
+  font-weight: 600;
   border: none;
+  box-shadow: 0 2px 12px rgb(147 51 234 / 0.4);
 }
 
 .nav-item-logout {
@@ -205,5 +228,6 @@
 
 .nav-item-logout:hover {
   background: rgb(220 38 38 / 0.1);
+  transform: translateX(2px);
 }
 </style>
