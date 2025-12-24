@@ -12,9 +12,12 @@ class AiResponse extends Model
     protected $fillable = [
         'user_id',
         'device_id',
+        'ai_type',
         'gemini_api_key',
         'is_active',
         'reply_to_groups',
+        'contact_filter_mode',
+        'contact_numbers',
         'model',
         'system_prompt',
         'max_tokens',

@@ -118,15 +118,15 @@
                       </label>
                       <select name="ai_type" class="select select-bordered w-full ai-type-select">
                         <option value="default" {{ ($aiSetting->ai_type ?? 'default') == 'default' ? 'selected' : '' }}>
-                          🆓 Default AI (Free Gemini)
+                          🆓 Default AI (Free - UnlimitedAI)
                         </option>
                         <option value="custom" {{ ($aiSetting->ai_type ?? '') == 'custom' ? 'selected' : '' }}>
                           🔑 Custom AI (Your API Key)
                         </option>
                       </select>
                       <label class="label">
-                        <span class="label-text-alt text-info">
-                          {{ __('Default AI is free but may have limitations') }}
+                        <span class="label-text-alt text-success">
+                          {{ __('Default AI is free and works well for most cases') }}
                         </span>
                       </label>
                     </div>
@@ -166,8 +166,8 @@
                       </select>
                     </div>
 
-                    <!-- Max Tokens -->
-                    <div>
+                    <!-- Max Tokens (Only for Custom AI) -->
+                    <div x-show="aiType === 'custom'">
                       <label class="block mb-2">
                         <span class="font-semibold text-base-content">{{ __('Max Response Length') }}</span>
                       </label>
@@ -187,23 +187,23 @@
                   <!-- Right Column -->
                   <div class="space-y-5">
                     
-                    <!-- Temperature -->
-                    <div>
+                    <!-- Temperature (Only for Custom AI) -->
+                    <div x-show="aiType === 'custom'" x-data="{ temperature: {{ $aiSetting->temperature ?? 0.7 }} }">
                       <label class="block mb-2">
                         <span class="font-semibold text-base-content">{{ __('Creativity Level') }}</span>
-                        <span class="text-primary ml-2 font-mono text-sm">{{ $aiSetting->temperature ?? '0.7' }}</span>
+                        <span class="text-primary ml-2 font-mono text-sm" x-text="temperature.toFixed(2)">{{ $aiSetting->temperature ?? '0.7' }}</span>
                       </label>
                       <input type="range" 
                              name="temperature"
-                             value="{{ $aiSetting->temperature ?? 0.7 }}"
+                             x-model.number="temperature"
                              min="0" 
-                             max="1" 
-                             step="0.1" 
+                             max="2" 
+                             step="0.01" 
                              class="range range-primary" />
                       <div class="flex justify-between text-xs text-base-content/60 mt-2 px-1">
-                        <span>🎯 Precise</span>
-                        <span>⚖️ Balanced</span>
-                        <span>🎨 Creative</span>
+                        <span>🎯 Precise (0.0)</span>
+                        <span>⚖️ Balanced (1.0)</span>
+                        <span>🎨 Creative (2.0)</span>
                       </div>
                     </div>
 
@@ -230,6 +230,47 @@
                           <span class="font-semibold block">{{ __('Reply in Group Chats') }}</span>
                           <span class="text-xs text-base-content/60">{{ __('Enable AI to respond in WhatsApp groups') }}</span>
                         </div>
+                      </label>
+                    </div>
+
+                    <!-- Contact Filter -->
+                    <div class="divider text-sm">{{ __('Contact Filter') }}</div>
+                    
+                    <div>
+                      <label class="block mb-2">
+                        <span class="font-semibold text-base-content">{{ __('Filter Mode') }}</span>
+                      </label>
+                      <select name="contact_filter_mode" class="select select-bordered w-full contact-filter-mode">
+                        <option value="all" {{ ($aiSetting->contact_filter_mode ?? 'all') == 'all' ? 'selected' : '' }}>
+                          🌐 {{ __('Reply to All Contacts') }}
+                        </option>
+                        <option value="whitelist" {{ ($aiSetting->contact_filter_mode ?? '') == 'whitelist' ? 'selected' : '' }}>
+                          ✅ {{ __('Whitelist (Only Listed Numbers)') }}
+                        </option>
+                        <option value="blacklist" {{ ($aiSetting->contact_filter_mode ?? '') == 'blacklist' ? 'selected' : '' }}>
+                          ❌ {{ __('Blacklist (Block Listed Numbers)') }}
+                        </option>
+                      </select>
+                      <label class="label">
+                        <span class="label-text-alt text-base-content/60">
+                          {{ __('Control which contacts can receive AI responses') }}
+                        </span>
+                      </label>
+                    </div>
+
+                    <div class="contact-numbers-field {{ ($aiSetting->contact_filter_mode ?? 'all') == 'all' ? 'hidden' : '' }}">
+                      <label class="block mb-2">
+                        <span class="font-semibold text-base-content">{{ __('Contact Numbers') }}</span>
+                        <span class="text-base-content/40 text-sm ml-1">({{ __('One per line') }})</span>
+                      </label>
+                      <textarea name="contact_numbers" 
+                                class="textarea textarea-bordered w-full" 
+                                rows="5"
+                                placeholder="62812345678&#10;62898765432&#10;62877123456">{{ $aiSetting->contact_numbers ?? '' }}</textarea>
+                      <label class="label">
+                        <span class="label-text-alt text-info">
+                          💡 {{ __('Enter phone numbers without + or spaces (e.g., 62812345678)') }}
+                        </span>
                       </label>
                     </div>
 
@@ -289,6 +330,19 @@ $(document).ready(function() {
     }
   });
   
+  // Toggle Contact Filter Fields
+  $('.contact-filter-mode').on('change', function() {
+    const filterMode = $(this).val();
+    const form = $(this).closest('form');
+    const contactNumbersField = form.find('.contact-numbers-field');
+    
+    if (filterMode === 'all') {
+      contactNumbersField.addClass('hidden');
+    } else {
+      contactNumbersField.removeClass('hidden');
+    }
+  });
+  
   // Save Configuration
   $('.ai-config-form').on('submit', function(e) {
     e.preventDefault();
@@ -299,6 +353,7 @@ $(document).ready(function() {
     
     submitBtn.prop('disabled', true).html('<span class="loading loading-spinner loading-sm"></span> {{ __('Saving...') }}');
     
+    
     const aiType = form.find('[name="ai_type"]').val();
     const formData = {
       device_id: form.data('device-id'),
@@ -306,7 +361,9 @@ $(document).ready(function() {
       max_tokens: parseInt(form.find('[name="max_tokens"]').val()),
       temperature: parseFloat(form.find('[name="temperature"]').val()),
       system_prompt: form.find('[name="system_prompt"]').val(),
-      reply_to_groups: form.find('[name="reply_to_groups"]').is(':checked') ? true : false
+      reply_to_groups: form.find('[name="reply_to_groups"]').is(':checked') ? true : false,
+      contact_filter_mode: form.find('[name="contact_filter_mode"]').val(),
+      contact_numbers: form.find('[name="contact_numbers"]').val()
     };
     
     // Only include API key and model for custom AI

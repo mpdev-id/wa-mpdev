@@ -188,20 +188,44 @@ class BulkController extends Controller
             $message_id = $request->message_id ?? null;
             $message = json_encode($request->message ?? '');
             $message = json_decode($message);
+            
+            // Extract quoted/replied message for context
+            $quotedMessage = null;
+            if (isset($message->extendedTextMessage->contextInfo->quotedMessage)) {
+                $quoted = $message->extendedTextMessage->contextInfo->quotedMessage;
+                if (isset($quoted->conversation)) {
+                    $quotedMessage = $quoted->conversation;
+                } elseif (isset($quoted->extendedTextMessage->text)) {
+                    $quotedMessage = $quoted->extendedTextMessage->text;
+                }
+            }
 
+            // Extract main message
+            $buttonId = null;
             if (isset($message->conversation)) {
                 $message = $message->conversation ?? null;
             } elseif (isset($message->extendedTextMessage)) {
                 $message = $message->extendedTextMessage->text ?? null;
             } elseif (isset($message->buttonsResponseMessage)) {
+                $buttonId = $message->buttonsResponseMessage->selectedButtonId ?? null;
                 $message = $message->buttonsResponseMessage->selectedDisplayText ?? null;
+            } elseif (isset($message->templateButtonReplyMessage)) {
+                // Handle quick reply button response
+                $buttonId = $message->templateButtonReplyMessage->selectedId ?? null;
+                $message = $message->templateButtonReplyMessage->selectedDisplayText ?? null;
             } elseif (isset($message->listResponseMessage)) {
                 $message = $message->listResponseMessage->title ?? null;
             } else {
                 $message = null;
             }
             
-            \Log::info('Message extracted', ['message' => $message, 'length' => strlen($message ?? '')]);
+            \Log::info('Message extracted', [
+                'message' => $message, 
+                'length' => strlen($message ?? ''),
+                'has_quoted' => !empty($quotedMessage),
+                'quoted_message' => $quotedMessage ? substr($quotedMessage, 0, 50) : null
+            ]);
+
 
             if ($device->hook_url) {
                 $hook = new Webhook;
@@ -225,8 +249,204 @@ class BulkController extends Controller
                 
                 \Log::info('AI check', ['found' => $aiResponse ? 'yes' : 'no', 'device_id' => $device_id, 'message' => $message]);
                 
-                if ($aiResponse && $aiResponse->gemini_api_key) {
+                // Check for reset command
+                if ($aiResponse && (strtolower(trim($message)) === '/reset' || strtolower(trim($message)) === 'reset')) {
+                    \App\Models\AiConversationHistory::where('device_id', $device_id)
+                        ->where('sender', $request_from)
+                        ->delete();
+                    
+                    \Log::info('Conversation reset', ['sender' => $request_from]);
+                    
+                    return response()->json([
+                        'message' => array('text' => '🔄 Conversation history has been reset. Let\'s start fresh!'),
+                        'receiver' => $request->from,
+                        'session_id' => $session
+                    ], 200);
+                }
+                
+                // Handle button responses (ai_on / ai_off)
+                if ($aiResponse && $buttonId) {
+                    if ($buttonId === 'ai_off') {
+                        \DB::table('ai_user_preferences')->updateOrInsert(
+                            ['device_id' => $device_id, 'sender' => $request_from],
+                            ['ai_enabled' => false, 'updated_at' => now()]
+                        );
+                        
+                        \Log::info('AI disabled via button', ['sender' => $request_from]);
+                        
+                        return response()->json([
+                            'message' => array('text' => 'Chat bot telah dinonaktifkan. Ketik #on untuk mengaktifkan kembali.'),
+                            'receiver' => $request->from,
+                            'session_id' => $session
+                        ], 200);
+                    } elseif ($buttonId === 'ai_on') {
+                        \DB::table('ai_user_preferences')->updateOrInsert(
+                            ['device_id' => $device_id, 'sender' => $request_from],
+                            ['ai_enabled' => true, 'updated_at' => now()]
+                        );
+                        
+                        \Log::info('AI enabled via button', ['sender' => $request_from]);
+                        
+                        return response()->json([
+                            'message' => array('text' => 'Chat bot telah diaktifkan! Ketik #off untuk menonaktifkan fitur ini.'),
+                            'receiver' => $request->from,
+                            'session_id' => $session
+                        ], 200);
+                    }
+                }
+                
+                // Check for #off command (disable AI for this user)
+                if ($aiResponse && strtolower(trim($message)) === '#off') {
+                    // Store user preference to disable AI
+                    \DB::table('ai_user_preferences')->updateOrInsert(
+                        [
+                            'device_id' => $device_id,
+                            'sender' => $request_from
+                        ],
+                        [
+                            'ai_enabled' => false,
+                            'updated_at' => now()
+                        ]
+                    );
+                    
+                    \Log::info('AI disabled for user', ['sender' => $request_from]);
+                    
+                    return response()->json([
+                        'message' => array('text' => '🔕 AI auto-reply has been disabled for you. Send #on to enable it again.'),
+                        'receiver' => $request->from,
+                        'session_id' => $session
+                    ], 200);
+                }
+                
+                // Check for #on command (enable AI for this user)
+                if ($aiResponse && strtolower(trim($message)) === '#on') {
+                    // Store user preference to enable AI
+                    \DB::table('ai_user_preferences')->updateOrInsert(
+                        [
+                            'device_id' => $device_id,
+                            'sender' => $request_from
+                        ],
+                        [
+                            'ai_enabled' => true,
+                            'updated_at' => now()
+                        ]
+                    );
+                    
+                    \Log::info('AI enabled for user', ['sender' => $request_from]);
+                    
+                    return response()->json([
+                        'message' => array('text' => '🔔 AI auto-reply has been enabled for you. I\'m ready to help!'),
+                        'receiver' => $request->from,
+                        'session_id' => $session
+                    ], 200);
+                }
+                
+                // Check if user has disabled AI
+                $userPreference = \DB::table('ai_user_preferences')
+                    ->where('device_id', $device_id)
+                    ->where('sender', $request_from)
+                    ->first();
+                
+                // Check if this is first-time user (no preference record yet)
+                $isFirstTime = !$userPreference;
+                
+                if ($userPreference && !$userPreference->ai_enabled) {
+                    \Log::info('AI disabled by user preference', ['sender' => $request_from]);
+                    return response()->json([
+                        'message' => array('text' => null),
+                        'receiver' => $request->from,
+                        'session_id' => $session
+                    ], 200);
+                }
+                
+                // Send welcome message with buttons for first-time users
+                if ($isFirstTime && $aiResponse) {
+                    // Create user preference record (enabled by default)
+                    \DB::table('ai_user_preferences')->insert([
+                        'device_id' => $device_id,
+                        'sender' => $request_from,
+                        'ai_enabled' => true,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    
+                    \Log::info('First-time user, sending welcome message', ['sender' => $request_from]);
+                    
+                    // Send welcome message with quick reply buttons
+                    return response()->json([
+                        'message' => array(
+                            'text' => "👋 Halo! Saya adalah AI Assistant yang siap membantu Anda.\n\n💡 *Tips:*\nAnda bisa mengontrol AI auto-reply dengan quick reply di bawah ini:",
+                            'footer' => 'Pilih salah satu opsi',
+                            'templateButtons' => [
+                                [
+                                    'index' => 0,
+                                    'quickReplyButton' => [
+                                        'displayText' => '#on',
+                                        'id' => '#on'
+                                    ]
+                                ],
+                                [
+                                    'index' => 1,
+                                    'quickReplyButton' => [
+                                        'displayText' => '#off',
+                                        'id' => '#off'
+                                    ]
+                                ]
+                            ]
+                        ),
+                        'receiver' => $request->from,
+                        'session_id' => $session
+                    ], 200);
+                }
+                
+                // Process AI if enabled (both Default AI and Custom AI)
+                if ($aiResponse) {
                     try {
+                        // Check contact filter
+                        $contactFilterMode = $aiResponse->contact_filter_mode ?? 'all';
+                        $allowedNumbers = [];
+                        
+                        if ($contactFilterMode !== 'all' && !empty($aiResponse->contact_numbers)) {
+                            // Parse contact numbers (comma or newline separated)
+                            $allowedNumbers = preg_split('/[\r\n,]+/', $aiResponse->contact_numbers);
+                            $allowedNumbers = array_map('trim', $allowedNumbers);
+                            $allowedNumbers = array_filter($allowedNumbers);
+                        }
+                        
+                        $senderNumber = $request_from;
+                        $isAllowed = true;
+                        
+                        if ($contactFilterMode === 'whitelist' && !empty($allowedNumbers)) {
+                            // Only allow numbers in the list
+                            $isAllowed = in_array($senderNumber, $allowedNumbers);
+                            \Log::info('Whitelist check', [
+                                'sender' => $senderNumber,
+                                'allowed' => $isAllowed,
+                                'whitelist_count' => count($allowedNumbers)
+                            ]);
+                        } elseif ($contactFilterMode === 'blacklist' && !empty($allowedNumbers)) {
+                            // Block numbers in the list
+                            $isAllowed = !in_array($senderNumber, $allowedNumbers);
+                            \Log::info('Blacklist check', [
+                                'sender' => $senderNumber,
+                                'allowed' => $isAllowed,
+                                'blacklist_count' => count($allowedNumbers)
+                            ]);
+                        }
+                        
+                        if (!$isAllowed) {
+                            \Log::info('Contact filtered out', [
+                                'mode' => $contactFilterMode,
+                                'sender' => $senderNumber
+                            ]);
+                            // Skip AI processing for this contact
+                            return response()->json([
+                                'message' => array('text' => null),
+                                'receiver' => $request->from,
+                                'session_id' => $session
+                            ], 403);
+                        }
+                        
                         // Check if message is from group
                         $isGroupMessage = strpos($request->from, '@g.us') !== false;
                         
@@ -236,13 +456,17 @@ class BulkController extends Controller
                         // 1. Message is from private chat, OR
                         // 2. Message is from group AND reply_to_groups is enabled
                         if (!$isGroupMessage || $aiResponse->reply_to_groups) {
-                            \Log::info('Calling AI generateResponse', ['sender' => $request_from]);
+                            \Log::info('Calling AI generateResponse', [
+                                'ai_type' => $aiResponse->ai_type,
+                                'sender' => $request_from,
+                                'has_quoted' => !empty($quotedMessage)
+                            ]);
                             
                             // Send typing indicator
                             $this->sendTyping($device_id, $request->from);
                             
                             $aiController = new \App\Http\Controllers\User\AiResponseController();
-                            $aiReply = $aiController->generateResponse($message, $device_id, $request_from);
+                            $aiReply = $aiController->generateResponse($message, $device_id, $request_from, $quotedMessage);
                             
                             \Log::info('AI Reply received', ['reply' => $aiReply ? substr($aiReply, 0, 50) : 'null']);
                             
@@ -254,15 +478,25 @@ class BulkController extends Controller
                                 $logs['type'] = 'ai';
                                 $this->saveLog($logs);
                                 
-                                return response()->json([
-                                    'message' => array('text' => $aiReply),
-                                    'receiver' => $request->from,
-                                    'session_id' => $session
-                                ], 200);
+                                // Send message in chunks for natural human-like conversation
+                                $response = $this->sendMessageInChunks($device_id, $request->from, $aiReply, $session);
+                                
+                                // If response has null text (chunks sent in background), return empty success
+                                if (!isset($response['message']['text']) || $response['message']['text'] === null) {
+                                    return response()->json([
+                                        'status' => 'success',
+                                        'message' => 'Message sent in chunks'
+                                    ], 200);
+                                }
+                                
+                                return response()->json($response, 200);
                             }
                         }
                     } catch (\Exception $e) {
-                        \Log::error('AI Error: ' . $e->getMessage());
+                        \Log::error('AI Error in webhook', [
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString()
+                        ]);
                     }
                 }
                 // ===== END AI RESPONSE =====

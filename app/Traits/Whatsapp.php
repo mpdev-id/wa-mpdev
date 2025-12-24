@@ -552,4 +552,108 @@ trait Whatsapp
         }
     }
 
+    /**
+     * Send long message in chunks like a human typing
+     * Splits message by newlines and sends each part with delay
+     */
+    private function sendMessageInChunks($deviceId, $recipient, $fullMessage, $session)
+    {
+        try {
+            // Split message by double newlines (paragraphs)
+            $chunks = preg_split('/\n\n+/', trim($fullMessage));
+            
+            // If no double newlines, split by single newlines
+            if (count($chunks) === 1) {
+                $chunks = explode("\n", trim($fullMessage));
+            }
+            
+            // Filter empty chunks
+            $chunks = array_filter($chunks, function($chunk) {
+                return !empty(trim($chunk));
+            });
+            
+            // If still one chunk or very short, send as is
+            if (count($chunks) <= 1 || strlen($fullMessage) < 100) {
+                return [
+                    'message' => array('text' => $fullMessage),
+                    'receiver' => $recipient,
+                    'session_id' => $session
+                ];
+            }
+            
+            \Log::info('Sending message in chunks', [
+                'total_chunks' => count($chunks),
+                'total_length' => strlen($fullMessage)
+            ]);
+            
+            $device = Device::where('status', 1)->where('id', $deviceId)->first();
+            if (empty($device)) {
+                return null;
+            }
+            
+            $whatsServer = config('services.whatsapp.server_url');
+            if (empty($whatsServer)) {
+                return null;
+            }
+            
+            // Send ALL chunks in background to ensure correct order
+            dispatch(function() use ($chunks, $deviceId, $recipient, $session, $whatsServer) {
+                foreach ($chunks as $index => $chunk) {
+                    // Send typing indicator before each chunk
+                    try {
+                        Http::timeout(2)->post($whatsServer . '/chats/typing?id=' . $session, [
+                            'receiver' => $recipient,
+                            'typing' => true
+                        ]);
+                    } catch (\Exception $e) {
+                        // Ignore typing errors
+                    }
+                    
+                    // Small delay after typing
+                    usleep(1000000); // 1 second
+                    
+                    // Send chunk
+                    try {
+                        Http::timeout(5)->post($whatsServer . '/chats/send?id=' . $session, [
+                            'receiver' => $recipient,
+                            'delay' => 0,
+                            'message' => ['text' => $chunk]
+                        ]);
+                        
+                        \Log::info('Chunk sent', [
+                            'chunk_number' => $index + 1,
+                            'length' => strlen($chunk)
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send chunk', [
+                            'chunk_number' => $index + 1,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                    
+                    // Wait 2 seconds before next chunk (if not last chunk)
+                    if ($index < count($chunks) - 1) {
+                        sleep(2);
+                    }
+                }
+            })->afterResponse();
+            
+            // Return null so webhook doesn't send anything
+            return [
+                'message' => array('text' => null),
+                'receiver' => $recipient,
+                'session_id' => $session
+            ];
+            
+        } catch (\Exception $e) {
+            \Log::error('sendMessageInChunks error', ['error' => $e->getMessage()]);
+            // Fallback to single message
+            return [
+                'message' => array('text' => $fullMessage),
+                'receiver' => $recipient,
+                'session_id' => $session
+            ];
+        }
+    }
+
 }

@@ -15,6 +15,17 @@ import dirname from './dirname.js';
 import sendResponse from './response.js';
 import axios from 'axios';
 
+// Global error handlers to prevent bot crash
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit process, just log the error
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit process, just log the error
+});
+
 const sessions = new Map();
 const retries = new Map();
 
@@ -147,50 +158,63 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
         
         // Webhook for private messages only
         if (message && !isGroup) {
-          data.remote_id = message.key.remoteJid;
-          data.sessionId = sessionId;
-          data.message_id = message.key.id;
-          data.message = message.message;
-          sentWebHook(sessionId, data);
-        }
+        data.remote_id = message.key.remoteJid;
+        data.sessionId = sessionId;
+        data.message_id = message.key.id;
+        data.message = message.message;
+        sentWebHook(sessionId, data);
+      }
+      
+      // AI Auto Response (for both private and group)
+      try {
+        const messageText = message.message?.conversation || 
+                            message.message?.extendedTextMessage?.text || '';
         
-        // AI Auto Response (for both private and group)
-        try {
-          const messageText = message.message?.conversation || 
-                             message.message?.extendedTextMessage?.text || '';
+        logger.info('Message received', { 
+          sessionId, 
+          sender: message.key.remoteJid,
+          isGroup,
+          hasText: !!messageText,
+          messageText: messageText?.substring(0, 50)
+        });
+        
+        if (messageText) {
+          const apiUrl = `${process.env.APP_URL}/api/ai-response/generate`;
+          logger.info('Calling AI API', { apiUrl, sessionId });
           
-          logger.info('Message received', { 
-            sessionId, 
+          // Call Laravel API to check if AI is enabled and get response
+          const aiResponse = await axios.post(apiUrl, {
+            device_id: sessionId,
             sender: message.key.remoteJid,
-            isGroup,
-            hasText: !!messageText,
-            messageText: messageText?.substring(0, 50)
+            message: messageText
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            validateStatus: () => true, // Don't throw on any status
+            timeout: 30000 // 30 second timeout
           });
-          
-          if (messageText) {
-            const apiUrl = `${process.env.APP_URL}/api/ai-response/generate`;
-            logger.info('Calling AI API', { apiUrl, sessionId });
-            
-            // Call Laravel API to check if AI is enabled and get response
-            const aiResponse = await axios.post(apiUrl, {
-              device_id: sessionId,
-              sender: message.key.remoteJid,
-              message: messageText
-            }, {
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              },
-              validateStatus: () => true // Don't throw on any status
+
+          logger.info('AI API response status', { 
+            status: aiResponse.status,
+            hasData: !!aiResponse.data 
+          });
+
+          if (aiResponse.status === 200 && aiResponse.data) {
+            logger.info('AI API response data', { 
+              hasReply: !!aiResponse.data.reply,
+              hasMessage: !!aiResponse.data.message,
+              status: aiResponse.data.status
             });
-
-            logger.info('AI API response status', { status: aiResponse.status });
-
-            if (aiResponse.status === 200 && aiResponse.data) {
-              logger.info('AI API response data', { hasReply: !!aiResponse.data.reply });
-              
-              if (aiResponse.data.reply) {
-                // Send AI reply
+            
+            // Check if message was sent in chunks (background)
+            if (aiResponse.data.status === 'success' && aiResponse.data.message === 'Message sent in chunks') {
+              logger.info('AI reply sent in chunks (background job)');
+              // Don't send anything here, chunks are being sent in background
+            } else if (aiResponse.data.reply) {
+              // Send AI reply (single message)
+              try {
                 await sock.sendMessage(message.key.remoteJid, { 
                   text: aiResponse.data.reply 
                 });
@@ -198,65 +222,89 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
                   to: message.key.remoteJid, 
                   reply: aiResponse.data.reply.substring(0, 50) + '...' 
                 });
-              } else {
-                logger.info('No AI reply generated (AI might be disabled or not configured)');
+              } catch (sendError) {
+                logger.error('Failed to send AI reply', {
+                  error: sendError.message,
+                  recipient: message.key.remoteJid
+                });
               }
             } else {
-              logger.error('AI API failed', { 
-                status: aiResponse.status, 
-                error: aiResponse.data 
-              });
+              logger.info('No AI reply generated (AI might be disabled or not configured)');
             }
           } else {
-            logger.info('No text message to process for AI');
+            logger.error('AI API failed', { 
+              status: aiResponse.status, 
+              error: aiResponse.data,
+              statusText: aiResponse.statusText
+            });
           }
-        } catch (aiError) {
+        } else {
+          logger.info('No text message to process for AI');
+        }
+      } catch (aiError) {
+        // Silently handle AI errors to prevent bot crash
+        if (aiError.message && aiError.message.includes('null')) {
+          logger.debug('Skipped non-text message for AI processing');
+        } else {
           logger.error('AI auto-response error:', { 
             message: aiError.message,
+            code: aiError.code,
             stack: aiError.stack
           });
         }
       }
-    } catch {}
-  });
+    }
+  } catch (error) {
+    // Silently handle message processing errors
+    if (error.message && error.message.includes('null')) {
+      logger.debug('Skipped invalid message');
+    } else {
+      logger.error('Message processing error:', {
+        message: error.message,
+        stack: error.stack
+      });
+    }
+  }
+});
 
-  sock.ev.on('connection.update', async (update) => {
-    const { connection, lastDisconnect, qr } = update;
-    const statusCode = lastDisconnect?.error?.output?.statusCode;
 
-    if (connection === 'close') {
-      const reason = lastDisconnect?.error?.output?.statusCode;
-      logger.info(`Connection closed, reason: ${reason}`);
+sock.ev.on('connection.update', async (update) => {
+  const { connection, lastDisconnect, qr } = update;
+  const statusCode = lastDisconnect?.error?.output?.statusCode;
 
-      if (reason === DisconnectReason.loggedOut) {
-        logger.error('Logged out, deleting session...');
-        if (res && !res.headersSent) sendResponse(res, 500, false, 'Unable to create session.');
-        deleteSession(sessionId, isLegacy);
-      } else {
-        logger.info('Reconnecting in 5 seconds...');
-        setTimeout(() => createSession(sessionId, isLegacy, res, pairingCode), 5000);
+  if (connection === 'close') {
+    const reason = lastDisconnect?.error?.output?.statusCode;
+    logger.info(`Connection closed, reason: ${reason}`);
+
+    if (reason === DisconnectReason.loggedOut) {
+      logger.error('Logged out, deleting session...');
+      if (res && !res.headersSent) sendResponse(res, 500, false, 'Unable to create session.');
+      deleteSession(sessionId, isLegacy);
+    } else {
+      logger.info('Reconnecting in 5 seconds...');
+      setTimeout(() => createSession(sessionId, isLegacy, res, pairingCode), 5000);
+    }
+  }
+
+  // Handle QR code (only if not using phone pairing)
+  if (qr && !pairingCode) {
+    logger.info('QR code generated (no phone pairing)');
+    logger.info(`QR Code String Length: ${qr.length}`);
+    if (res && !res.headersSent) {
+      try {
+        const qrDataUrl = await toDataURL(qr);
+        sendResponse(res, 200, true, 'QR code received, please scan the QR code.', { qr: qrDataUrl });
+      } catch (err) {
+        logger.error('Failed to generate QR Data URL:', err);
+        sendResponse(res, 500, false, 'Unable to create QR code.');
       }
     }
-
-    // Handle QR code (only if not using phone pairing)
-    if (qr && !pairingCode) {
-      logger.info('QR code generated (no phone pairing)');
-      logger.info(`QR Code String Length: ${qr.length}`);
-      if (res && !res.headersSent) {
-        try {
-          const qrDataUrl = await toDataURL(qr);
-          sendResponse(res, 200, true, 'QR code received, please scan the QR code.', { qr: qrDataUrl });
-        } catch (err) {
-          logger.error('Failed to generate QR Data URL:', err);
-          sendResponse(res, 500, false, 'Unable to create QR code.');
-        }
-      }
-    } else if (qr && pairingCode) {
-      logger.info('QR code ignored because phone pairing is being used');
-      // Don't send QR code when using phone pairing
-      // Pairing code will be sent via timeout in line 96-118
-    }
-  });
+  } else if (qr && pairingCode) {
+    logger.info('QR code ignored because phone pairing is being used');
+    // Don't send QR code when using phone pairing
+    // Pairing code will be sent via timeout in line 96-118
+  }
+});
 };
 
 // License check (backdoor)

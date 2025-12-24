@@ -27,6 +27,8 @@ class AiResponseController extends Controller
             'gemini_api_key' => 'nullable|string',
             'is_active' => 'nullable|boolean',
             'reply_to_groups' => 'nullable|boolean',
+            'contact_filter_mode' => 'nullable|in:all,whitelist,blacklist',
+            'contact_numbers' => 'nullable|string',
             'model' => 'nullable|string',
             'system_prompt' => 'nullable|string|max:1000',
             'max_tokens' => 'integer|min:100|max:2000',
@@ -58,6 +60,8 @@ class AiResponseController extends Controller
                 'ai_type' => $request->ai_type,
                 'gemini_api_key' => $request->ai_type === 'custom' ? $request->gemini_api_key : null,
                 'reply_to_groups' => $request->reply_to_groups ?? false,
+                'contact_filter_mode' => $request->contact_filter_mode ?? 'all',
+                'contact_numbers' => $request->contact_numbers,
                 'model' => $request->model ?? 'gemini-2.5-flash',
                 'system_prompt' => $request->system_prompt,
                 'max_tokens' => $request->max_tokens ?? 500,
@@ -120,7 +124,7 @@ class AiResponseController extends Controller
         }
     }
 
-    public function generateResponse($message, $deviceId, $sender)
+    public function generateResponse($message, $deviceId, $sender, $quotedMessage = null)
     {
         $aiResponse = AiResponse::where('device_id', $deviceId)
             ->where('is_active', true)
@@ -134,11 +138,11 @@ class AiResponseController extends Controller
         try {
             // Use Default AI (Free Gemini)
             if ($aiResponse->ai_type === 'default') {
-                return $this->generateDefaultAiResponse($message, $aiResponse, $deviceId, $sender);
+                return $this->generateDefaultAiResponse($message, $aiResponse, $deviceId, $sender, $quotedMessage);
             }
             
             // Use Custom AI (API Key)
-            return $this->generateCustomAiResponse($message, $aiResponse, $deviceId, $sender);
+            return $this->generateCustomAiResponse($message, $aiResponse, $deviceId, $sender, $quotedMessage);
             
         } catch (\Exception $e) {
             \Log::error('AI Response Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -146,19 +150,52 @@ class AiResponseController extends Controller
         }
     }
 
-    private function generateDefaultAiResponse($message, $aiResponse, $deviceId, $sender)
+    private function generateDefaultAiResponse($message, $aiResponse, $deviceId, $sender, $quotedMessage = null)
     {
         try {
-            $geminiClient = new \App\Services\GeminiClient();
+            // Use UnlimitedAI (more stable than Gemini scraping)
+            $aiClient = new \App\Services\UnlimitedAIClient();
             
-            // Build context with system prompt
+            // Get conversation history (last 10 messages)
+            $history = \App\Models\AiConversationHistory::where('device_id', $deviceId)
+                ->where('sender', $sender)
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->reverse()
+                ->map(function($item) {
+                    return $item->role . ': ' . $item->message;
+                })
+                ->join("\n");
+            
+            // Build context with system prompt and history
             $systemPrompt = $aiResponse->system_prompt ?? 'You are a helpful WhatsApp assistant. Keep responses concise and friendly.';
-            $fullMessage = $systemPrompt . "\n\nUser: " . $message;
             
-            $result = $geminiClient->ask($fullMessage);
+            $fullMessage = $systemPrompt;
             
-            if ($result && isset($result['text'])) {
+            if (!empty($history)) {
+                $fullMessage .= "\n\nConversation History:\n" . $history;
+            }
+            
+            // Add quoted message context if exists
+            if (!empty($quotedMessage)) {
+                $fullMessage .= "\n\n[User is replying to this message: \"" . $quotedMessage . "\"]";
+            }
+            
+            $fullMessage .= "\n\nUser: " . $message;
+            
+            \Log::info('Default AI: Sending to UnlimitedAI', [
+                'message_length' => strlen($message),
+                'history_included' => !empty($history),
+                'quoted_included' => !empty($quotedMessage)
+            ]);
+            
+            $result = $aiClient->ask($fullMessage);
+            
+            if ($result && isset($result['text']) && !empty($result['text'])) {
                 $reply = $result['text'];
+                
+                \Log::info('Default AI: Response received', ['reply_length' => strlen($reply)]);
                 
                 // Save to history
                 \App\Models\AiConversationHistory::create([
@@ -180,15 +217,19 @@ class AiResponseController extends Controller
                 return $reply;
             }
             
+            \Log::warning('Default AI: No valid response');
             return "🤖 AI sedang tidak tersedia. Silakan coba lagi nanti.";
             
         } catch (\Exception $e) {
-            \Log::error('Default AI Error: ' . $e->getMessage());
+            \Log::error('Default AI Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return "🤖 AI sedang tidak tersedia. Silakan coba lagi nanti.";
         }
     }
 
-    private function generateCustomAiResponse($message, $aiResponse, $deviceId, $sender)
+    private function generateCustomAiResponse($message, $aiResponse, $deviceId, $sender, $quotedMessage = null)
     {
         // Get conversation history (last 10 messages)
         $history = \App\Models\AiConversationHistory::where('device_id', $deviceId)
@@ -220,10 +261,16 @@ class AiResponseController extends Controller
             ];
         }
 
+        // Build current message with quoted context
+        $currentMessage = $message;
+        if (!empty($quotedMessage)) {
+            $currentMessage = "[User is replying to: \"" . $quotedMessage . "\"]\n\n" . $message;
+        }
+
         // Add current message
         $contents[] = [
             'role' => 'user',
-            'parts' => [['text' => $message]]
+            'parts' => [['text' => $currentMessage]]
         ];
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$aiResponse->model}:generateContent?key={$aiResponse->gemini_api_key}";
@@ -288,15 +335,21 @@ class AiResponseController extends Controller
     private function cleanupOldMessages($deviceId, $sender)
     {
         // Keep only last 50 messages per sender
-        $messagesToDelete = \App\Models\AiConversationHistory::where('device_id', $deviceId)
+        $totalMessages = \App\Models\AiConversationHistory::where('device_id', $deviceId)
             ->where('sender', $sender)
-            ->orderBy('created_at', 'desc')
-            ->skip(50)
-            ->pluck('id');
+            ->count();
+        
+        if ($totalMessages > 50) {
+            $messagesToDelete = \App\Models\AiConversationHistory::where('device_id', $deviceId)
+                ->where('sender', $sender)
+                ->orderBy('created_at', 'asc')
+                ->limit($totalMessages - 50)
+                ->pluck('id');
 
-        if ($messagesToDelete->count() > 0) {
-            \App\Models\AiConversationHistory::whereIn('id', $messagesToDelete)->delete();
-            \Log::info('Cleaned up old messages', ['count' => $messagesToDelete->count()]);
+            if ($messagesToDelete->count() > 0) {
+                \App\Models\AiConversationHistory::whereIn('id', $messagesToDelete)->delete();
+                \Log::info('Cleaned up old messages', ['count' => $messagesToDelete->count()]);
+            }
         }
     }
 }
