@@ -105,7 +105,7 @@
                     <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
                       <span class="material-icons text-sm">more_vert</span>
                     </button>
-                    <ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-xl w-48 border border-base-200">
+                    <ul tabindex="0" class="dropdown-content z-[9999] menu p-2 shadow-xl bg-white rounded-xl w-48 border border-base-200">
                       <li>
                         <a href="javascript:void(0)" 
                            @click="editData = { name: '{{ $group->name }}', action: '{{ route('user.group.update', $group->id) }}' }; showEditModal = true"

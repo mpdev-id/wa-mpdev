@@ -312,43 +312,6 @@ class DeviceController extends Controller
         
         if ($device != null && $message != null) {
             
-            // Check AI Response first
-            $aiResponse = \App\Models\AiResponse::where('device_id', $device_id)
-                ->where('is_active', true)
-                ->first();
-            
-            \Log::info('AI Response check', ['found' => $aiResponse ? 'yes' : 'no', 'is_active' => $aiResponse->is_active ?? 'N/A']);
-            
-            if ($aiResponse && $aiResponse->gemini_api_key) {
-                try {
-                    // Check if message is from group
-                    $isGroupMessage = strpos($request->from, '@g.us') !== false;
-                    
-                    \Log::info('Group check', ['isGroup' => $isGroupMessage, 'reply_to_groups' => $aiResponse->reply_to_groups]);
-                    
-                    // Only proceed if: 
-                    // 1. Message is from private chat, OR
-                    // 2. Message is from group AND reply_to_groups is enabled
-                    if (!$isGroupMessage || $aiResponse->reply_to_groups) {
-                        \Log::info('Calling AI generateResponse');
-                        $aiController = new \App\Http\Controllers\User\AiResponseController();
-                        $aiReply = $aiController->generateResponse($message, $device_id);
-                        
-                        \Log::info('AI Reply', ['reply' => $aiReply ? substr($aiReply, 0, 50) : 'null']);
-                        
-                        if ($aiReply) {
-                            return response()->json([
-                                'message'  => array('text' => $aiReply),
-                                'receiver' => $request->from,
-                                'session_id' => $session
-                            ], 200);
-                        }
-                    }
-                } catch (\Exception $e) {
-                    \Log::error('AI Response Error: ' . $e->getMessage());
-                }
-            }
-            
             // Fall back to chatbot (only for short messages)
             if (strlen($message) < 50) {
                 $replies=Reply::where('device_id',$device_id)->with('template')->where('keyword','LIKE','%'.$message.'%')->latest()->get();
@@ -503,6 +466,43 @@ class DeviceController extends Controller
 
 
        }
+
+            // Check AI Response first
+            $aiResponse = \App\Models\AiResponse::where('device_id', $device_id)
+                ->where('is_active', true)
+                ->first();
+            
+            \Log::info('AI Response check', ['found' => $aiResponse ? 'yes' : 'no', 'is_active' => $aiResponse->is_active ?? 'N/A']);
+            
+            if ($aiResponse && $aiResponse->gemini_api_key) {
+                try {
+                    // Check if message is from group
+                    $isGroupMessage = strpos($request->from, '@g.us') !== false;
+                    
+                    \Log::info('Group check', ['isGroup' => $isGroupMessage, 'reply_to_groups' => $aiResponse->reply_to_groups]);
+                    
+                    // Only proceed if: 
+                    // 1. Message is from private chat, OR
+                    // 2. Message is from group AND reply_to_groups is enabled
+                    if (!$isGroupMessage || $aiResponse->reply_to_groups) {
+                        \Log::info('Calling AI generateResponse');
+                        $aiController = new \App\Http\Controllers\User\AiResponseController();
+                        $aiReply = $aiController->generateResponse($message, $device_id);
+                        
+                        \Log::info('AI Reply', ['reply' => $aiReply ? substr($aiReply, 0, 50) : 'null']);
+                        
+                        if ($aiReply) {
+                            return response()->json([
+                                'message'  => array('text' => $aiReply),
+                                'receiver' => $request->from,
+                                'session_id' => $session
+                            ], 200);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('AI Response Error: ' . $e->getMessage());
+                }
+            }
             }
         
 
