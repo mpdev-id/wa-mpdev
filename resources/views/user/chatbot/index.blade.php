@@ -5,7 +5,43 @@
 
 @section('content')
 
-<div class="max-w-7xl mx-auto" x-data="{ showCreateModal: false, showEditModal: false, editData: {} }">
+<div class="max-w-7xl mx-auto" x-data="{ 
+  showCreateModal: false, 
+  showEditModal: false, 
+  editData: {
+    id: null,
+    keyword: '',
+    device: '',
+    reply_type: 'text',
+    match_type: 'equal',
+    reply: '',
+    caption: '',
+    latitude: '',
+    longitude: '',
+    template_id: '',
+    buttons: []
+  },
+  createButtons: [{displaytext: '', type: 'quickReplyButton', action: ''}],
+  
+  addCreateButton() {
+    if (this.createButtons.length < 3) {
+      this.createButtons.push({displaytext: '', type: 'quickReplyButton', action: ''});
+    }
+  },
+  removeCreateButton(index) {
+    this.createButtons.splice(index, 1);
+  },
+  
+  addEditButton() {
+    if (!this.editData.buttons) this.editData.buttons = [];
+    if (this.editData.buttons.length < 3) {
+      this.editData.buttons.push({displaytext: '', type: 'quickReplyButton', action: ''});
+    }
+  },
+  removeEditButton(index) {
+    this.editData.buttons.splice(index, 1);
+  }
+}">
   
   <!-- Page Header -->
   <div class="flex items-center justify-between mb-6">
@@ -13,7 +49,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Automatic Replies') }}</h1>
       <p class="text-base-content/60">{{ __('Set up chatbot auto-reply rules for incoming messages') }}</p>
     </div>
-    <button @click="showCreateModal = true" class="btn btn-primary gap-2">
+    <button @click="showCreateModal = true; createButtons = [{displaytext: '', type: 'quickReplyButton', action: ''}]" class="btn btn-primary gap-2">
       <span class="material-icons text-sm">add</span>
       {{ __('Create Reply') }}
     </button>
@@ -151,7 +187,12 @@
                              device: '{{ $reply->device_id }}',
                              reply_type: '{{ $reply->reply_type }}',
                              match_type: '{{ $reply->match_type }}',
-                             reply: '{{ $reply->reply }}',
+                             reply: `{{ in_array($reply->reply_type, ['image', 'video', 'audio', 'document', 'location', 'button']) ? (optional(json_decode($reply->reply))->message ?? '') : $reply->reply }}`,
+                             caption: `{{ in_array($reply->reply_type, ['image', 'video']) ? (optional(json_decode($reply->reply))->caption ?? '') : '' }}`,
+                             latitude: `{{ $reply->reply_type == 'location' ? (optional(json_decode($reply->reply))->latitude ?? '') : '' }}`,
+                             longitude: `{{ $reply->reply_type == 'location' ? (optional(json_decode($reply->reply))->longitude ?? '') : '' }}`,
+                             footer: `{{ $reply->reply_type == 'button' ? (optional(json_decode($reply->reply))->footer ?? '') : '' }}`,
+                             buttons: {{ $reply->reply_type == 'button' ? json_encode(optional(json_decode($reply->reply))->buttons ?? []) : '[]' }},
                              template_id: '{{ $reply->template_id }}'
                            }; showEditModal = true"
                            class="flex items-center gap-2">
@@ -196,7 +237,7 @@
         {{ __('Create Auto Reply') }}
       </h3>
       
-      <form method="POST" action="{{ route('user.chatbot.store') }}" class="ajaxform_instant_reload space-y-4">
+      <form method="POST" action="{{ route('user.chatbot.store') }}" class="ajaxform_instant_reload space-y-4" enctype="multipart/form-data">
         @csrf
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -224,6 +265,12 @@
             </label>
             <select class="select select-bordered w-full reply_type" name="reply_type" required>
               <option value="text">{{ __('Plain Text') }}</option>
+              <option value="button">{{ __('Button') }}</option>
+              <option value="image">{{ __('Image') }}</option>
+              <option value="audio">{{ __('Audio') }}</option>
+              <option value="video">{{ __('Video') }}</option>
+              <option value="document">{{ __('Document') }}</option>
+              <option value="location">{{ __('Location') }}</option>
               <option value="template">{{ __('Template') }}</option>
             </select>
           </div>
@@ -244,6 +291,125 @@
             <span class="label-text font-medium">{{ __('Reply Message') }}</span>
           </label>
           <textarea class="textarea textarea-bordered h-32" name="reply" maxlength="1000"></textarea>
+        </div>
+
+        <div class="form-control button-area hidden">
+           <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-medium">{{ __('Message Body') }}</span>
+              </label>
+              <textarea class="textarea textarea-bordered h-24" name="button_message" maxlength="1000" placeholder="Main message content..."></textarea>
+           </div>
+           
+           <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-medium">{{ __('Footer Text') }}</span>
+              </label>
+              <input type="text" name="footer_text" class="input input-bordered w-full" maxlength="50" placeholder="Footer text..." />
+           </div>
+
+           <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-medium">{{ __('Header Image (Optional)') }}</span>
+              </label>
+              <input type="file" name="button_image" class="file-input file-input-bordered w-full" accept="image/*" />
+           </div>
+
+           <div class="divider">{{ __('Buttons') }}</div>
+           
+           <div class="space-y-4">
+              <template x-for="(button, index) in createButtons" :key="index">
+                 <div class="bg-base-200 p-4 rounded-xl relative group">
+                    <button type="button" @click="removeCreateButton(index)" class="absolute top-2 right-2 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition-opacity" x-show="createButtons.length > 1">✕</button>
+                    
+                    <div class="grid grid-cols-1 gap-2">
+                       <select x-model="button.type" :name="'buttons['+index+'][type]'" class="select select-bordered select-sm w-full">
+                          <option value="quickReplyButton">{{ __('Quick Reply') }}</option>
+                          <option value="urlButton">{{ __('URL Link') }}</option>
+                          <option value="callButton">{{ __('Call Phone') }}</option>
+                          <option value="copyCodeButton">{{ __('Copy Code') }}</option>
+                       </select>
+                       
+                       <input type="text" x-model="button.displaytext" :name="'buttons['+index+'][displaytext]'" class="input input-bordered input-sm w-full" placeholder="Button Label" required />
+                       
+                       <input type="text" x-model="button.action" :name="'buttons['+index+'][action]'" class="input input-bordered input-sm w-full" :placeholder="button.type === 'urlButton' ? 'https://...' : (button.type === 'callButton' ? '62xxx' : 'Value')" :required="button.type !== 'quickReplyButton'" />
+                    </div>
+                 </div>
+              </template>
+              
+              <button type="button" @click="addCreateButton()" class="btn btn-outline btn-sm w-full border-dashed" x-show="createButtons.length < 3">
+                 + {{ __('Add Button') }}
+              </button>
+           </div>
+        </div>
+
+        <div class="form-control image-area hidden">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Image') }}</span>
+          </label>
+          <input type="file" name="image" class="file-input file-input-bordered w-full" accept="image/*" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Supported formats: jpg, jpeg, png, webp') }}</span>
+          </div>
+          <div class="form-control mt-2">
+             <label class="label">
+                <span class="label-text font-medium">{{ __('Caption (Optional)') }}</span>
+             </label>
+             <input type="text" name="caption" class="input input-bordered w-full" placeholder="Image caption..." />
+          </div>
+        </div>
+
+        <div class="form-control audio-area hidden">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Audio') }}</span>
+          </label>
+          <input type="file" name="audio" class="file-input file-input-bordered w-full" accept="audio/*" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Supported formats: mp3, ogg, wav') }}</span>
+          </div>
+        </div>
+
+        <div class="form-control video-area hidden">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Video') }}</span>
+          </label>
+          <input type="file" name="video" class="file-input file-input-bordered w-full" accept="video/*" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Supported formats: mp4') }}</span>
+          </div>
+          <div class="form-control mt-2">
+             <label class="label">
+                <span class="label-text font-medium">{{ __('Caption (Optional)') }}</span>
+             </label>
+             <input type="text" name="video_caption" class="input input-bordered w-full" placeholder="Video caption..." />
+          </div>
+        </div>
+
+        <div class="form-control document-area hidden">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Document') }}</span>
+          </label>
+          <input type="file" name="document" class="file-input file-input-bordered w-full" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Supported formats: pdf, doc, xls, etc.') }}</span>
+          </div>
+        </div>
+
+        <div class="form-control location-area hidden">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">{{ __('Latitude') }}</span>
+                    </label>
+                    <input type="text" name="latitude" class="input input-bordered w-full" placeholder="-6.200000" />
+                </div>
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">{{ __('Longitude') }}</span>
+                    </label>
+                    <input type="text" name="longitude" class="input input-bordered w-full" placeholder="106.816666" />
+                </div>
+            </div>
         </div>
 
         <div class="form-control templates hidden">
@@ -276,7 +442,7 @@
         {{ __('Edit Auto Reply') }}
       </h3>
       
-      <form method="POST" :action="editData.action" class="ajaxform_instant_reload space-y-4">
+      <form method="POST" :action="editData.action" class="ajaxform_instant_reload space-y-4" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -305,6 +471,12 @@
             </label>
             <select class="select select-bordered w-full reply_type" name="reply_type" x-model="editData.reply_type" required>
               <option value="text">{{ __('Plain Text') }}</option>
+              <option value="button">{{ __('Button') }}</option>
+              <option value="image">{{ __('Image') }}</option>
+              <option value="audio">{{ __('Audio') }}</option>
+              <option value="video">{{ __('Video') }}</option>
+              <option value="document">{{ __('Document') }}</option>
+              <option value="location">{{ __('Location') }}</option>
               <option value="template">{{ __('Template') }}</option>
             </select>
           </div>
@@ -325,6 +497,128 @@
             <span class="label-text font-medium">{{ __('Reply Message') }}</span>
           </label>
           <textarea class="textarea textarea-bordered h-32" name="reply" x-model="editData.reply" maxlength="1000"></textarea>
+        </div>
+
+        <div class="form-control" x-show="editData.reply_type === 'button'" id="button-area">
+           <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-medium">{{ __('Message Body') }}</span>
+              </label>
+              <textarea class="textarea textarea-bordered h-24" name="button_message" x-model="editData.reply" maxlength="1000" placeholder="Main message content..."></textarea>
+           </div>
+           
+           <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-medium">{{ __('Footer Text') }}</span>
+              </label>
+              <input type="text" name="footer_text" x-model="editData.footer" class="input input-bordered w-full" maxlength="50" placeholder="Footer text..." />
+           </div>
+
+           <div class="form-control mb-4">
+              <label class="label">
+                <span class="label-text font-medium">{{ __('Header Image (Optional)') }}</span>
+              </label>
+              <input type="file" name="button_image" class="file-input file-input-bordered w-full" accept="image/*" />
+              <div class="label">
+                 <span class="label-text-alt">{{ __('Leave empty to keep existing image') }}</span>
+              </div>
+           </div>
+
+           <div class="divider">{{ __('Buttons') }}</div>
+           
+           <div class="space-y-4">
+              <template x-for="(button, index) in editData.buttons" :key="index">
+                 <div class="bg-base-200 p-4 rounded-xl relative group">
+                    <button type="button" @click="removeEditButton(index)" class="absolute top-2 right-2 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition-opacity" x-show="editData.buttons.length > 1">✕</button>
+                    
+                    <div class="grid grid-cols-1 gap-2">
+                       <select x-model="button.type" :name="'buttons['+index+'][type]'" class="select select-bordered select-sm w-full">
+                          <option value="quickReplyButton">{{ __('Quick Reply') }}</option>
+                          <option value="urlButton">{{ __('URL Link') }}</option>
+                          <option value="callButton">{{ __('Call Phone') }}</option>
+                          <option value="copyCodeButton">{{ __('Copy Code') }}</option>
+                       </select>
+                       
+                       <input type="text" x-model="button.displaytext" :name="'buttons['+index+'][displaytext]'" class="input input-bordered input-sm w-full" placeholder="Button Label" required />
+                       
+                       <input type="text" x-model="button.action" :name="'buttons['+index+'][action]'" class="input input-bordered input-sm w-full" :placeholder="button.type === 'urlButton' ? 'https://...' : (button.type === 'callButton' ? '62xxx' : 'Value')" :required="button.type !== 'quickReplyButton'" />
+                    </div>
+                 </div>
+              </template>
+              
+              <button type="button" @click="addEditButton()" class="btn btn-outline btn-sm w-full border-dashed" x-show="editData.buttons && editData.buttons.length < 3">
+                 + {{ __('Add Button') }}
+              </button>
+           </div>
+        </div>
+
+        <div class="form-control" x-show="editData.reply_type === 'image'" id="image-area">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Image') }}</span>
+          </label>
+          <input type="file" name="image" class="file-input file-input-bordered w-full" accept="image/*" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Leave empty to keep existing image') }}</span>
+          </div>
+          <div class="form-control mt-2">
+             <label class="label">
+                <span class="label-text font-medium">{{ __('Caption (Optional)') }}</span>
+             </label>
+             <input type="text" name="caption" x-model="editData.caption" class="input input-bordered w-full" placeholder="Image caption..." />
+          </div>
+        </div>
+
+        <div class="form-control" x-show="editData.reply_type === 'audio'" id="audio-area">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Audio') }}</span>
+          </label>
+          <input type="file" name="audio" class="file-input file-input-bordered w-full" accept="audio/*" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Leave empty to keep existing audio') }}</span>
+          </div>
+        </div>
+
+        <div class="form-control" x-show="editData.reply_type === 'video'" id="video-area">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Video') }}</span>
+          </label>
+          <input type="file" name="video" class="file-input file-input-bordered w-full" accept="video/*" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Leave empty to keep existing video') }}</span>
+          </div>
+          <div class="form-control mt-2">
+             <label class="label">
+                <span class="label-text font-medium">{{ __('Caption (Optional)') }}</span>
+             </label>
+             <input type="text" name="video_caption" x-model="editData.caption" class="input input-bordered w-full" placeholder="Video caption..." />
+          </div>
+        </div>
+
+        <div class="form-control" x-show="editData.reply_type === 'document'" id="document-area">
+          <label class="label">
+            <span class="label-text font-medium">{{ __('Select Document') }}</span>
+          </label>
+          <input type="file" name="document" class="file-input file-input-bordered w-full" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" />
+          <div class="label">
+             <span class="label-text-alt">{{ __('Leave empty to keep existing document') }}</span>
+          </div>
+        </div>
+
+        <div class="form-control" x-show="editData.reply_type === 'location'" id="location-area">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">{{ __('Latitude') }}</span>
+                    </label>
+                    <input type="text" name="latitude" x-model="editData.latitude" class="input input-bordered w-full" placeholder="-6.200000" />
+                </div>
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">{{ __('Longitude') }}</span>
+                    </label>
+                    <input type="text" name="longitude" x-model="editData.longitude" class="input input-bordered w-full" placeholder="106.816666" />
+                </div>
+            </div>
         </div>
 
         <div class="form-control" x-show="editData.reply_type === 'template'" id="templates-area">
@@ -366,13 +660,40 @@ document.querySelectorAll('.reply_type').forEach(select => {
     const form = this.closest('form');
     const textArea = form.querySelector('.text-area');
     const templates = form.querySelector('.templates');
+    const buttonArea = form.querySelector('.button-area');
+    const imageArea = form.querySelector('.image-area');
+    const audioArea = form.querySelector('.audio-area');
+    const videoArea = form.querySelector('.video-area');
+    const documentArea = form.querySelector('.document-area');
+    const locationArea = form.querySelector('.location-area');
     
+    // Hide all first
+    if (textArea) textArea.classList.add('hidden');
+    if (templates) templates.classList.add('hidden');
+    if (buttonArea) buttonArea.classList.add('hidden');
+    if (imageArea) imageArea.classList.add('hidden');
+    if (audioArea) audioArea.classList.add('hidden');
+    if (videoArea) videoArea.classList.add('hidden');
+    if (documentArea) documentArea.classList.add('hidden');
+    if (locationArea) locationArea.classList.add('hidden');
+
+    // Show selected
     if (this.value === 'template') {
-      if (textArea) textArea.classList.add('hidden');
       if (templates) templates.classList.remove('hidden');
+    } else if (this.value === 'button') {
+      if (buttonArea) buttonArea.classList.remove('hidden');
+    } else if (this.value === 'image') {
+      if (imageArea) imageArea.classList.remove('hidden');
+    } else if (this.value === 'audio') {
+      if (audioArea) audioArea.classList.remove('hidden');
+    } else if (this.value === 'video') {
+      if (videoArea) videoArea.classList.remove('hidden');
+    } else if (this.value === 'document') {
+      if (documentArea) documentArea.classList.remove('hidden');
+    } else if (this.value === 'location') {
+      if (locationArea) locationArea.classList.remove('hidden');
     } else {
       if (textArea) textArea.classList.remove('hidden');
-      if (templates) templates.classList.add('hidden');
     }
   });
 });

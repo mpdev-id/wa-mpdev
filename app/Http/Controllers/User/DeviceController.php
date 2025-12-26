@@ -366,6 +366,112 @@ class DeviceController extends Controller
 
                  
                 }
+                elseif ($reply->reply_type == 'image') {
+                    $content = json_decode($reply->reply, true);
+                    $imagePath = $content['image'] ?? null;
+                    $caption = $content['caption'] ?? '';
+                    
+                    if ($imagePath) {
+                        return response()->json([
+                            'message'  => [
+                                'image' => ['url' => asset('storage/'.$imagePath)],
+                                'caption' => $caption
+                            ],
+                            'receiver' => $request->from,
+                            'session_id' => $session
+                        ], 200);
+                    }
+                }
+                elseif ($reply->reply_type == 'audio') {
+                    $content = json_decode($reply->reply, true);
+                    $audioPath = $content['audio'] ?? null;
+                    
+                    if ($audioPath) {
+                        return response()->json([
+                            'message'  => [
+                                'audio' => ['url' => asset('storage/'.$audioPath)],
+                                'ptt' => true // Send as voice note
+                            ],
+                            'receiver' => $request->from,
+                            'session_id' => $session
+                        ], 200);
+                    }
+                }
+                elseif ($reply->reply_type == 'video') {
+                    $content = json_decode($reply->reply, true);
+                    $videoPath = $content['video'] ?? null;
+                    $caption = $content['caption'] ?? '';
+                    
+                    if ($videoPath) {
+                        return response()->json([
+                            'message'  => [
+                                'video' => ['url' => asset('storage/'.$videoPath)],
+                                'caption' => $caption
+                            ],
+                            'receiver' => $request->from,
+                            'session_id' => $session
+                        ], 200);
+                    }
+                }
+                elseif ($reply->reply_type == 'document') {
+                    $content = json_decode($reply->reply, true);
+                    $docPath = $content['document'] ?? null;
+                    
+                    if ($docPath) {
+                        $fileName = basename($docPath);
+                        return response()->json([
+                            'message'  => [
+                                'document' => ['url' => asset('storage/'.$docPath)],
+                                'fileName' => $fileName
+                            ],
+                            'receiver' => $request->from,
+                            'session_id' => $session
+                        ], 200);
+                    }
+                }
+                elseif ($reply->reply_type == 'location') {
+                    $content = json_decode($reply->reply, true);
+                    $lat = $content['latitude'] ?? null;
+                    $long = $content['longitude'] ?? null;
+                    
+                    if ($lat && $long) {
+                        return response()->json([
+                            'message'  => [
+                                'location' => [
+                                    'degreesLatitude' => (float)$lat,
+                                    'degreesLongitude' => (float)$long
+                                ]
+                            ],
+                            'receiver' => $request->from,
+                            'session_id' => $session
+                        ], 200);
+                    }
+                }
+                elseif ($reply->reply_type == 'button') {
+                    $content = json_decode($reply->reply, true);
+                    $message = $content['message'] ?? '';
+                    $footer = $content['footer'] ?? '';
+                    $buttons = $content['buttons'] ?? [];
+                    $imagePath = $content['image'] ?? null;
+                    
+                    $messagePayload = [
+                        'templateButtons' => [
+                            'text' => $message,
+                            'footer' => $footer,
+                            'buttons' => $buttons
+                        ]
+                    ];
+                    
+                    if ($imagePath) {
+                        $messagePayload['templateButtons']['image'] = ['url' => asset('storage/'.$imagePath)];
+                    }
+                    
+                    return response()->json([
+                        'message'  => $messagePayload,
+                        'receiver' => $request->from,
+                        'session_id' => $session
+                    ], 200);
+                }
                 else{
                     if (!empty($reply->template)) {
                         $template = $reply->template;
