@@ -14,6 +14,8 @@ use App\Models\Group;
 use App\Models\Groupcontact;
 use Auth;
 use DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 class ContactController extends Controller
 {
     use Whatsapp;
@@ -371,6 +373,127 @@ class ContactController extends Controller
             ], 200);
 
 
+    }
+
+    public function sync(Request $request)
+    {
+        $validated = $request->validate([
+            'device_id' => 'required|exists:devices,id',
+        ]);
+
+        $device = Device::where('user_id', Auth::id())
+            ->where('status', 1)
+            ->findOrFail($request->device_id);
+
+        try {
+            // Call WhatsApp API to get contacts (using chats endpoint)
+            $whatsServer = config('services.whatsapp.server_url');
+            // Use device_{id} format if uuid is not set or different
+            $sessionId = 'device_' . $device->id; 
+            
+            // Use device_{id} format
+            $sessionId = 'device_' . $device->id; 
+            
+            // We use /chats endpoint because /contacts endpoint is not available on this server
+            // This will fetch all active conversations
+            $url = $whatsServer . '/chats?id=' . $sessionId;
+            
+            Log::info('Syncing active contacts from: ' . $url);
+            
+            $response = Http::timeout(30)->get($url);
+
+            Log::info('Sync response status: ' . $response->status());
+            
+            $contacts = [];
+            
+            if ($response->successful()) {
+                $jsonResponse = $response->json();
+                $data = $jsonResponse['data'] ?? [];
+                
+                if (is_array($data)) {
+                    $contacts = $data;
+                    Log::info('Active chats found: ' . count($contacts));
+                } else {
+                    // Fallback if data is directly in the root
+                    if (is_array($jsonResponse)) {
+                        $contacts = $jsonResponse;
+                    }
+                }
+            } else {
+                Log::warning('Failed to fetch chats. Status: ' . $response->status());
+            }
+            
+            Log::info('Total contacts to process: ' . count($contacts));
+                
+                $syncedCount = 0;
+                $skippedCount = 0;
+
+                DB::beginTransaction();
+                
+                foreach ($contacts as $contact) {
+                    // Normalize contact data structure
+                    // /chats endpoint might return different structure than /contacts
+                    $contactId = $contact['id'] ?? null;
+                    $contactName = $contact['name'] ?? $contact['notify'] ?? null;
+                    
+                    // Skip if no ID or if it's a group (usually ends with @g.us)
+                    if (empty($contactId) || strpos($contactId, '@g.us') !== false) {
+                        continue;
+                    }
+
+                    // Extract phone number (remove @s.whatsapp.net)
+                    $phone = str_replace('@s.whatsapp.net', '', $contactId);
+                    
+                    // Use phone as name if name is empty
+                    $name = $contactName ?? $phone;
+                    
+                    // Check if contact already exists
+                    $existingContact = Contact::where('user_id', Auth::id())
+                        ->where('phone', $phone)
+                        ->first();
+
+                    if (!$existingContact) {
+                        // Check contact limit
+                        if (getUserPlanData('contact_limit') == false) {
+                            Log::warning('Contact limit reached for user: ' . Auth::id());
+                            break;
+                        }
+
+                        // Create new contact
+                        Contact::create([
+                            'name' => $name,
+                            'phone' => $phone,
+                            'user_id' => Auth::id()
+                        ]);
+                        
+                        $syncedCount++;
+                    } else {
+                        $skippedCount++;
+                    }
+                }
+
+                DB::commit();
+                
+                Log::info("Sync completed. Synced: $syncedCount, Skipped: $skippedCount");
+
+                return response()->json([
+                    'message' => __('Active contacts synced successfully (from chat history)'),
+                    'synced' => $syncedCount,
+                    'skipped' => $skippedCount,
+                    'total' => count($contacts)
+                ], 200);
+
+            // Removed else block as we handle errors individually above
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Sync Exception: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            
+            return response()->json([
+                'message' => __('Error syncing contacts: ') . $e->getMessage()
+            ], 500);
+        }
     }
 
     

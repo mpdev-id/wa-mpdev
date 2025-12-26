@@ -33,9 +33,11 @@
 <div x-data="{ 
   showEditModal: false, 
   showImportModal: false,
+  showSyncModal: false,
   showBulkModal: false,
+  syncing: false,
   editData: {name: '', phone: '', group: '', action: ''}
-}">
+}" @reset-syncing.window="syncing = false" @start-syncing.window="syncing = true">
   
   <!-- Stats Cards -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -79,6 +81,10 @@
     <button @click="showImportModal = true" class="btn btn-outline gap-2">
       <span class="material-icons text-sm">upload_file</span>
       {{ __('Import Contacts') }}
+    </button>
+    <button @click="showSyncModal = true" class="btn btn-outline btn-success gap-2">
+      <span class="material-icons text-sm">sync</span>
+      {{ __('Sync from WhatsApp') }}
     </button>
     <button @click="showBulkModal = true" class="btn btn-outline gap-2">
       <span class="material-icons text-sm">send</span>
@@ -269,6 +275,107 @@
 	</div>
 </div>
 
+<!-- Sync Contacts Modal -->
+<div x-show="showSyncModal" 
+     x-cloak
+     @click.away="showSyncModal = false"
+     class="fixed inset-0 z-50 overflow-y-auto"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0">
+  
+  <!-- Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50"></div>
+  
+  <!-- Modal -->
+  <div class="flex items-center justify-center min-h-screen p-4">
+    <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full"
+         @click.stop
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95">
+      
+      <form id="sync-form" action="{{ route('user.contact.sync') }}" method="POST">
+        @csrf
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <span class="material-icons text-green-600">sync</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">{{ __('Sync Contacts') }}</h3>
+          </div>
+          <button type="button" @click="showSyncModal = false" class="text-gray-400 hover:text-gray-600">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+        
+        <!-- Body -->
+        <div class="p-6 space-y-4">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex gap-3">
+              <span class="material-icons text-blue-600">info</span>
+              <div class="flex-1">
+                <p class="text-sm text-blue-900 font-medium">{{ __('Sync Active Contacts') }}</p>
+                <p class="text-xs text-blue-700 mt-1">{{ __('This will import contacts from your active chat history. Contacts without recent conversations may not be included.') }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              {{ __('Select WhatsApp Device') }}
+            </label>
+            <select name="device_id" class="select select-bordered w-full" required>
+              <option value="">{{ __('Choose a device...') }}</option>
+              @foreach($devices as $device)
+              <option value="{{ $device->id }}">{{ $device->name }} - {{ $device->phone }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
+          <button type="button" @click="showSyncModal = false" class="btn btn-ghost" :disabled="syncing">
+            {{ __('Cancel') }}
+          </button>
+          <button type="submit" 
+                  class="btn btn-success gap-2" 
+                  :disabled="syncing">
+            <span class="material-icons text-sm" :class="{'animate-spin': syncing}">sync</span>
+            <span x-text="syncing ? '{{ __('Syncing...') }}' : '{{ __('Sync Now') }}'"></span>
+          </button>
+        </div>
+        
+        <!-- Loading Overlay -->
+        <div x-show="syncing" 
+             x-cloak
+             class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center rounded-2xl z-10">
+          <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4">
+              <svg class="animate-spin h-16 w-16 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <p class="text-lg font-semibold text-gray-900">{{ __('Syncing Contacts...') }}</p>
+            <p class="text-sm text-gray-600 mt-1">{{ __('Please wait while we import your contacts') }}</p>
+          </div>
+        </div>
+      </form>
+      
+    </div>
+  </div>
+</div>
+
 
 
 
@@ -343,4 +450,82 @@
 @endpush
 @push('js')
 <script src="{{ asset('assets/js/pages/user/contact.js?V=1') }}"></script>
+<script>
+$(document).ready(function() {
+    // Use event delegation for dynamically rendered form
+    $(document).on('submit', '#sync-form', function(e) {
+        e.preventDefault();
+        
+        console.log('Sync form submitted'); // Debug log
+        
+        var form = $(this);
+        var url = form.attr('action');
+        var formData = form.serialize();
+        
+        console.log('URL:', url); // Debug log
+        console.log('Data:', formData); // Debug log
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            beforeSend: function() {
+                console.log('Sending request...'); // Debug log
+                window.dispatchEvent(new CustomEvent('start-syncing'));
+            },
+            success: function(response) {
+                console.log('Success:', response); // Debug log
+                
+                // Show success message with statistics
+                var message = response.message;
+                if (response.synced !== undefined) {
+                    message += '\n\nSynced: ' + response.synced + 
+                               '\nSkipped: ' + response.skipped + 
+                               '\nTotal: ' + response.total;
+                }
+                
+                Toastify({
+                    text: message,
+                    duration: 5000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                }).showToast();
+                
+                // Reload page after 2 seconds
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', xhr, status, error); // Debug log
+                
+                // Reset syncing state via DOM manipulation
+                var syncButton = form.find('button[type="submit"]');
+                syncButton.prop('disabled', false);
+                
+                // Trigger Alpine to reset syncing state
+                window.dispatchEvent(new CustomEvent('reset-syncing'));
+                
+                var message = 'Error syncing contacts';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                
+                Toastify({
+                    text: message,
+                    duration: 5000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                }).showToast();
+            }
+        });
+        
+        return false; // Prevent any default behavior
+    });
+});
+</script>
 @endpush

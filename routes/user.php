@@ -55,6 +55,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['auth','user
    Route::post('contact',                                 [USER\ContactController::class,'sendtemplateBulk'])->name('contact.send-template-bulk');
    Route::post('contact/store',                           [USER\ContactController::class,'store'])->name('contact.store');
    Route::post('contact-import',                          [USER\ContactController::class,'import'])->name('contact.import');
+   Route::post('contact-sync',                            [USER\ContactController::class,'sync'])->name('contact.sync');
 
    
    //chatbot route
