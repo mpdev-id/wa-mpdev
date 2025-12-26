@@ -70,50 +70,32 @@
   <!-- Templates Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
     @foreach($templates ?? [] as $template)
-    <div class="card bg-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in">
-      <div class="card-body">
-        <!-- Header -->
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex-1">
-            <h3 class="card-title text-lg font-bold text-gray-900 mb-2">{{ $template->title }}</h3>
-            <div class="flex items-center gap-2">
-              <span class="badge badge-sm badge-outline">{{ $template->type }}</span>
-              <span class="badge badge-sm {{ $template->status == 1 ? 'badge-success' : 'badge-warning' }}">
-                {{ $template->status == 1 ? __('Active') : __('Inactive') }}
+    <div class="card bg-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in !overflow-visible">
               </span>
             </div>
           </div>
           
           <!-- Dropdown Menu -->
-          <div class="dropdown dropdown-end">
-            <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-              <span class="material-icons">more_vert</span>
-            </button>
-            <ul tabindex="0" class="dropdown-content z-[9999] menu p-2 shadow-xl bg-white rounded-xl w-56 border border-gray-200">
-              <li>
-                <a href="{{ route('user.template.edit',$template->id) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">edit</span>
-                  {{ __('Edit Template') }}
-                </a>
-              </li>
-              <li>
-                <a href="javascript:void(0)" 
-                   @click="showModal = true; modalTitle = '{{ $template->title }}'; modalId = '{{ $template->uuid }}'"
-                   class="flex items-center gap-2">
-                  <span class="material-icons text-sm">info</span>
-                  {{ __('View Template ID') }}
-                </a>
-              </li>
-              <div class="divider my-0"></div>
-              <li>
-                <a href="javascript:void(0)" 
-                   class="delete-confirm text-red-600 hover:bg-red-50 flex items-center gap-2" 
-                   data-action="{{ route('user.template.destroy',$template->id) }}">
-                  <span class="material-icons text-sm">delete</span>
-                  {{ __('Remove') }}
-                </a>
-              </li>
-            </ul>
+          <div class="flex items-center justify-end gap-1">
+            <a href="{{ route('user.template.edit',$template->id) }}" 
+               class="btn btn-sm btn-ghost text-primary"
+               title="{{ __('Edit Template') }}">
+              <span class="material-icons text-sm">edit</span>
+            </a>
+            
+            <a href="javascript:void(0)" 
+               @click="showModal = true; modalTitle = '{{ $template->title }}'; modalId = '{{ $template->uuid }}'"
+               class="btn btn-sm btn-ghost text-info"
+               title="{{ __('View Template ID') }}">
+              <span class="material-icons text-sm">info</span>
+            </a>
+            
+            <a href="javascript:void(0)" 
+               class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+               data-action="{{ route('user.template.destroy',$template->id) }}"
+               title="{{ __('Remove') }}">
+              <span class="material-icons text-sm">delete</span>
+            </a>
           </div>
         </div>
 

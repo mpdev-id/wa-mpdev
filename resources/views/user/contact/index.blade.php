@@ -94,9 +94,9 @@
 
   @if(count($contacts ?? []) > 0)
   <!-- Contacts List -->
-  <div class="card bg-white shadow-lg">
-    <div class="card-body p-0">
-      <div class="overflow-x-auto">
+  <div class="card bg-white shadow-lg !overflow-visible">
+    <div class="card-body p-0 !overflow-visible">
+      <div class="overflow-x-auto pb-40">
         <table class="table table-zebra">
           <thead>
             <tr class="border-b border-gray-200">
@@ -128,34 +128,25 @@
               </td>
               <td class="text-right font-mono text-sm">{{ $contact->phone }}</td>
               <td class="text-right">
-                <div class="dropdown dropdown-end">
-                  <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-                    <span class="material-icons text-sm">more_vert</span>
-                  </button>
-                  <ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-xl w-48 border border-gray-200">
-                    <li>
-                      <a href="javascript:void(0)" 
-                         @click="editData = {
-                           name: '{{ $contact->name }}', 
-                           phone: '{{ $contact->phone }}', 
-                           group: '{{ $contact->groupcontact[0]->id ?? '' }}', 
-                           action: '{{ route('user.contact.update',$contact->id) }}'
-                         }; showEditModal = true"
-                         class="flex items-center gap-2">
-                        <span class="material-icons text-sm">edit</span>
-                        {{ __('Edit') }}
-                      </a>
-                    </li>
-                    <div class="divider my-0"></div>
-                    <li>
-                      <a href="javascript:void(0)" 
-                         class="delete-confirm text-red-600 hover:bg-red-50 flex items-center gap-2" 
-                         data-action="{{ route('user.contact.destroy',$contact->id) }}">
-                        <span class="material-icons text-sm">delete</span>
-                        {{ __('Remove') }}
-                      </a>
-                    </li>
-                  </ul>
+                <div class="flex items-center justify-end gap-2">
+                  <a href="javascript:void(0)" 
+                     @click="editData = {
+                       name: '{{ $contact->name }}', 
+                       phone: '{{ $contact->phone }}', 
+                       group: '{{ $contact->groupcontact[0]->id ?? '' }}', 
+                       action: '{{ route('user.contact.update',$contact->id) }}'
+                     }; showEditModal = true"
+                     class="btn btn-sm btn-ghost text-primary"
+                     title="{{ __('Edit') }}">
+                    <span class="material-icons text-sm">edit</span>
+                  </a>
+                  
+                  <a href="javascript:void(0)" 
+                     class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+                     data-action="{{ route('user.contact.destroy',$contact->id) }}"
+                     title="{{ __('Remove') }}">
+                    <span class="material-icons text-sm">delete</span>
+                  </a>
                 </div>
               </td>
             </tr>

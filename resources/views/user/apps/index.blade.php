@@ -81,7 +81,7 @@
   <!-- Apps Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @foreach($apps as $app)
-    <div class="card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 animate-slide-up" style="animation-delay: {{ $loop->index * 0.1 }}s">
+    <div class="card bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300 animate-slide-up !overflow-visible" style="animation-delay: {{ $loop->index * 0.1 }}s">
       <div class="card-body">
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-3">
@@ -94,33 +94,25 @@
             </div>
           </div>
           
-          <div class="dropdown dropdown-end">
-            <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-              <span class="material-icons text-sm">more_vert</span>
-            </button>
-            <ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-xl w-48 border border-base-200">
-              <li>
-                <a href="{{ route('user.app.logs', $app->uuid) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">history</span>
-                  {{ __('Message Logs') }}
-                </a>
-              </li>
-              <li>
-                <a href="{{ route('user.app.integration', $app->uuid) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">code</span>
-                  {{ __('REST API') }}
-                </a>
-              </li>
-              <div class="divider my-0"></div>
-              <li>
-                <a href="javascript:void(0)" 
-                   class="delete-confirm text-red-600 hover:bg-red-50 flex items-center gap-2" 
-                   data-action="{{ route('user.apps.destroy', $app->uuid) }}">
-                  <span class="material-icons text-sm">delete</span>
-                  {{ __('Remove') }}
-                </a>
-              </li>
-            </ul>
+          <div class="flex items-center justify-end gap-1">
+            <a href="{{ route('user.app.logs', $app->uuid) }}" 
+               class="btn btn-sm btn-ghost text-primary"
+               title="{{ __('Message Logs') }}">
+              <span class="material-icons text-sm">history</span>
+            </a>
+            
+            <a href="{{ route('user.app.integration', $app->uuid) }}" 
+               class="btn btn-sm btn-ghost text-info"
+               title="{{ __('REST API') }}">
+              <span class="material-icons text-sm">code</span>
+            </a>
+            
+            <a href="javascript:void(0)" 
+               class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+               data-action="{{ route('user.apps.destroy', $app->uuid) }}"
+               title="{{ __('Remove') }}">
+              <span class="material-icons text-sm">delete</span>
+            </a>
           </div>
         </div>
 

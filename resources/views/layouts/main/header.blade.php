@@ -131,11 +131,7 @@
 
             <!-- Menu Items -->
             <div class="p-2">
-              <a href="{{ Request::is('user/*') ? url('/user/profile') : url('/admin/profile') }}" 
-                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
-                <span class="material-icons text-gray-600 text-xl">person</span>
-                <span class="text-sm font-medium text-gray-700">{{ __('My Profile') }}</span>
-              </a>
+
               
               @if(Request::is('user/*'))
               <a href="{{ url('/user/subscription') }}" 

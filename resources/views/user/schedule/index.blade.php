@@ -88,9 +88,9 @@
 
   <!-- Schedules Table -->
   @if(count($posts) > 0)
-  <div class="card bg-white shadow-xl">
-    <div class="card-body p-0">
-      <div class="overflow-x-auto">
+  <div class="card bg-white shadow-xl !overflow-visible">
+    <div class="card-body p-0 !overflow-visible">
+      <div class="overflow-x-auto pb-40">
         <table class="table">
           <thead>
             <tr>
@@ -158,29 +158,21 @@
               </td>
               <td>
                 <div class="flex justify-end">
-                  <div class="dropdown dropdown-end">
-                    <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-                      <span class="material-icons text-sm">more_vert</span>
-                    </button>
-                    <ul tabindex="0" class="dropdown-content z-[9999] menu p-2 shadow-xl bg-white rounded-xl w-48 border border-base-200">
-                      <li>
-                        <a href="{{ route('user.schedule-message.show', $post->id) }}" class="flex items-center gap-2">
-                          <span class="material-icons text-sm">visibility</span>
-                          {{ __('View Log') }}
-                        </a>
-                      </li>
-                      @if($post->status == 'pending')
-                      <div class="divider my-0"></div>
-                      <li>
-                        <a href="javascript:void(0)" 
-                           class="delete-confirm text-red-600 hover:bg-red-50 flex items-center gap-2" 
-                           data-action="{{ route('user.schedule-message.destroy', $post->id) }}">
-                          <span class="material-icons text-sm">delete</span>
-                          {{ __('Remove') }}
-                        </a>
-                      </li>
-                      @endif
-                    </ul>
+                  <div class="flex items-center justify-end gap-2">
+                    <a href="{{ route('user.schedule-message.show', $post->id) }}" 
+                       class="btn btn-sm btn-ghost text-primary"
+                       title="{{ __('View Log') }}">
+                      <span class="material-icons text-sm">visibility</span>
+                    </a>
+                    
+                    @if($post->status == 'pending')
+                    <a href="javascript:void(0)" 
+                       class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+                       data-action="{{ route('user.schedule-message.destroy', $post->id) }}"
+                       title="{{ __('Remove') }}">
+                      <span class="material-icons text-sm">delete</span>
+                    </a>
+                    @endif
                   </div>
                 </div>
               </td>

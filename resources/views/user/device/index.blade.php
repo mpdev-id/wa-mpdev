@@ -62,7 +62,7 @@
   @if(count($devices ?? []) > 0)
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
     @foreach($devices ?? [] as $device)
-    <div class="card bg-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in">
+    <div class="card bg-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in !overflow-visible">
       <div class="card-body">
         <!-- Header -->
         <div class="flex items-start justify-between mb-4">
@@ -87,53 +87,44 @@
           </div>
           
           <!-- Dropdown Menu -->
-          <div class="dropdown dropdown-end">
-            <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-              <span class="material-icons">more_vert</span>
-            </button>
-            <ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-xl bg-white rounded-xl w-56 border border-gray-200">
-              <li>
-                <a href="{{ route('user.device.scan',$device->uuid) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">qr_code_scanner</span>
-                  {{ __('Scan QR') }}
-                </a>
-              </li>
-              @if($device->status == 1)
-              <li>
-                <a href="{{ url('/user/device/chats/'.$device->uuid) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">chat</span>
-                  {{ __('Chats') }}
-                </a>
-              </li>
-              <li>
-                <a href="{{ url('/user/device/groups/'.$device->uuid) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">groups</span>
-                  {{ __('Groups') }}
-                </a>
-              </li>
-              @endif
-              <li>
-                <a href="{{ route('user.device.edit',$device->uuid) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">edit</span>
-                  {{ __('Edit Device') }}
-                </a>
-              </li>
-              <li>
-                <a href="{{ route('user.device.show',$device->uuid) }}" class="flex items-center gap-2">
-                  <span class="material-icons text-sm">history</span>
-                  {{ __('View Log') }}
-                </a>
-              </li>
-              <div class="divider my-0"></div>
-              <li>
-                <a href="javascript:void(0)" 
-                   class="delete-confirm text-red-600 hover:bg-red-50 flex items-center gap-2" 
-                   data-action="{{ route('user.device.destroy',$device->uuid) }}">
-                  <span class="material-icons text-sm">delete</span>
-                  {{ __('Remove') }}
-                </a>
-              </li>
-            </ul>
+          <div class="flex items-center justify-end gap-1 flex-wrap max-w-[120px]">
+            <a href="{{ route('user.device.scan',$device->uuid) }}" 
+               class="btn btn-sm btn-ghost text-primary px-1"
+               title="{{ __('Scan QR') }}">
+              <span class="material-icons text-sm">qr_code_scanner</span>
+            </a>
+
+            @if($device->status == 1)
+            <a href="{{ url('/user/device/chats/'.$device->uuid) }}" 
+               class="btn btn-sm btn-ghost text-info px-1"
+               title="{{ __('Chats') }}">
+              <span class="material-icons text-sm">chat</span>
+            </a>
+            <a href="{{ url('/user/device/groups/'.$device->uuid) }}" 
+               class="btn btn-sm btn-ghost text-success px-1"
+               title="{{ __('Groups') }}">
+              <span class="material-icons text-sm">groups</span>
+            </a>
+            @endif
+
+            <a href="{{ route('user.device.edit',$device->uuid) }}" 
+               class="btn btn-sm btn-ghost text-warning px-1"
+               title="{{ __('Edit Device') }}">
+              <span class="material-icons text-sm">edit</span>
+            </a>
+
+            <a href="{{ route('user.device.show',$device->uuid) }}" 
+               class="btn btn-sm btn-ghost text-base-content/70 px-1"
+               title="{{ __('View Log') }}">
+              <span class="material-icons text-sm">history</span>
+            </a>
+
+            <a href="javascript:void(0)" 
+               class="delete-confirm btn btn-sm btn-ghost text-red-600 px-1" 
+               data-action="{{ route('user.device.destroy',$device->uuid) }}"
+               title="{{ __('Remove') }}">
+              <span class="material-icons text-sm">delete</span>
+            </a>
           </div>
         </div>
 

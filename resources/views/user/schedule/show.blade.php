@@ -12,10 +12,6 @@
       <p class="text-base-content/60">{{ __('Scheduled message information') }}</p>
     </div>
     <div class="flex gap-2">
-      <a href="{{ route('user.schedule-message.edit', $schedule->id) }}" class="btn btn-outline gap-2">
-        <span class="material-icons text-sm">edit</span>
-        {{ __('Edit') }}
-      </a>
       <a href="{{ route('user.schedule-message.index') }}" class="btn btn-outline gap-2">
         <span class="material-icons text-sm">arrow_back</span>
         {{ __('Back') }}
@@ -29,20 +25,24 @@
       <div class="divider"></div>
       <div class="grid grid-cols-2 gap-4">
         <div>
+          <p class="text-sm text-gray-600">{{ __('Title') }}</p>
+          <p class="font-semibold">{{ $info->title }}</p>
+        </div>
+        <div>
           <p class="text-sm text-gray-600">{{ __('Message') }}</p>
-          <p class="font-semibold">{{ $schedule->message }}</p>
+          <p class="font-semibold">{{ $info->body ?? __('Template Message') }}</p>
         </div>
         <div>
           <p class="text-sm text-gray-600">{{ __('Scheduled For') }}</p>
-          <p class="font-semibold">{{ $schedule->scheduled_at }}</p>
+          <p class="font-semibold">{{ \Carbon\Carbon::parse($info->schedule_at)->format('d M Y H:i') }}</p>
         </div>
         <div>
           <p class="text-sm text-gray-600">{{ __('Status') }}</p>
-          <span class="badge badge-info">{{ $schedule->status }}</span>
+          <span class="badge badge-info">{{ ucfirst($info->status) }}</span>
         </div>
         <div>
           <p class="text-sm text-gray-600">{{ __('Created') }}</p>
-          <p class="font-semibold">{{ $schedule->created_at->format('d M Y') }}</p>
+          <p class="font-semibold">{{ $info->created_at->format('d M Y') }}</p>
         </div>
       </div>
     </div>

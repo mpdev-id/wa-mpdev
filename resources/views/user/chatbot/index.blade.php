@@ -127,9 +127,9 @@
   </div>
   @else
   <!-- Replies Table -->
-  <div class="card bg-white shadow-xl">
-    <div class="card-body p-0">
-      <div class="overflow-x-auto">
+  <div class="card bg-white shadow-xl !overflow-visible">
+    <div class="card-body p-0 !overflow-visible">
+      <div class="overflow-x-auto pb-40">
         <table class="table">
           <thead>
             <tr>
@@ -174,42 +174,33 @@
               </td>
               <td>
                 <div class="flex justify-end">
-                  <div class="dropdown dropdown-end">
-                    <button tabindex="0" class="btn btn-ghost btn-sm btn-circle">
-                      <span class="material-icons text-sm">more_vert</span>
-                    </button>
-                    <ul tabindex="0" class="dropdown-content z-[9999] menu p-2 shadow-xl bg-white rounded-xl w-48 border border-base-200">
-                      <li>
-                        <a href="javascript:void(0)" 
-                           @click="editData = {
-                             action: '{{ route('user.chatbot.update', $reply->id) }}',
-                             keyword: '{{ $reply->keyword }}',
-                             device: '{{ $reply->device_id }}',
-                             reply_type: '{{ $reply->reply_type }}',
-                             match_type: '{{ $reply->match_type }}',
-                             reply: `{{ in_array($reply->reply_type, ['image', 'video', 'audio', 'document', 'location', 'button']) ? (optional(json_decode($reply->reply))->message ?? '') : $reply->reply }}`,
-                             caption: `{{ in_array($reply->reply_type, ['image', 'video']) ? (optional(json_decode($reply->reply))->caption ?? '') : '' }}`,
-                             latitude: `{{ $reply->reply_type == 'location' ? (optional(json_decode($reply->reply))->latitude ?? '') : '' }}`,
-                             longitude: `{{ $reply->reply_type == 'location' ? (optional(json_decode($reply->reply))->longitude ?? '') : '' }}`,
-                             footer: `{{ $reply->reply_type == 'button' ? (optional(json_decode($reply->reply))->footer ?? '') : '' }}`,
-                             buttons: {{ $reply->reply_type == 'button' ? json_encode(optional(json_decode($reply->reply))->buttons ?? []) : '[]' }},
-                             template_id: '{{ $reply->template_id }}'
-                           }; showEditModal = true"
-                           class="flex items-center gap-2">
-                          <span class="material-icons text-sm">edit</span>
-                          {{ __('Edit') }}
-                        </a>
-                      </li>
-                      <div class="divider my-0"></div>
-                      <li>
-                        <a href="javascript:void(0)" 
-                           class="delete-confirm text-red-600 hover:bg-red-50 flex items-center gap-2" 
-                           data-action="{{ route('user.chatbot.destroy', $reply->id) }}">
-                          <span class="material-icons text-sm">delete</span>
-                          {{ __('Delete') }}
-                        </a>
-                      </li>
-                    </ul>
+                  <div class="flex items-center justify-end gap-2">
+                    <a href="javascript:void(0)" 
+                       @click="editData = {
+                         action: '{{ route('user.chatbot.update', $reply->id) }}',
+                         keyword: '{{ $reply->keyword }}',
+                         device: '{{ $reply->device_id }}',
+                         reply_type: '{{ $reply->reply_type }}',
+                         match_type: '{{ $reply->match_type }}',
+                         reply: `{{ in_array($reply->reply_type, ['image', 'video', 'audio', 'document', 'location', 'button']) ? (optional(json_decode($reply->reply))->message ?? '') : $reply->reply }}`,
+                         caption: `{{ in_array($reply->reply_type, ['image', 'video']) ? (optional(json_decode($reply->reply))->caption ?? '') : '' }}`,
+                         latitude: `{{ $reply->reply_type == 'location' ? (optional(json_decode($reply->reply))->latitude ?? '') : '' }}`,
+                         longitude: `{{ $reply->reply_type == 'location' ? (optional(json_decode($reply->reply))->longitude ?? '') : '' }}`,
+                         footer: `{{ $reply->reply_type == 'button' ? (optional(json_decode($reply->reply))->footer ?? '') : '' }}`,
+                         buttons: {{ $reply->reply_type == 'button' ? json_encode(optional(json_decode($reply->reply))->buttons ?? []) : '[]' }},
+                         template_id: '{{ $reply->template_id }}'
+                       }; showEditModal = true"
+                       class="btn btn-sm btn-ghost text-primary"
+                       title="{{ __('Edit') }}">
+                      <span class="material-icons text-sm">edit</span>
+                    </a>
+                    
+                    <a href="javascript:void(0)" 
+                       class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+                       data-action="{{ route('user.chatbot.destroy', $reply->id) }}"
+                       title="{{ __('Delete') }}">
+                      <span class="material-icons text-sm">delete</span>
+                    </a>
                   </div>
                 </div>
               </td>
