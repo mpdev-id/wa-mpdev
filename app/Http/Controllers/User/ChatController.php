@@ -288,8 +288,8 @@ class ChatController extends Controller
         abort_if(empty($device), 404);
 
         $response = Cache::remember(
-            "groups_" . $device->uuid,
-            120,
+            "chats_" . $device->uuid,
+            10,
             function () use ($device) {
                 return $this->getChats($device->id);
             }

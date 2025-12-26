@@ -70,13 +70,21 @@
   <!-- Templates Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
     @foreach($templates ?? [] as $template)
-    <div class="card bg-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in !overflow-visible">
+    <div class="card bg-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in group">
+      <div class="card-body p-5">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="font-bold text-lg text-gray-900 mb-1">{{ $template->title }}</h3>
+            <div class="flex items-center gap-2">
+              <span class="badge badge-sm {{ $template->status ? 'badge-success text-white' : 'badge-warning' }}">
+                {{ $template->status ? __('Active') : __('Inactive') }}
               </span>
+              <span class="badge badge-sm badge-ghost capitalize">{{ str_replace(['text-with-', '-'], ['',' '], $template->type) }}</span>
             </div>
           </div>
           
-          <!-- Dropdown Menu -->
-          <div class="flex items-center justify-end gap-1">
+          <!-- Actions -->
+          <div class="flex items-center gap-1">
             <a href="{{ route('user.template.edit',$template->id) }}" 
                class="btn btn-sm btn-ghost text-primary"
                title="{{ __('Edit Template') }}">
@@ -99,23 +107,23 @@
           </div>
         </div>
 
-        <!-- Template Preview (if message exists) -->
-        @if(!empty($template->message))
-        <div class="bg-gray-50 rounded-xl p-3 mb-4">
-          <p class="text-sm text-gray-600 line-clamp-3">{{ Str::limit($template->message, 120) }}</p>
+        <div class="bg-gray-50 rounded-lg p-3 mb-4 h-24 overflow-hidden relative">
+           <p class="text-gray-600 text-sm">
+             {{ $template->body['text'] ?? ($template->body['caption'] ?? __('No text content')) }}
+           </p>
+           <div class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-50 to-transparent"></div>
         </div>
-        @endif
 
-        <!-- Card Actions -->
-        <div class="card-actions justify-end">
-          <a href="{{ route('user.template.edit',$template->id) }}" class="btn btn-sm btn-primary gap-2">
-            <span class="material-icons text-xs">send</span>
-            {{ __('Use Template') }}
-          </a>
+        <div class="flex justify-end">
+           <a href="{{ route('user.bulk-message.create') }}?template={{ $template->id }}" class="btn btn-sm btn-primary gap-2 w-full">
+             <span class="material-icons text-sm">send</span>
+             {{ __('Use Template') }}
+           </a>
         </div>
       </div>
     </div>
     @endforeach
+
   </div>
 
   <!-- Pagination -->

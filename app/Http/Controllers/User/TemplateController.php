@@ -264,6 +264,7 @@ class TemplateController extends Controller
 
         return response()->json([
             'message' => __('Template created successfully..!!'),
+            'redirect' => route('user.template.index')
         ], 200);
     }
 
@@ -542,6 +543,7 @@ class TemplateController extends Controller
        
         return response()->json([
             'message' => __('Template Updated Successfully..!!'),
+            'redirect' => route('user.template.index')
         ], 200);
     }
 

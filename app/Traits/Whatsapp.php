@@ -86,10 +86,12 @@ trait Whatsapp
 
         $response=Http::get($whatsServer.'/chats?id='.$session_id);
         $status=$response->status();
+        
+        \Log::info('getChats response', ['device_id' => $device_id, 'status' => $status, 'body' => $response->body()]);
 
         if ($status != 200) {
             $responseBody=json_decode($response->body());
-            $responseData['message']=$responseBody->message;
+            $responseData['message']=$responseBody->message ?? 'Unknown error';
             $responseData['status']=$status;
         }
         else{
@@ -98,8 +100,11 @@ trait Whatsapp
             $contacts = $colllections->map(function($item) {
                              $phone = explode('@', $item->id);
                              $data['number'] = $phone[0] ?? null;
+                             $data['name'] = $item->name ?? null;
+                             $data['pushName'] = $item->pushName ?? null;
                              $data['unread'] = $item->unreadCount ?? 0;
                              $data['timestamp'] = $item->conversationTimestamp ?? 0;
+                             $data['last_message'] = $item->lastMessage ?? null; // Attempt to get last message if available
                              return $data;
                         });
 
