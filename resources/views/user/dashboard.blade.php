@@ -171,6 +171,24 @@
 @push('js')
 <script src="{{ asset('assets/vendor/chart.js/dist/chart.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/canvas-confetti/confetti.browser.min.js') }}"></script>
+<script>
+  // Define Charts object if missing to prevent ReferenceError in dashboard.js
+  if (typeof Charts === 'undefined') {
+    window.Charts = {
+      colors: {
+        gray: { 200: '#e2e8f0' },
+        theme: {
+          'primary': '#7934f3',
+          'info': '#0dcaf0',
+          'success': '#198754',
+          'danger': '#dc3545',
+          'warning': '#ffc107',
+          'dark': '#212529'
+        }
+      }
+    };
+  }
+</script>
 @endpush
 
 @push('bottomjs')

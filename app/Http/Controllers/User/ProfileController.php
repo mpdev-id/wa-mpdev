@@ -78,34 +78,12 @@ class ProfileController extends Controller
                 'phone'     => 'required|numeric|unique:users,phone,'.Auth::id(),
                 'name'      => ['required', 'string','max:100'],
                 'address'   => ['required', 'string','max:150'],
-                'avatar'    => ['image','max:1024'],
             ]);
 
             $user->name=$request->name;
             $user->email=$request->email; 
             $user->phone=$request->phone;
             $user->address=$request->address;
-            
-
-            if ($request->hasFile('avatar')) {
-                $file = $request->file('avatar');
-                $ext = $file->extension();
-                $filename = now()->timestamp.'.'.$ext;
-
-                $path = 'uploads/' . \Auth::id() . date('/y') . '/' . date('m') . '/';
-                $filePath = $path.$filename;
-                Storage::put($filePath, file_get_contents($file));
-                if ($user->avatar != null) {
-                    $fileArr=explode('uploads', $user->avatar);
-                    if (isset($fileArr[1])) {
-                      $oldavatar='uploads'.$fileArr[1];
-                      if (Storage::exists($oldavatar)) {
-                        Storage::delete($oldavatar);
-                      }
-                  }
-                }
-                $user->avatar = Storage::url($filePath);
-            }
 
             $message = __('General Settings Updated Successfully');    
         }

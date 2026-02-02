@@ -37,24 +37,6 @@
         @method('PUT')
         
         <div class="space-y-4">
-          <!-- Avatar Upload -->
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text font-medium flex items-center gap-2">
-                <span class="material-icons text-sm">image</span>
-                {{ __('Avatar') }}
-              </span>
-            </label>
-            <div class="flex items-center gap-4">
-              <div class="avatar">
-                <div class="w-20 h-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                  <img src="{{ Auth::user()->avatar ?? asset('assets/img/default-avatar.png') }}" alt="Avatar" />
-                </div>
-              </div>
-              <input type="file" name="avatar" class="file-input file-input-bordered w-full max-w-xs" accept="image/*" />
-            </div>
-          </div>
-
           <!-- Name -->
           <div class="form-control">
             <label class="label">
