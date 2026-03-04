@@ -1,11 +1,11 @@
 <div class="h-full flex flex-col bg-base-100">
   
   <!-- Logo -->
-  <div class="p-4 border-b border-base-300">
+  <!-- <div class="p-4 border-b border-base-300">
     <a href="{{ url('/user/dashboard') }}" class="flex items-center gap-3">
-      <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-8" alt="{{ env('APP_NAME') }}">
+      <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-16" alt="{{ env('APP_NAME') }}">
     </a>
-  </div>
+  </div> -->
 
   <!-- Menu -->
   <div class="flex-1 overflow-y-auto p-3 space-y-6">

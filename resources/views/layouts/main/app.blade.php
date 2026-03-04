@@ -54,13 +54,13 @@
       <!-- Logo -->
       <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
         <a href="{{ url('/user/dashboard') }}" class="flex items-center gap-3">
-          <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-8" alt="{{ env('APP_NAME') }}">
+          <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-24" alt="{{ env('APP_NAME') }}">
         </a>
       </div>
       
       <!-- Navigation -->
       <nav class="flex-1 overflow-y-auto scrollbar-hide py-4 px-3">
-        @include('layouts.main.sidebar')
+        <!-- @include('layouts.main.sidebar') -->
       </nav>
     </div>
   </aside>
