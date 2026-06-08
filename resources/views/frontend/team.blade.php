@@ -78,7 +78,7 @@
                   <div class="tp-custom-accordio-2">
                      <div class="accordion" id="accordionExample-2">
                        @foreach($faqs as $key => $faq)
-                       @if($faq->slug == 'bottom')
+                       @if($faq->slug != 'top')
                         <div class="accordion-items">
                            <h2 class="accordion-header" id="heading-{{ $key+1 }}">
                               <button class="accordion-buttons {{ $key > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse"

@@ -24,8 +24,9 @@ class SubscriptionController extends Controller
     public function index()
     {
         $plans = Plan::where('status',1)->where('price','>',0)->latest()->get();
+        $subscription = Auth::user();
 
-        return view('user.subscription.index',compact('plans'));
+        return view('user.subscription.index',compact('plans', 'subscription'));
     }
 
     
@@ -67,8 +68,11 @@ class SubscriptionController extends Controller
     public function log()
     {
         $orders = Order::where('user_id',Auth::id())->with('plan','gateway')->latest()->paginate(20);
+        $total = Order::where('user_id',Auth::id())->count();
+        $totalPaid = Order::where('user_id',Auth::id())->where('status',1)->sum('amount');
+        $pending = Order::where('user_id',Auth::id())->where('status',2)->count();
 
-        return view('user.subscription.log',compact('orders'));
+        return view('user.subscription.log',compact('orders', 'total', 'totalPaid', 'pending'));
     }
 
     /**

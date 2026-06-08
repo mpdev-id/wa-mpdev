@@ -15,11 +15,11 @@ class CategorySeeder extends Seeder
     public function run()
     {
      $categories = array(
-      array('id' => '1','title' => '#','slug' => '/uploads/23/03/16781015652CQnP1QNhw2T4te7n4J2.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 11:19:25','updated_at' => '2023-03-06 11:19:25'),
-      array('id' => '2','title' => '#','slug' => '/uploads/23/03/1678101574iv7f5NuUi7wXfkq4DQwf.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 11:19:34','updated_at' => '2023-03-06 11:19:34'),
-      array('id' => '3','title' => '#','slug' => '/uploads/23/03/1678101584RYE53fStsc5Rbnwm1Acq.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 11:19:44','updated_at' => '2023-03-06 11:19:44'),
-      array('id' => '4','title' => '#','slug' => '/uploads/23/03/1678101592TSj8SeYx7JZM0dhRYq1k.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 11:19:52','updated_at' => '2023-03-06 11:19:52'),
-      array('id' => '5','title' => '#','slug' => '/uploads/23/03/1678101601r2uMoEBkUc9cN4n60XTn.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 11:20:01','updated_at' => '2023-03-06 11:20:01'),
+      array('id' => '1','title' => '#','slug' => '/uploads/23/03/16781015652CQnP1QNhw2T4te7n4J2.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'partner','created_at' => '2023-03-06 11:19:25','updated_at' => '2023-03-06 11:19:25'),
+      array('id' => '2','title' => '#','slug' => '/uploads/23/03/1678101574iv7f5NuUi7wXfkq4DQwf.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'partner','created_at' => '2023-03-06 11:19:34','updated_at' => '2023-03-06 11:19:34'),
+      array('id' => '3','title' => '#','slug' => '/uploads/23/03/1678101584RYE53fStsc5Rbnwm1Acq.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'partner','created_at' => '2023-03-06 11:19:44','updated_at' => '2023-03-06 11:19:44'),
+      array('id' => '4','title' => '#','slug' => '/uploads/23/03/1678101592TSj8SeYx7JZM0dhRYq1k.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'partner','created_at' => '2023-03-06 11:19:52','updated_at' => '2023-03-06 11:19:52'),
+      array('id' => '5','title' => '#','slug' => '/uploads/23/03/1678101601r2uMoEBkUc9cN4n60XTn.png','type' => 'brand','status' => '1','is_featured' => '1','lang' => 'partner','created_at' => '2023-03-06 11:20:01','updated_at' => '2023-03-06 11:20:01'),
       array('id' => '6','title' => 'Chatbot','slug' => 'chatbot','type' => 'blog_category','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 18:35:06','updated_at' => '2023-03-06 18:35:06'),
       array('id' => '7','title' => 'Target marketing','slug' => 'target-marketing','type' => 'blog_category','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 18:35:30','updated_at' => '2023-03-06 18:35:30'),
       array('id' => '8','title' => 'Button message','slug' => 'button-message','type' => 'blog_category','status' => '1','is_featured' => '1','lang' => 'en','created_at' => '2023-03-06 18:36:44','updated_at' => '2023-03-06 18:36:44'),

@@ -70,11 +70,7 @@
   
   /* ===== CARDS ===== */
   .card {
-    @apply bg-white shadow-md hover:shadow-xl transition-all duration-300 border border-base-200;
-  }
-  
-  .card:hover {
-    @apply transform -translate-y-1;
+    @apply bg-white shadow-md transition-all duration-300 border border-base-200;
   }
   
   /* ===== BUTTONS ===== */

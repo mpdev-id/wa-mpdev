@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
          PostSeeder::class,
          PostmetaSeeder::class,
          PostCategorySeeder::class,
+         IndonesianContentSeeder::class,
         ]); 
     }
 }

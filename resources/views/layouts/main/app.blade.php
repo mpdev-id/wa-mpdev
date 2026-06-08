@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="{{ asset('assets/vendor/nucleo/css/nucleo.css') }}" type="text/css">
   <link rel="stylesheet" href="{{ asset('assets/vendor/@fortawesome/fontawesome-free/css/all.min.css') }}" type="text/css">
   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/uicons-regular-straight.css') }}">
+
   
   @stack('topcss')
   
@@ -40,6 +41,16 @@
   
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @stack('css')
+  
+  @if(Request::is('admin/*'))
+  <link rel="stylesheet" href="{{ asset('assets/css/argon.css?v=1.1.1') }}" type="text/css">
+  <style>
+    /* Fix DaisyUI tab-content conflict with Bootstrap in Admin Panel */
+    .tab-content {
+      display: block !important;
+    }
+  </style>
+  @endif
   
   <style>
     [x-cloak] { display: none !important; }
@@ -60,7 +71,7 @@
       
       <!-- Navigation -->
       <nav class="flex-1 overflow-y-auto scrollbar-hide py-4 px-3">
-        <!-- @include('layouts.main.sidebar') -->
+        @include('layouts.main.sidebar')
       </nav>
     </div>
   </aside>

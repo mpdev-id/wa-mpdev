@@ -1,57 +1,45 @@
-@extends('frontend.layouts.main')
+@extends('frontend.layouts.landing')
+
 @section('content')
-@include('frontend.layouts.header-1')
-<!-- tp-offcanvus-area-start -->
-<div class="body-overlay"></div>
-<main>
-      @include('frontend.sections.hero-1')
+@include('frontend.layouts.header-landing')
 
-      @if($features_area == 'active')
-       <!-- tp-feature-area-start -->
-       <div id="feature-area" class="tp-feature__area pt-60 pb-100">
-         <div class="container">
-            <div class="row">
-               <div class="col-12">
-                  <div class="tp-feature__section-box text-center mb-70">
-                     <h3 class="tp-section-title wow tpfadeUp" data-wow-duration=".7s" data-wow-delay=".3s">{{ $home->features->title ?? '' }}</h3>
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               @include('frontend.sections.features',['limit'=> 6])
-            </div>
+<main class="pt-20 overflow-hidden">
+   <!-- Hero Section -->
+   @include('frontend.sections.hero-1')
+
+   <!-- Features Area -->
+   @if($features_area == 'active')
+   <div id="features" class="py-24 bg-gradient-to-b from-base-200 to-white relative">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+         <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+               {{ $home->features->title ?? '' }}
+            </h2>
          </div>
+         @include('frontend.sections.features-landing', ['limit' => 6])
       </div>
-      <!-- tp-feature-area-end -->
-      @endif
+   </div>
+   @endif
 
-      <!-- tp-appliction-area-start -->
-       @include('frontend.sections.top-area')
-      <!-- tp-appliction-area-end -->
+   <!-- Dashboard Info Area -->
+   @include('frontend.sections.top-area-landing')
 
+   <!-- Top FAQ Section -->
+   @include('frontend.sections.top-faq-landing')
 
-      <!-- tp-faq-area-end -->
-      @include('frontend.sections.top-faq')
-      <!-- tp-faq-area-end -->
+   <!-- Integration Area -->
+   @include('frontend.sections.top-integration-landing')
 
+   <!-- Pricing Table -->
+   @include('frontend.sections.pricing-landing')
 
-      <!-- tp-Integration-area-start -->
-      @include('frontend.sections.top-integration')
-      <!-- tp-Integration-area-end -->
-      @include('frontend.pricings')
-      <!-- tp-testimonial-area-start -->
-      @include('frontend.sections.feedback-1')
-      <!-- tp-testimonial-area-end -->
+   <!-- Testimonials Area -->
+   @include('frontend.sections.feedback-1-landing')
 
-      <!-- tp-choose-area-start -->
-       @include('frontend.whychoose')
-      <!-- tp-choose-area-end -->
+   <!-- Why Choose Us & Counters -->
+   @include('frontend.whychoose-landing')
 
-
-      <!-- tp-support-area-start -->
-      @include('frontend.sections.faq')
-      <!-- tp-support-area-end -->
-
-
-   </main>
+   <!-- General FAQ Section -->
+   @include('frontend.sections.faq-landing')
+</main>
 @endsection

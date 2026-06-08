@@ -27,12 +27,12 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div>
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Plan Name') }}</p>
-          <p class="text-xl font-bold">{{ $subscription->plan->name ?? 'Free' }}</p>
+          <p class="text-xl font-bold">{{ $subscription->plan->title ?? 'Free' }}</p>
         </div>
         
         <div>
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Price') }}</p>
-          <p class="text-xl font-bold">${{ $subscription->plan->price ?? 0 }}/{{ __('month') }}</p>
+          <p class="text-xl font-bold">{{ amount_format($subscription->plan->price ?? 0) }}/{{ __('month') }}</p>
         </div>
         
         <div>

@@ -35,7 +35,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Paid') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">${{ number_format($totalPaid ?? 0, 2) }}</h3>
+          <h3 class="text-3xl font-bold text-gray-900">{{ amount_format($totalPaid ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">paid</span>
@@ -57,7 +57,7 @@
   </div>
 
   <!-- Transactions Table -->
-  @if(count($transactions ?? []) > 0)
+  @if(count($orders ?? []) > 0)
   <div class="card bg-white shadow-xl">
     <div class="card-body p-0">
       <div class="overflow-x-auto">
@@ -72,31 +72,36 @@
             </tr>
           </thead>
           <tbody>
-            @foreach($transactions as $tx)
+            @foreach($orders as $tx)
             <tr class="hover">
               <td>{{ $tx->created_at->format('d M Y') }}</td>
-              <td>{{ $tx->plan_name }}</td>
-              <td class="font-semibold">${{ number_format($tx->amount, 2) }}</td>
+              <td>{{ $tx->plan->title ?? 'N/A' }}</td>
+              <td class="font-semibold">{{ amount_format($tx->amount) }}</td>
               <td>
-                @if($tx->status == 'paid')
+                @if($tx->status == 1)
                   <span class="badge badge-success">{{ __('Paid') }}</span>
-                @elseif($tx->status == 'pending')
+                @elseif($tx->status == 2)
                   <span class="badge badge-warning">{{ __('Pending') }}</span>
                 @else
                   <span class="badge badge-error">{{ __('Failed') }}</span>
                 @endif
               </td>
               <td class="text-right">
-                <button class="btn btn-ghost btn-sm gap-1">
-                  <span class="material-icons text-xs">download</span>
-                  {{ __('Download') }}
-                </button>
+                <a href="{{ route('user.subscription.show', $tx->id) }}" class="btn btn-ghost btn-sm gap-1">
+                  <span class="material-icons text-xs">visibility</span>
+                  {{ __('Invoice') }}
+                </a>
               </td>
             </tr>
             @endforeach
           </tbody>
         </table>
       </div>
+      @if($orders->hasPages())
+      <div class="p-4 border-t border-base-250">
+        {{ $orders->links() }}
+      </div>
+      @endif
     </div>
   </div>
   @else

@@ -11,32 +11,28 @@
 			</div>
 			<div class="card-body">
 				<div class="row">
-					<div class="col-12 col-sm-12 col-md-4">
-						<ul class="nav nav-pills flex-column" id="myTab4" role="tablist">
-							<li class="nav-item">
-								<a class="nav-link active" id="home-tab4" data-toggle="tab" href="#home4" role="tab" aria-controls="home" aria-selected="true">{{ __('Primary Settings') }}</a>
+					<div class="col-12 col-sm-12 col-md-4 mb-4 mb-md-0">
+						<ul class="nav nav-pills flex-row flex-md-column flex-nowrap flex-md-wrap overflow-auto scrollbar-hide pb-2 pb-md-0" id="myTab4" role="tablist" style="white-space: nowrap;">
+							<li class="nav-item mr-2 mr-md-0">
+								<a class="nav-link active" id="primary-tab" data-toggle="tab" href="#primary-settings" role="tab" aria-controls="primary-settings" aria-selected="true">{{ __('Primary Settings') }}</a>
 							</li>
-							<li class="nav-item mt-2">
-								<a class="nav-link" id="profile-tab4" data-toggle="tab" href="#header-footer" role="tab" aria-controls="profile" aria-selected="false">{{ __('Header Footer Settings') }}</a>
+							<li class="nav-item mt-md-2 mr-2 mr-md-0">
+								<a class="nav-link" id="header-footer-tab" data-toggle="tab" href="#header-footer-settings" role="tab" aria-controls="header-footer-settings" aria-selected="false">{{ __('Header Footer Settings') }}</a>
 							</li>
-							<li class="nav-item mt-2">
-								<a class="nav-link" id="profile-tab4" data-toggle="tab" href="#why-choose" role="tab" aria-controls="profile" aria-selected="false">{{ __('Why choose Settings') }}</a>
+							<li class="nav-item mt-md-2 mr-2 mr-md-0">
+								<a class="nav-link" id="why-choose-tab" data-toggle="tab" href="#why-choose-settings" role="tab" aria-controls="why-choose-settings" aria-selected="false">{{ __('Why Choose Settings') }}</a>
 							</li>
-							<li class="nav-item mt-2">
-								<a class="nav-link" id="profile-tab4" data-toggle="tab" href="#home-page" role="tab" aria-controls="profile" aria-selected="false">{{ __('Home Page') }}</a>
+							<li class="nav-item mt-md-2 mr-2 mr-md-0">
+								<a class="nav-link" id="home-page-tab" data-toggle="tab" href="#home-page-settings" role="tab" aria-controls="home-page-settings" aria-selected="false">{{ __('Home Page') }}</a>
 							</li>
-							<li class="nav-item mt-2">
-								<a class="nav-link" id="profile-tab4" data-toggle="tab" href="#contact-page" role="tab" aria-controls="profile" aria-selected="false">{{ __('Contact Page') }}</a>
-							</li>
-							
-							<li class="nav-item mt-2 none">
-								<a class="nav-link" id="contact-tab4" data-toggle="tab" href="#contact4" role="tab" aria-controls="contact" aria-selected="false"></a>
+							<li class="nav-item mt-md-2 mr-0">
+								<a class="nav-link" id="contact-page-tab" data-toggle="tab" href="#contact-page-settings" role="tab" aria-controls="contact-page-settings" aria-selected="false">{{ __('Contact Page') }}</a>
 							</li>
 						</ul>
 					</div>
 					<div class="col-12 col-sm-12 col-md-8">
 						<div class="tab-content no-padding" id="myTab2Content">
-							<div class="tab-pane fade show active" id="home4" role="tabpanel" aria-labelledby="home-tab4">
+							<div class="tab-pane fade show active" id="primary-settings" role="tabpanel" aria-labelledby="primary-tab">
 								<form method="POST" action="{{ route('admin.page-settings.update','primary_data') }}" class="ajaxform" enctype="multipart/form-data">
 									@method('PUT')
 									<div class="form-group">
@@ -98,12 +94,12 @@
 
 								</form>
 							</div>
-							<div class="tab-pane fade" id="why-choose" role="tabpanel" aria-labelledby="profile-tab4">
+							<div class="tab-pane fade" id="why-choose-settings" role="tabpanel" aria-labelledby="why-choose-tab">
 								<form method="POST" action="{{ route('admin.page-settings.update','why-choose') }}" class="ajaxform" enctype="multipart/form-data">
 									@method('PUT')
 									<div class="form-group">
 										<label>{{ __('Section Title') }}</label>
-										<input type="text" name="data[title]" class="form-control" value="{{ $why_choose->title ?? '' }}" required="" placeholder="{{ __('Why choose WASender 🎖️') }}">
+										<input type="text" name="data[title]" class="form-control" value="{{ $why_choose->title ?? '' }}" required="" placeholder="{{ __('Why Choose WASender 🎖️') }}">
 									</div>
 									<div class="form-group">
 										<label>{{ __('Section Sub Title') }}</label>
@@ -198,7 +194,7 @@
 												<div class="col-sm-4">
 													<div class="form-group">
 														<label>{{ __('Block Title') }}</label>
-														<input type="text" name="data[right_block_title]" class="form-control" value="{{ $why_choose->right_block_title ?? '' }}" placeholder="{{ __('1000+ posivie reviews') }}">
+														<input type="text" name="data[right_block_title]" class="form-control" value="{{ $why_choose->right_block_title ?? '' }}" placeholder="{{ __('1000+ positive reviews') }}">
 													</div>
 												</div>
 												<div class="col-sm-4">
@@ -217,7 +213,7 @@
 									</div>
 								</form>	
 							</div>
-							<div class="tab-pane fade" id="contact-page" role="tabpanel" aria-labelledby="profile-tab4">
+							<div class="tab-pane fade" id="contact-page-settings" role="tabpanel" aria-labelledby="contact-page-tab">
 								<form method="POST" action="{{ route('admin.page-settings.update','contact-page') }}" class="ajaxform" enctype="multipart/form-data">
 									@method('PUT')
 									<div class="form-group">
@@ -256,12 +252,12 @@
 									</div>
 								</form>	
 							</div>
-							<div class="tab-pane fade" id="home-page" role="tabpanel" aria-labelledby="profile-tab4">
+							<div class="tab-pane fade" id="home-page-settings" role="tabpanel" aria-labelledby="home-page-tab">
 								<form method="POST" action="{{ route('admin.page-settings.update','home-page') }}" class="ajaxform" enctype="multipart/form-data">
 									@method('PUT')
 									
 									<div class="form-group">
-										<label>{{ __('Hero Ttitle') }}</label>
+										<label>{{ __('Hero Title') }}</label>
 										<input type="text" name="data[heading][title]" class="form-control" value="{{ $home->heading->title ?? '' }}" required="">
 									</div>
 									<div class="form-row">
@@ -535,7 +531,7 @@
 									</div>
 								</form>	
 							</div>
-							<div class="tab-pane fade" id="header-footer" role="tabpanel" aria-labelledby="contact-tab4">
+							<div class="tab-pane fade" id="header-footer-settings" role="tabpanel" aria-labelledby="header-footer-tab">
 								<form method="POST" action="{{ route('admin.page-settings.update','header_footer') }}" class="ajaxform" enctype="multipart/form-data">
 									@method('PUT')
 									

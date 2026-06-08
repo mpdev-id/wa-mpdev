@@ -16,7 +16,7 @@ trait Seo
    
    public function metadata($key)
    {
-       $seo=get_option($key,true);
+       $seo=get_option($key,true,true);
 
        if ($key == 'seo_home') {
            JsonLdMulti::setTitle($seo->site_name ?? env('APP_NAME'));
