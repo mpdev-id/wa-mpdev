@@ -71,10 +71,9 @@
       </div>
       <div class="card-body px-4 pb-4">
 
-        <div class="alert alert-warning border-0 rounded-3 small mb-4" role="alert">
+        <div class="alert alert-info border-0 rounded-3 small mb-4" role="alert">
           <i class="fi fi-rs-info me-1"></i>
-          Gunakan aplikasi <a href="https://play.google.com/store/apps/details?id=com.llamalab.automate" target="_blank" rel="noopener noreferrer"><strong>Automate</strong></a> atau <a href="https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm" target="_blank" rel="noopener noreferrer"><strong>Tasker</strong></a> di Android untuk
-          mengirim notifikasi transfer masuk ke webhook ini secara otomatis.
+          <strong>Rekomendasi Utama:</strong> Gunakan aplikasi mandiri <strong>WHASAPI Receiver App</strong> (source code lengkap tersedia di folder <code>whasapi-receiver-android</code> pada project Anda). Sebagai alternatif, Anda juga bisa menggunakan aplikasi <a href="https://play.google.com/store/apps/details?id=com.llamalab.automate" target="_blank" rel="noopener noreferrer"><strong>Automate</strong></a> atau <a href="https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm" target="_blank" rel="noopener noreferrer"><strong>Tasker</strong></a>.
         </div>
 
         {{-- Steps --}}
@@ -83,10 +82,11 @@
           <div class="d-flex gap-3 align-items-start">
             <div class="step-badge bg-primary text-white">1</div>
             <div>
-              <div class="fw-bold small">Install Aplikasi di HP Android Anda</div>
+              <div class="fw-bold small">Pasang Aplikasi Penerima (Receiver) di Android</div>
               <p class="small text-muted mb-0">
-                Download <a href="https://play.google.com/store/apps/details?id=com.llamalab.automate" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline">Automate (Gratis)</a> atau <a href="https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline">Tasker (Berbayar)</a> dari Google Play Store.
-                Keduanya mampu membaca notifikasi e-wallet dan mengirim HTTP request ke server.
+                Buka folder <code>whasapi-receiver-android</code> menggunakan <strong>Android Studio</strong>, build menjadi file APK, lalu instal di HP Android Anda.
+                <br>
+                <em>Alternatif:</em> Download <a href="https://play.google.com/store/apps/details?id=com.llamalab.automate" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline">Automate (Gratis)</a> atau <a href="https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline">Tasker (Berbayar)</a> dari Google Play Store.
               </p>
             </div>
           </div>

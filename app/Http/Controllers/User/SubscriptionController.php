@@ -12,6 +12,8 @@ use Session;
 use Auth;
 use DB;
 use Storage;
+use Illuminate\Support\Facades\Cache;
+
 class SubscriptionController extends Controller
 {
     use Notifications;
@@ -64,7 +66,12 @@ class SubscriptionController extends Controller
                 $unique_code = Session::get($sessionKey);
             } else {
                 do {
-                    $unique_code = rand(100, 999);
+                    $counter = Cache::increment('qris_unique_code_counter');
+                    if ($counter > 500) {
+                        Cache::put('qris_unique_code_counter', 1);
+                        $counter = 1;
+                    }
+                    $unique_code = $counter;
                     $payable = $total + $unique_code;
                     $exists = Order::where('status', 2)
                                    ->where('amount', $payable)
@@ -116,7 +123,18 @@ class SubscriptionController extends Controller
           if (Session::has($sessionKey)) {
               $unique_code = Session::get($sessionKey);
           } else {
-              $unique_code = rand(100, 999);
+              do {
+                  $counter = Cache::increment('qris_unique_code_counter');
+                  if ($counter > 500) {
+                      Cache::put('qris_unique_code_counter', 1);
+                      $counter = 1;
+                  }
+                  $unique_code = $counter;
+                  $payable = $total + $unique_code;
+                  $exists = Order::where('status', 2)
+                                 ->where('amount', $payable)
+                                 ->exists();
+              } while ($exists);
           }
           $total = $total + $unique_code;
       }
