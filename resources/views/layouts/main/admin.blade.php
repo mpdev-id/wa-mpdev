@@ -31,6 +31,12 @@
     </a>
   </li>
   <li class="nav-item">
+    <a class="nav-link {{ Request::is('admin/qris-android*') ? 'active' : '' }}" href="{{ route('admin.qris.android.index') }}">
+     <i class="fi fi-rs-smartphone"></i>
+      <span class="nav-link-text">{{ __('QRIS Android Webhook') }}</span>
+    </a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link {{ Request::is('admin/cron-job*') ? 'active' : '' }}" href="{{ route('admin.cron-job.index') }}">
      <i class="fi fi-rs-calendar-clock"></i>
       <span class="nav-link-text">{{ __('Cron Jobs') }}</span>

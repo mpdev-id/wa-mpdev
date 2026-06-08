@@ -47,6 +47,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth','ad
 	Route::get('dashboard-static-data',         [ADMIN\DashboardController::class, 'dashboardData'])->name('dashboard.static');
 	Route::get('/wa-server-status',				[ADMIN\DashboardController::class, 'waServerStatus']);
 	Route::get('/sales-overview',				[ADMIN\DashboardController::class, 'salesOverView']);
+	Route::get('/qris-android', [ADMIN\QrisAndroidController::class, 'index'])->name('qris.android.index');
+	Route::post('/qris-android/test', [ADMIN\QrisAndroidController::class, 'test'])->name('qris.android.test');
 
 });
 

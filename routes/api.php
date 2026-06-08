@@ -23,3 +23,10 @@ Route::group(['middleware' => ['throttle:api']], function (){
     Route::post('/ai-response/generate','App\Http\Controllers\Api\AiResponseController@generate');
 
 });
+
+// QRIS Android Webhook — menerima notifikasi transfer masuk dari HP Android
+// Diproteksi: token header X-Auth-Token + rate limit 10 req/mnt per IP
+Route::post('/qris-webhook', [App\Http\Controllers\Api\QrisWebhookController::class, 'handle'])
+     ->middleware('throttle:qris_webhook')
+     ->name('qris.webhook');
+

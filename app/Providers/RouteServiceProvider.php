@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
@@ -69,6 +70,21 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        // Dedicated limiter for QRIS webhook:
+        // Allow max 10 requests/minute per IP.
+        // A legitimate Android device sends ≤ 1 request per real transaction.
+        // Anything above 10/min from one IP is suspicious (brute-force or replay).
+        RateLimiter::for('qris_webhook', function (Request $request) {
+            return Limit::perMinute(10)
+                ->by($request->ip())
+                ->response(function () {
+                    Log::warning('QRIS Webhook: Rate limit exceeded', [
+                        'ip' => request()->ip(),
+                    ]);
+                    return response()->json(['message' => 'Too many requests'], 429);
+                });
         });
     }
 }

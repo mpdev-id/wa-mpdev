@@ -56,6 +56,25 @@ class SubscriptionController extends Controller
         $tax      = get_option('tax');
         $tax      = $tax > 0 ? ($plan->price / 100) * $tax : 0;
         $total    = (double)$tax+$plan->price;
+
+        $has_manual = $gateways->where('is_auto', 0)->count() > 0;
+        if ($has_manual) {
+            $sessionKey = 'payment_unique_code_' . $plan->id;
+            if (Session::has($sessionKey)) {
+                $unique_code = Session::get($sessionKey);
+            } else {
+                do {
+                    $unique_code = rand(100, 999);
+                    $payable = $total + $unique_code;
+                    $exists = Order::where('status', 2)
+                                   ->where('amount', $payable)
+                                   ->exists();
+                } while ($exists);
+                Session::put($sessionKey, $unique_code);
+            }
+            $total = $total + $unique_code;
+        }
+
         $invoice_data = get_option('invoice_data',true); 
 
         Session::forget('payment_info');
@@ -91,6 +110,17 @@ class SubscriptionController extends Controller
       $tax      = get_option('tax');
       $tax      = $tax > 0 ? ($plan->price / 100) * $tax : 0;
       $total    = (double)$tax+$plan->price;
+
+      if ($gateway->is_auto == 0) {
+          $sessionKey = 'payment_unique_code_' . $plan->id;
+          if (Session::has($sessionKey)) {
+              $unique_code = Session::get($sessionKey);
+          } else {
+              $unique_code = rand(100, 999);
+          }
+          $total = $total + $unique_code;
+      }
+
       $payable  = $total*$gateway->multiply+$gateway->charge;
 
         if ($gateway->min_amount > $payable ){

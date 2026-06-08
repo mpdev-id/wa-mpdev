@@ -56,9 +56,12 @@
             <div class="flex items-center justify-between mb-6">
               <h2 class="card-title text-xl font-bold text-gray-900 flex items-center gap-2">
                 <span class="material-icons text-primary">qr_code_2</span>
-                {{ __('Pembayaran QRIS Manual') }}
+                {{ __('Pembayaran QRIS') }}
               </h2>
-              <span class="badge badge-primary font-bold px-3 py-2 rounded-lg text-xs">{{ __('Proses Cepat') }}</span>
+              <span class="badge badge-success font-bold px-3 py-2 rounded-lg text-xs gap-1">
+                <span class="material-icons text-xs">bolt</span>
+                {{ __('Aktivasi Otomatis') }}
+              </span>
             </div>
 
             <!-- QRIS Scan Area -->
@@ -84,6 +87,17 @@
               </div>
             </div>
 
+            <!-- ⚡ Unique Code Notice -->
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3 items-start mb-4">
+              <span class="material-icons text-amber-500 text-lg mt-0.5">warning</span>
+              <div class="text-xs text-amber-800 leading-relaxed">
+                <p class="font-black text-sm text-amber-900 mb-1">⚡ Wajib Transfer Nominal Tepat!</p>
+                <p>Untuk aktivasi <strong>otomatis instan</strong>, transfer nominal <strong>persis</strong> sebesar:</p>
+                <p class="text-lg font-black text-amber-900 my-2 tracking-tight">{{ amount_format($total, 'icon') }}</p>
+                <p>Termasuk 3 digit unik di belakang sebagai kode identifikasi transaksi Anda. <strong>Jangan dibulatkan.</strong></p>
+              </div>
+            </div>
+
             <!-- Instructions List -->
             <div class="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-4">
               <h3 class="font-bold text-gray-900 text-sm md:text-base flex items-center gap-2">
@@ -94,21 +108,26 @@
               <ol class="space-y-3 text-xs md:text-sm text-gray-650">
                 <li class="flex gap-3">
                   <span class="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold flex-none text-xs">1</span>
-                  <span>Buka aplikasi e-wallet Anda (GoPay, OVO, DANA, LinkAja) atau Mobile Banking (BCA, Mandiri, BRI, dll).</span>
+                  <span>Buka aplikasi e-wallet (GoPay, OVO, DANA, LinkAja) atau Mobile Banking Anda.</span>
                 </li>
                 <li class="flex gap-3">
                   <span class="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold flex-none text-xs">2</span>
-                  <span>Pilih opsi **Scan / QRIS / Bayar** dan arahkan kamera ke kode QR di atas.</span>
+                  <span>Pilih <strong>Scan / QRIS</strong> dan pindai kode QR di atas.</span>
                 </li>
                 <li class="flex gap-3">
-                  <span class="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold flex-none text-xs">3</span>
-                  <span>Masukkan nominal transfer tepat sebesar **{{ amount_format($total, 'icon') }}** lalu selesaikan transaksi.</span>
+                  <span class="w-5 h-5 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold flex-none text-xs">3</span>
+                  <span>Masukkan nominal <strong class="text-amber-700">{{ amount_format($total, 'icon') }}</strong> dengan angka yang sama persis — termasuk 3 digit terakhirnya.</span>
                 </li>
                 <li class="flex gap-3">
-                  <span class="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold flex-none text-xs">4</span>
-                  <span>Ambil screenshot bukti transfer sukses Anda, lalu unggah di form di sebelah kanan.</span>
+                  <span class="w-5 h-5 rounded-full bg-success/10 text-success flex items-center justify-center font-bold flex-none text-xs">4</span>
+                  <span>Setelah transfer sukses, langganan Anda akan <strong class="text-success">aktif otomatis dalam hitungan detik</strong> tanpa perlu upload bukti manual.</span>
                 </li>
               </ol>
+
+              <div class="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
+                <span class="material-icons text-xs">smartphone</span>
+                <span>Sistem verifikasi otomatis via perangkat Android 24 jam nonstop</span>
+              </div>
             </div>
           </div>
         </div>

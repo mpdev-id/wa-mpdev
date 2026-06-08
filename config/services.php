@@ -36,4 +36,15 @@ return [
         'delay_time' => env('DELAY_TIME', 1000),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | QRIS Android Webhook Token
+    |--------------------------------------------------------------------------
+    | Secret token used to authenticate incoming requests from the Android
+    | device running the QRIS notification listener.
+    | Set ANDROID_QRIS_TOKEN in your .env file.
+    | Can also be managed via the admin panel at /admin/qris-android.
+    */
+    'qris_android_token' => env('ANDROID_QRIS_TOKEN', ''),
+
 ];
