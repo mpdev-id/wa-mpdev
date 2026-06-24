@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="default">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
 
 <head>
   <meta charset="utf-8">
@@ -210,6 +210,11 @@
       background: rgb(147 51 234 / 0.08);
       color: rgb(147 51 234);
     }
+
+    .bg-white{
+       background-color: #f8fafc !important;
+    }
+
   </style>
   @endif
   

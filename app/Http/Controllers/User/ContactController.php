@@ -25,10 +25,26 @@ class ContactController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
         $total_contacts=Contact::where('user_id',Auth::id())->count();
-        $contacts=Contact::where('user_id',Auth::id())->with('groupcontact')->latest()->paginate(20);
+
+        $query = Contact::where('user_id',Auth::id())->with('groupcontact');
+
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('phone', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        $contacts = $query->latest()->paginate(20);
+
+        if (!empty($search)) {
+            $contacts->appends(['search' => $search]);
+        }
+
         $templates=Template::where('user_id',Auth::id())->where('status',1)->latest()->get();
         $devices=Device::where('user_id',Auth::id())->where('status',1)->latest()->get();
         $limit  = json_decode(Auth::user()->plan);
@@ -43,7 +59,7 @@ class ContactController extends Controller
         
         $groups = Group::where('user_id',Auth::id())->latest()->get();
 
-        return view('user.contact.index',compact('contacts','total_contacts','templates','devices','limit','groups'));
+        return view('user.contact.index',compact('contacts','total_contacts','templates','devices','limit','groups', 'search'));
     }
 
     /**

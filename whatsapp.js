@@ -363,15 +363,26 @@ const getChatList = (sessionId, isGroup = false) => {
 
 const isExists = async (sock, number, legacy = false) => {
   try {
-    let result;
-    if (legacy) {
-      result = await sock.onWhatsApp(number);
-      return Boolean(result.id);
-    }
-    [result] = await sock.onWhatsApp(number);
-    return result.exists;
-  } catch {
-    return false;
+    const timeout = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Timeout')), 3000)
+    );
+
+    const query = (async () => {
+      let result;
+      if (legacy) {
+        result = await sock.onWhatsApp(number);
+        return Boolean(result && result.id);
+      }
+      const results = await sock.onWhatsApp(number);
+      if (Array.isArray(results) && results.length > 0) {
+        return results[0].exists;
+      }
+      return false;
+    })();
+
+    return await Promise.race([query, timeout]);
+  } catch (error) {
+    return true; // Fallback to true on timeout/error to allow sending attempt
   }
 };
 
@@ -507,9 +518,11 @@ const sendMessage = async (sock, jid, message, delayMs = 1000) => {
 };
 
 const formatPhone = (number) => {
-  if (number.endsWith('@s.whatsapp.net')) return number;
-  let formatted = number.replace(/\D/g, '');
-  return formatted + '@s.whatsapp.net';
+  let clean = number.replace('@s.whatsapp.net', '').replace(/\D/g, '');
+  if (clean.startsWith('0')) {
+    clean = '62' + clean.substring(1);
+  }
+  return clean + '@s.whatsapp.net';
 };
 
 const formatGroup = (id) => {

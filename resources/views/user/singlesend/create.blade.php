@@ -51,7 +51,7 @@
           <span class="label-text font-bold text-base-content/60 uppercase tracking-widest text-xs">{{ __('Message Type') }}</span>
         </label>
         <div class="relative">
-          <select x-model="activeTab" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300 font-bold">
+          <select x-model="activeTab" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300 font-bold">
             <template x-for="tab in tabs" :key="tab.id">
               <option :value="tab.id" x-text="tab.label"></option>
             </template>
@@ -132,7 +132,7 @@
                     <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
                   </label>
                   <div class="relative group">
-                    <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" required>
+                    <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
                       <option value="">{{ __('Choose device...') }}</option>
                       @foreach($devices ?? [] as $device)
                         <option value="{{ $device->id }}">{{ $device->name }} ({{ $device->phone }})</option>
@@ -149,7 +149,7 @@
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
                   <div class="relative group">
-                    <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                    <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                     <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-base-content/30 group-hover:text-primary transition-colors">
                       <span class="material-symbols-outlined">call</span>
                     </div>
@@ -165,7 +165,7 @@
                   <span class="label-text font-bold text-base-content/80">{{ __('Message Content') }}</span>
                 </label>
                 <div class="relative">
-                  <textarea name="message" class="textarea textarea-bordered textarea-lg h-48 w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300 leading-relaxed" placeholder="{{ __('Type your message here...') }}" required></textarea>
+                  <textarea name="message" class="textarea textarea-bordered textarea-lg h-48 w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300 leading-relaxed" placeholder="{{ __('Type your message here...') }}" required></textarea>
                   <div class="absolute bottom-4 right-4 text-xs font-bold text-base-content/30 uppercase tracking-widest">
                     {{ __('WhatsApp Standard') }}
                   </div>
@@ -203,7 +203,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
                   </label>
-                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" required>
+                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
                     <option value="">{{ __('Choose device...') }}</option>
                     @foreach($devices ?? [] as $device)
                       <option value="{{ $device->id }}">{{ $device->name }}</option>
@@ -215,7 +215,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -224,7 +224,7 @@
                   <span class="label-text font-bold text-base-content/80">{{ __('Media File') }}</span>
                 </label>
                 <div class="flex items-center justify-center w-full">
-                  <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-base-300 rounded-3xl cursor-pointer bg-base-100/50 hover:bg-base-100 hover:border-primary/50 transition-all group">
+                  <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-base-300 rounded-3xl cursor-pointer bg-base-100/80 hover:bg-base-100 hover:border-primary/50 transition-all group">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                       <span class="material-symbols-outlined text-4xl text-base-content/30 group-hover:text-primary transition-colors mb-3">cloud_upload</span>
                       <p class="mb-2 text-sm text-base-content/60 font-semibold">{{ __('Click to upload or drag and drop') }}</p>
@@ -239,7 +239,7 @@
                 <label class="label px-1">
                   <span class="label-text font-bold text-base-content/80">{{ __('Caption (Optional)') }}</span>
                 </label>
-                <textarea name="message" class="textarea textarea-bordered textarea-lg h-32 w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('Type your caption here...') }}"></textarea>
+                <textarea name="message" class="textarea textarea-bordered textarea-lg h-32 w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('Type your caption here...') }}"></textarea>
               </div>
 
               <div class="pt-4">
@@ -274,7 +274,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
                   </label>
-                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" required>
+                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
                     <option value="">{{ __('Choose device...') }}</option>
                     @foreach($devices ?? [] as $device)
                       <option value="{{ $device->id }}">{{ $device->name }}</option>
@@ -286,7 +286,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -295,14 +295,14 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Header Title') }}</span>
                   </label>
-                  <input type="text" name="header_title" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" maxlength="30" placeholder="{{ __('List header') }}" required />
+                  <input type="text" name="header_title" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" maxlength="30" placeholder="{{ __('List header') }}" required />
                 </div>
 
                 <div class="form-control">
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Button Text') }}</span>
                   </label>
-                  <input type="text" name="button_text" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" maxlength="30" placeholder="{{ __('View options') }}" required />
+                  <input type="text" name="button_text" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" maxlength="30" placeholder="{{ __('View options') }}" required />
                 </div>
               </div>
 
@@ -310,14 +310,14 @@
                 <label class="label px-1">
                   <span class="label-text font-bold text-base-content/80">{{ __('Message Body') }}</span>
                 </label>
-                <textarea name="message" class="textarea textarea-bordered textarea-lg h-24 w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" maxlength="300" placeholder="{{ __('Your list description...') }}" required></textarea>
+                <textarea name="message" class="textarea textarea-bordered textarea-lg h-24 w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" maxlength="300" placeholder="{{ __('Your list description...') }}" required></textarea>
               </div>
 
               <div class="form-control">
                 <label class="label px-1">
                   <span class="label-text font-bold text-base-content/80">{{ __('Footer Text') }}</span>
                 </label>
-                <input type="text" name="footer_text" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" maxlength="30" placeholder="{{ __('Footer text') }}" required />
+                <input type="text" name="footer_text" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" maxlength="30" placeholder="{{ __('Footer text') }}" required />
               </div>
 
               <div class="space-y-6">
@@ -401,7 +401,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
                   </label>
-                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" required>
+                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
                     <option value="">{{ __('Choose device...') }}</option>
                     @foreach($devices ?? [] as $device)
                       <option value="{{ $device->id }}">{{ $device->name }}</option>
@@ -413,7 +413,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -421,21 +421,21 @@
                 <label class="label px-1">
                   <span class="label-text font-bold text-base-content/80">{{ __('Media Header (Optional)') }}</span>
                 </label>
-                <input type="file" name="file" class="file-input file-input-bordered w-full rounded-2xl bg-base-100/50" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" />
+                <input type="file" name="file" class="file-input file-input-bordered w-full rounded-2xl bg-base-100/80" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" />
               </div>
 
               <div class="form-control">
                 <label class="label px-1">
                   <span class="label-text font-bold text-base-content/80">{{ __('Message Body') }}</span>
                 </label>
-                <textarea name="message" class="textarea textarea-bordered textarea-lg h-32 w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('Your message content...') }}" required></textarea>
+                <textarea name="message" class="textarea textarea-bordered textarea-lg h-32 w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('Your message content...') }}" required></textarea>
               </div>
 
               <div class="form-control">
                 <label class="label px-1">
                   <span class="label-text font-bold text-base-content/80">{{ __('Footer Text') }}</span>
                 </label>
-                <input type="text" name="footer_text" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" maxlength="100" placeholder="{{ __('Footer text...') }}" required />
+                <input type="text" name="footer_text" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" maxlength="100" placeholder="{{ __('Footer text...') }}" required />
               </div>
 
               <div class="space-y-6">
@@ -507,7 +507,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
                   </label>
-                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" required>
+                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
                     <option value="">{{ __('Choose device...') }}</option>
                     @foreach($devices ?? [] as $device)
                       <option value="{{ $device->id }}">{{ $device->name }}</option>
@@ -519,7 +519,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -527,7 +527,7 @@
                 <label class="label px-1">
                   <span class="label-text font-bold text-base-content/80">{{ __('Question') }}</span>
                 </label>
-                <input type="text" name="message" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('What is your question?') }}" required maxlength="255" />
+                <input type="text" name="message" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('What is your question?') }}" required maxlength="255" />
               </div>
 
               <div class="space-y-4">
@@ -591,7 +591,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
                   </label>
-                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" required>
+                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
                     <option value="">{{ __('Choose device...') }}</option>
                     @foreach($devices ?? [] as $device)
                       <option value="{{ $device->id }}">{{ $device->name }}</option>
@@ -603,7 +603,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -612,14 +612,14 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Latitude') }}</span>
                   </label>
-                  <input type="text" name="degreesLatitude" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="-6.200000" required />
+                  <input type="text" name="degreesLatitude" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="-6.200000" required />
                 </div>
 
                 <div class="form-control">
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Longitude') }}</span>
                   </label>
-                  <input type="text" name="degreesLongitude" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/50 focus:bg-base-100 transition-all border-base-300" placeholder="106.816666" required />
+                  <input type="text" name="degreesLongitude" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="106.816666" required />
                 </div>
               </div>
 
@@ -654,8 +654,29 @@
 <script>
 $(document).ready(function() {
     $('.select2').select2();
+
+    function formatPhoneInput(val) {
+        if (!val) return '';
+        return val.split(',').map(num => {
+            let trimmed = num.trim();
+            trimmed = trimmed.replace(/^\+/, '');
+            if (trimmed.startsWith('0')) {
+                trimmed = '62' + trimmed.substring(1);
+            }
+            return trimmed;
+        }).join(', ');
+    }
+
+    $(document).on('blur', 'input[name="phone"]', function() {
+        $(this).val(formatPhoneInput($(this).val()));
+    });
     
     $('.message-send-form').on('submit', function(e) {
+        const phoneInput = $(this).find('input[name="phone"]');
+        if (phoneInput.length) {
+            phoneInput.val(formatPhoneInput(phoneInput.val()));
+        }
+
         e.preventDefault();
         
         const form = $(this);

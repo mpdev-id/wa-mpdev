@@ -26,7 +26,10 @@ class ChatController extends Controller
             ->where("status", 1)
             ->latest()
             ->get();
-        return view("user.chats.list", compact("device", "templates"));
+        $contacts = \App\Models\Contact::where("user_id", Auth::id())
+            ->latest()
+            ->get();
+        return view("user.chats.list", compact("device", "templates", "contacts"));
     }
 
     public function getGroupMetaData(Request $request)

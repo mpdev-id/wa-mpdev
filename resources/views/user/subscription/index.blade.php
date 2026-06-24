@@ -66,7 +66,7 @@
   </div>
 
   <!-- Features List -->
-  <div class="card bg-base-100 shadow-md animate-slide-up" style="animation-delay: 0.1s">
+  <div class="card  shadow-md animate-slide-up" style="animation-delay: 0.1s">
     <div class="card-body">
       <h3 class="card-title text-lg mb-4">{{ __('Plan Features') }}</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
