@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('ai_responses', function (Blueprint $table) {
-            $table->boolean('reply_to_groups')->default(false)->after('is_active');
-        });
+        if (!Schema::hasColumn('ai_responses', 'reply_to_groups')) {
+            Schema::table('ai_responses', function (Blueprint $table) {
+                $table->boolean('reply_to_groups')->default(false)->after('is_active');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('ai_responses', function (Blueprint $table) {
-            $table->dropColumn('reply_to_groups');
-        });
+        if (Schema::hasColumn('ai_responses', 'reply_to_groups')) {
+            Schema::table('ai_responses', function (Blueprint $table) {
+                $table->dropColumn('reply_to_groups');
+            });
+        }
     }
 };

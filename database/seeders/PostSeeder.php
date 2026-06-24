@@ -42,6 +42,7 @@ class PostSeeder extends Seeder
           array('id' => '26','title' => 'Terms and conditions','slug' => 'terms-and-conditions','type' => 'page','status' => '1','featured' => '1','lang' => 'en','created_at' => '2023-04-09 19:40:59','updated_at' => '2023-04-09 19:40:59')
       );
 
+Post::whereIn('id', array_column($posts, 'id'))->delete();
 Post::insert($posts);
 }
 }

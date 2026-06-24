@@ -118,6 +118,7 @@ It is a long established fact that a reader will be distracted by the readable c
   array('id' => '66','post_id' => '26','key' => 'seo','value' => '{"title":"terms and conditions","description":"orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, w","tags":"wa, whatsapp, devstation, qserve, whatsserve"}')
 );
 
+   Postmeta::whereIn('id', array_column($postmetas, 'id'))->delete();
    Postmeta::insert($postmetas);
   }
 }

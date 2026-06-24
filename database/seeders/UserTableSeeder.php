@@ -18,15 +18,17 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-       $super = User::create([
-            'role' => 'admin',
-            'avatar' => 'uploads/avatar.png',
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('password'),
-        ]);
+       $super = User::updateOrCreate(
+            ['email' => 'admin@mpdev.my.id'],
+            [
+                'role' => 'admin',
+                'avatar' => 'uploads/avatar.png',
+                'name' => 'Admin',
+                'password' => Hash::make('@Jembu123'),
+            ]
+        );
 
-        $roleSuperAdmin = Role::create(['name' => 'superadmin']);
+        $roleSuperAdmin = Role::firstOrCreate(['name' => 'superadmin']);
         //create permission
         $permissions = [
           
@@ -94,10 +96,13 @@ class UserTableSeeder extends Seeder
 
 
             foreach ($row['permissions'] as $per) {
-                $permission = Permission::create(['name' => $per, 'group_name' => $row['group_name']]);
-                $roleSuperAdmin->givePermissionTo($permission);
-                $permission->assignRole($roleSuperAdmin);
-                $super->assignRole($roleSuperAdmin);
+                $permission = Permission::firstOrCreate(['name' => $per, 'group_name' => $row['group_name']]);
+                if (!$roleSuperAdmin->hasPermissionTo($permission)) {
+                    $roleSuperAdmin->givePermissionTo($permission);
+                }
+                if (!$super->hasRole($roleSuperAdmin)) {
+                    $super->assignRole($roleSuperAdmin);
+                }
             }
         }
     }

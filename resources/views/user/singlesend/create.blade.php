@@ -24,10 +24,10 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto ">
   
   <!-- Page Header -->
-  <div class="mb-8">
+  <div class="mb-8  bg-[#fff] rounded-2xl p-6">
     <h1 class="text-3xl font-bold text-base-content mb-2">{{ __('Send Custom Message') }}</h1>
     <p class="text-base-content/60 text-lg">{{ __('Send WhatsApp messages using different formats') }}</p>
   </div>
@@ -64,7 +64,7 @@
     </div>
 
     <!-- Sidebar Navigation (Desktop) -->
-    <div class="hidden lg:block lg:col-span-3 p-4">
+    <div class="hidden lg:block lg:col-span-3 p-4 bg-[#fff] rounded-2xl">
       <div class="glass-card rounded-3xl sticky top-24 overflow-hidden">
         <div class="p-6">
           <div class="flex items-center gap-3 mb-8 px-2">
@@ -102,7 +102,7 @@
 
     <!-- Main Content -->
     <div class="lg:col-span-9">
-      <div class="glass-card rounded-3xl overflow-hidden p-4">
+      <div class="glass-card rounded-3xl overflow-hidden p-4  bg-[#fff] rounded-2xl">
         <div class="p-8 md:p-12">
           
           <!-- Plain Text Tab -->

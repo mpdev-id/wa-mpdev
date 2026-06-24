@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- WHASAPI Theme Colors -->
+    <color name="bg_dark">#090d16</color>
+    <color name="bg_card">#131a26</color>
+    <color name="primary">#10b981</color> <!-- Emerald Green -->
+    <color name="primary_variant">#059669</color>
+    <color name="accent">#84cc16</color> <!-- Lime Green -->
+    <color name="text_main">#f8fafc</color>
+    <color name="text_muted">#94a3b8</color>
+    <color name="border">#1e293b</color>
+    <color name="danger">#ef4444</color>
+    <color name="success">#22c55e</color>
+</resources>

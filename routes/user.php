@@ -21,6 +21,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['auth','user
   
    Route::get('/device/chats/{uuid}',           [USER\ChatController::class,'chats']);
    Route::post('/get-chats/{uuid}',             [USER\ChatController::class,'chatHistory']);
+   Route::post('/get-messages/{uuid}',          [USER\ChatController::class,'chatMessages']);
    Route::post('/send-message/{uuid}',          [USER\ChatController::class,'sendMessage'])->name('chat.send-message');
 
    Route::get('/device/groups/{uuid}',          [USER\ChatController::class,'groups']);

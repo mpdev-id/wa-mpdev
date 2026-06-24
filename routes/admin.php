@@ -49,6 +49,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth','ad
 	Route::get('/sales-overview',				[ADMIN\DashboardController::class, 'salesOverView']);
 	Route::get('/qris-android', [ADMIN\QrisAndroidController::class, 'index'])->name('qris.android.index');
 	Route::post('/qris-android/test', [ADMIN\QrisAndroidController::class, 'test'])->name('qris.android.test');
+	Route::post('/qris-android/simulate', [ADMIN\QrisAndroidController::class, 'simulate'])->name('qris.android.simulate');
 
 });
 

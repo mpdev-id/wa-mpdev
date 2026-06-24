@@ -69,16 +69,24 @@
         
         <!-- CTA Action Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-2">
-          <a href="{{ route('register') }}" 
-             class="btn btn-primary btn-lg rounded-2xl gap-3 shadow-xl shadow-primary/20 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 px-8 text-white">
-            <span class="material-icons">rocket_launch</span>
-            {{ __('Get Started Free') }}
-          </a>
-          <a href="#features" 
-             class="btn btn-outline btn-lg rounded-2xl gap-3 hover:bg-gray-150/50 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 px-8 text-gray-800">
-            <span class="material-icons">play_circle</span>
-            {{ __('See Features') }}
-          </a>
+          @if(!Auth::check())
+            <a href="{{ route('login') }}" 
+               class="btn btn-primary btn-lg rounded-2xl gap-3 shadow-xl shadow-primary/20 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 px-8 text-white">
+              <span class="material-icons">login</span>
+              {{ __('Login') }}
+            </a>
+            <a href="{{ route('register') }}" 
+               class="btn btn-outline btn-lg rounded-2xl gap-3 hover:bg-gray-150/50 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 px-8 text-gray-800">
+              <span class="material-icons">rocket_launch</span>
+              {{ __('Try Me Free') }}
+            </a>
+          @else
+            <a href="{{ url('/login') }}" 
+               class="btn btn-primary btn-lg rounded-2xl gap-3 shadow-xl shadow-primary/20 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 px-8 text-white">
+              <span class="material-icons">dashboard</span>
+              {{ __('Dashboard') }}
+            </a>
+          @endif
         </div>
 
         <!-- Trust Badges Section -->

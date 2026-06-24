@@ -30,3 +30,7 @@ Route::post('/qris-webhook', [App\Http\Controllers\Api\QrisWebhookController::cl
      ->middleware('throttle:qris_webhook')
      ->name('qris.webhook');
 
+// QRIS Ping — tes konektivitas dari aplikasi Android (tidak butuh token)
+Route::get('/qris-ping', [App\Http\Controllers\Api\QrisWebhookController::class, 'ping'])
+     ->middleware('throttle:60,1')
+     ->name('qris.ping');

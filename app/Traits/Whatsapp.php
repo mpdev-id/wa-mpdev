@@ -57,7 +57,7 @@ trait Whatsapp
 
         //sending data to whatsapp server
         try {
-            $response=Http::timeout(10)->post($whatsServer.'/chats/send?id='.$session_id,$body);
+            $response=Http::timeout(30)->post($whatsServer.'/chats/send?id='.$session_id,$body);
             $status=$response->status();
 
             if ($status != 200) {
@@ -100,6 +100,7 @@ trait Whatsapp
             $contacts = $colllections->map(function($item) {
                              $phone = explode('@', $item->id);
                              $data['number'] = $phone[0] ?? null;
+                             $data['jid'] = $item->id;
                              $data['name'] = $item->name ?? null;
                              $data['pushName'] = $item->pushName ?? null;
                              $data['unread'] = $item->unreadCount ?? 0;
@@ -114,6 +115,32 @@ trait Whatsapp
 
         return $responseData;
 
+    }
+
+    private function getChatMessages($device_id, $jid)
+    {
+        $session_id = 'device_' . $device_id;
+        $whatsServer = config('services.whatsapp.server_url');
+
+        try {
+            $response = Http::get($whatsServer . '/chats/' . $jid . '?id=' . $session_id . '&limit=50');
+            $status = $response->status();
+
+            if ($status != 200) {
+                $responseBody = json_decode($response->body());
+                $responseData['message'] = $responseBody->message ?? 'Unknown error';
+                $responseData['status'] = $status;
+            } else {
+                $responseBody = json_decode($response->body());
+                $responseData['status'] = 200;
+                $responseData['data'] = $responseBody->data ?? [];
+            }
+            return $responseData;
+        } catch (\Exception $e) {
+            $responseData['status'] = 500;
+            $responseData['message'] = $e->getMessage();
+            return $responseData;
+        }
     }
 
     public function getGroupList($device_id)
@@ -194,7 +221,7 @@ trait Whatsapp
 
         //sending data to whatsapp server
         try {
-            $response=Http::timeout(10)->post($whatsServer.'/groups/send?id='.$session_id,$body);
+            $response=Http::timeout(30)->post($whatsServer.'/groups/send?id='.$session_id,$body);
             $status=$response->status();
 
             if ($status != 200) {

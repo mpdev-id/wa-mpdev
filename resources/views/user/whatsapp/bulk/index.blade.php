@@ -31,7 +31,7 @@
 }">
   
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 p-6 rounded-2xl bg-[#fff]">
     <div>
       <h1 class="text-4xl font-black text-base-content tracking-tight mb-2">{{ __('Bulk Messages') }}</h1>
       <p class="text-base-content/60 text-lg font-medium">{{ __('Manage and track your bulk message campaigns') }}</p>
@@ -51,7 +51,7 @@
   <!-- Stats Grid -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
     <div class="stat-card group">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-4 p-6 rounded-2xl  bg-[#fff]">
         <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
           <span class="material-symbols-outlined text-3xl">rocket_launch</span>
         </div>
@@ -66,7 +66,7 @@
     </div>
 
     <div class="stat-card group">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-4 p-6 rounded-2xl  bg-[#fff]">
         <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform duration-500">
           <span class="material-symbols-outlined text-3xl">calendar_month</span>
         </div>
@@ -81,7 +81,7 @@
     </div>
 
     <div class="stat-card group">
-      <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center justify-between mb-4 p-6 rounded-2xl  bg-[#fff]">
         <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform duration-500">
           <span class="material-symbols-outlined text-3xl">today</span>
         </div>
@@ -96,10 +96,10 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 ">
     
     <!-- Mobile Navigation -->
-    <div class="lg:hidden mb-6 col-span-1">
+    <div class="lg:hidden mb-6 col-span-1 p-6 rounded-2xl  bg-[#fff]">
       <div class="glass-card rounded-3xl p-4">
         <div class="relative">
           <select @change="window.location.href = $event.target.value" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/50 font-bold">
@@ -113,9 +113,9 @@
 
     <!-- Sidebar Navigation -->
     <div class="hidden lg:block lg:col-span-3">
-      <div class="glass-card rounded-3xl sticky top-24 overflow-hidden">
+      <div class="glass-card rounded-3xl sticky top-24 overflow-hidden  rounded-2xl  bg-[#fff]">
         <div class="p-6">
-          <div class="flex items-center gap-3 mb-8 px-2">
+          <div class="flex items-center gap-3 mb-8 px-2 ">
             <div class="w-10 h-10 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20">
               <span class="material-symbols-outlined">dashboard</span>
             </div>
@@ -140,8 +140,8 @@
     <!-- Main Content -->
     <div class="lg:col-span-9">
       <div class="glass-card rounded-3xl overflow-hidden">
-        <div class="p-8 md:p-10">
-          <div class="flex items-center justify-between mb-10">
+        <div class="p-8 md:p-10 rounded-2xl  bg-[#fff]">
+          <div class="flex items-center justify-between mb-10 ">
             <div class="flex items-center gap-4">
               <div class="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20">
                 <span class="material-symbols-outlined">history</span>

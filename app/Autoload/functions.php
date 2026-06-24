@@ -62,14 +62,15 @@ if (!function_exists('amount_format')) {
     function amount_format($amount=0, $icon_type = 'name')
     {
         $currency = get_option('base_currency',true);
+        $formatted = number_format($amount, 0, ',', '.');
         if ($icon_type == 'name') {
-            $currency = $currency->position == 'right' ? $currency->name.' '.number_format($amount,2)  :  number_format($amount,2).' '.$currency->name;
+            $currency = $currency->position == 'right' ? $currency->name.' '.$formatted  :  $formatted.' '.$currency->name;
         }
         elseif ($icon_type == 'both') {
-            $currency = $currency->icon.number_format($amount,2).' '.$currency->name;
+            $currency = $currency->icon.$formatted.' '.$currency->name;
         }
         else{
-            $currency = $currency->position == 'right' ? number_format($amount,2).$currency->icon : $currency->icon.number_format($amount,2);
+            $currency = $currency->position == 'right' ? $formatted.$currency->icon : $currency->icon.$formatted;
         }
 
         return $currency;
@@ -87,53 +88,26 @@ if (!function_exists('planData')) {
 
     function planData($title, $value)
     {
-        if ($title == 'chatbot') {
-            $data['is_bool'] = true;
-            $data['title'] = $title;
-            $data['value'] = filter_var($value,FILTER_VALIDATE_BOOLEAN);
+        $cleanTitle = str_replace('_', ' ', $title);
+        $translatedTitle = __($cleanTitle);
 
-            return $data;
-        }
-        elseif ($title == 'bulk_message') {
+        if ($title == 'chatbot' || $title == 'bulk_message' || $title == 'schedule_message' || $title == 'template_message' || $title == 'access_chat_list' || $title == 'access_group_list') {
             $data['is_bool'] = true;
-            $data['title'] = $title;
-            $data['value'] = filter_var($value,FILTER_VALIDATE_BOOLEAN);
+            $data['title'] = $translatedTitle;
+            $data['value'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
             return $data;
         }
-        elseif ($title == 'schedule_message') {
-            $data['is_bool'] = true;
-            $data['title'] = $title;
-            $data['value'] = filter_var($value,FILTER_VALIDATE_BOOLEAN);
-            return $data;
-        }
-        elseif ($title == 'template_message') {
-            $data['is_bool'] = true;
-            $data['title'] = $title;
-            $data['value'] = filter_var($value,FILTER_VALIDATE_BOOLEAN);
-            return $data;
-        }
-        elseif ($title == 'access_chat_list') {
-            $data['is_bool'] = true;
-            $data['title'] = $title;
-            $data['value'] = filter_var($value,FILTER_VALIDATE_BOOLEAN);
-            return $data;
-        }
-        elseif ($title == 'access_group_list') {
-            $data['is_bool'] = true;
-            $data['title'] = $title;
-            $data['value'] = filter_var($value,FILTER_VALIDATE_BOOLEAN);
-            return $data;
-        }
-        else{
+        else {
             if ($value == -1) {
-                $value = 'unlimited';
+                $valStr = __('unlimited');
+            } else {
+                $valStr = $value;
             }
             $data['value'] = null;
             $data['is_bool'] = false;
-            $data['title'] = $title. ' ('.$value.')';
+            $data['title'] = $translatedTitle . ' (' . $valStr . ')';
             return $data;
         }
-
     }
 
 }

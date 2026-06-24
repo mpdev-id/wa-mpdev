@@ -38,7 +38,7 @@
                   {{ __('Login') }}
                </a>
                <a href="{{ url('/register') }}" class="btn btn-primary btn-md rounded-xl text-white font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
-                  {{ __('Get Started') }}
+                  {{ __('Try Me Free') }}
                </a>
             @else
                <a href="{{ url('/login') }}" class="btn btn-primary btn-md rounded-xl text-white font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
@@ -109,7 +109,7 @@
                   {{ __('Login') }}
                </a>
                <a href="{{ url('/register') }}" class="btn btn-primary btn-md w-full text-white rounded-xl shadow-lg">
-                  {{ __('Get Started') }}
+                  {{ __('Try Me Free') }}
                </a>
             @else
                <a href="{{ url('/login') }}" class="btn btn-primary btn-md w-full text-white rounded-xl shadow-lg">

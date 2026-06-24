@@ -14,12 +14,15 @@ class MenuSeeder extends Seeder
      */
     public function run()
     {
-        Menu::create([
-            'name' => 'Header',
-            'position' => 'main-menu',
-            'data' => '[{"text":"Home","icon":"","href":"/","target":"_self","title":""},{"text":"Pricing","icon":"empty","href":"/pricing","target":"_self","title":""},{"text":"About","icon":"empty","href":"/about","target":"_self","title":""},{"text":"Features","icon":"empty","href":"/features","target":"_self","title":""},{"text":"Blogs","icon":"empty","href":"/blogs","target":"_self","title":""},{"text":"Contact","icon":"empty","href":"/contact","target":"_self","title":""}]',
-            'lang' => 'en',
-            'status' => 1
-        ]);
+        foreach (['en', 'id'] as $locale) {
+            Menu::updateOrCreate(
+                ['position' => 'main-menu', 'lang' => $locale],
+                [
+                    'name' => 'Header',
+                    'data' => '[{"text":"Beranda","icon":"","href":"/","target":"_self","title":""},{"text":"Harga","icon":"empty","href":"/pricing","target":"_self","title":""},{"text":"Tentang Kami","icon":"empty","href":"/about","target":"_self","title":""},{"text":"Fitur","icon":"empty","href":"/features","target":"_self","title":""},{"text":"Blog","icon":"empty","href":"/blogs","target":"_self","title":""},{"text":"Kontak","icon":"empty","href":"/contact","target":"_self","title":""}]',
+                    'status' => 1
+                ]
+            );
+        }
     }
 }

@@ -179,6 +179,21 @@ class IndonesianContentSeeder extends Seeder
         ];
 
         $options = [
+            'primary_data' => [
+                'logo' => '/uploads/wasapi/logo.png',
+                'favicon' => '/uploads/wasapi/favicon.png',
+                'contact_email' => 'contact@email.com',
+                'contact_phone' => '8801234567890',
+                'address' => 'Bowery St, New York',
+                'socials' => [
+                    'facebook' => 'https://www.facebook.com/',
+                    'youtube' => 'https://youtube.com/',
+                    'twitter' => 'https://twitter.com/',
+                    'instagram' => 'https://www.instagram.com/',
+                    'linkedin' => 'https://linkedin.com/'
+                ],
+                'footer_logo' => '/uploads/wasapi/logo_white.png'
+            ],
             'home-page' => $homePageData,
             'header_footer' => $headerFooterData,
             'why-choose' => $whyChooseData,

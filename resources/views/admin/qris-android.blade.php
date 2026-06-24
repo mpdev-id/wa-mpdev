@@ -5,338 +5,607 @@
 
 @section('content')
 <style>
+  /* ── Status dot ── */
   .status-dot {
-    width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+    width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0;
     animation: pulse-dot 2s ease-in-out infinite;
   }
-  .status-dot.online  { background: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.25); }
-  .status-dot.offline { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.25); }
+  .status-dot.online  { background: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,.2); }
+  .status-dot.offline { background: #ef4444; box-shadow: 0 0 0 4px rgba(239,68,68,.2); }
   @keyframes pulse-dot {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50%       { transform: scale(1.3); opacity: .7; }
+    0%,100% { transform:scale(1); opacity:1; }
+    50%      { transform:scale(1.35); opacity:.7; }
   }
-  .token-field { font-family: 'Courier New', monospace; letter-spacing: 0.04em; font-size: .85rem; }
-  .step-badge  { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
-                  justify-content: center; font-weight: 800; font-size: .75rem; flex-shrink: 0; }
+
+  /* ── Mono font ── */
+  .mono { font-family:'Courier New',monospace; letter-spacing:.04em; font-size:.82rem; }
+
+  /* ── Step badge ── */
+  .step-num {
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:.78rem; flex-shrink:0;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    color:#fff; box-shadow:0 4px 12px rgba(99,102,241,.35);
+  }
+  .step-num.done {
+    background:linear-gradient(135deg,#10b981,#059669);
+    box-shadow:0 4px 12px rgba(16,185,129,.35);
+  }
+
+  /* ── Code block ── */
+  .code-block {
+    background:#0f172a; border-radius:.75rem; padding:1rem 1.25rem;
+    font-family:'Courier New',monospace; font-size:.78rem;
+    line-height:1.7; overflow-x:auto; color:#94a3b8;
+  }
+  .code-block .key   { color:#7dd3fc; }
+  .code-block .val   { color:#86efac; }
+  .code-block .str   { color:#fca5a5; }
+  .code-block .cmt   { color:#64748b; }
+  .code-block .url   { color:#f0abfc; }
+
+  /* ── Token reveal ── */
+  .token-reveal { cursor:pointer; }
+
+  /* ── Status header gradient ── */
+  .status-header {
+    background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);
+    border-radius:1.25rem; overflow:hidden; position:relative;
+  }
+  .status-header::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(ellipse at 70% 50%, rgba(99,102,241,.15) 0%, transparent 70%);
+  }
+
+  /* ── Card hover ── */
+  .info-card {
+    border-radius:1.25rem; border:0; box-shadow:0 2px 16px rgba(0,0,0,.06);
+    transition:box-shadow .2s;
+  }
+  .info-card:hover { box-shadow:0 6px 28px rgba(0,0,0,.1); }
+
+  /* ── Tab pill ── */
+  .method-tab {
+    display:flex; gap:.5rem; background:#f1f5f9;
+    border-radius:.75rem; padding:.35rem; width:fit-content; flex-wrap:wrap;
+  }
+  .method-tab button {
+    border:0; background:transparent; border-radius:.5rem;
+    padding:.35rem .85rem; font-size:.8rem; font-weight:600; color:#64748b;
+    transition:all .2s; cursor:pointer;
+  }
+  .method-tab button.active {
+    background:#fff; color:#6366f1; box-shadow:0 2px 8px rgba(0,0,0,.1);
+  }
+
+  /* ── Test result box ── */
+  .test-result {
+    display:none; background:#0f172a; border-radius:.75rem;
+    padding:1rem; font-family:monospace; font-size:.78rem; color:#94a3b8;
+    white-space:pre-wrap; max-height:200px; overflow-y:auto; margin-top:.75rem;
+  }
+  .test-result.show { display:block; }
+  .test-result.ok   { border-left:3px solid #10b981; }
+  .test-result.fail { border-left:3px solid #ef4444; }
 </style>
 
-{{-- Alerts --}}
+{{-- ── Flash alerts ── --}}
 @if(session('success'))
-  <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
-    <i class="fi fi-rs-check-circle me-2"></i> {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  <div class="alert border-0 rounded-3 mb-4 py-3 px-4 d-flex align-items-center gap-3"
+       style="background:#ecfdf5; color:#065f46;">
+    <i class="fi fi-rs-check-circle fs-5"></i>
+    <div>{{ session('success') }}</div>
+  </div>
+@endif
+@if(session('error'))
+  <div class="alert border-0 rounded-3 mb-4 py-3 px-4 d-flex align-items-center gap-3"
+       style="background:#fef2f2; color:#991b1b;">
+    <i class="fi fi-rs-exclamation fs-5"></i>
+    <div>{{ session('error') }}</div>
   </div>
 @endif
 
-<div class="row g-4">
+<div class="d-flex flex-column gap-4">
 
-  {{-- ══════════ STATUS CARD ══════════ --}}
-  <div class="col-12">
-    <div class="card border-0 shadow" style="border-radius: 1.5rem; overflow:hidden;">
-      <div class="card-body d-flex align-items-center gap-4 p-4"
-           style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
-        <div class="p-3 rounded-3" style="background: rgba(255,255,255,.08);">
-          <i class="fi fi-rs-smartphone text-white" style="font-size:2rem;"></i>
+  {{-- ══════════ 1. STATUS BAR ══════════ --}}
+  <div class="status-header p-4">
+    <div class="row align-items-center g-3 position-relative">
+      <div class="col-md-7 d-flex align-items-center gap-4">
+        <div class="p-3 rounded-3 d-flex align-items-center justify-content-center"
+             style="background:rgba(255,255,255,.08); width:56px; height:56px;">
+          <i class="fi fi-rs-smartphone text-white" style="font-size:1.6rem;"></i>
         </div>
-        <div class="flex-grow-1">
+        <div>
           <div class="d-flex align-items-center gap-2 mb-1">
             <span class="status-dot {{ $deviceOnline ? 'online' : 'offline' }}"></span>
-            <span class="text-white fw-bold fs-5">
-              Perangkat Android
+            <span class="fw-bold text-white fs-6">
+              Perangkat Android —
               <span class="{{ $deviceOnline ? 'text-success' : 'text-danger' }}">
-                {{ $deviceOnline ? '● Online' : '● Offline' }}
+                {{ $deviceOnline ? 'Online' : 'Offline' }}
               </span>
             </span>
           </div>
-          <div class="text-white-50 small">
-            Ping terakhir: <strong class="text-white">{{ $lastPingDiff }}</strong>
-            &nbsp;·&nbsp; Webhook aktif dan siap menerima notifikasi QRIS
+          <div class="small" style="color:rgba(255,255,255,.55);">
+            Ping terakhir:
+            <strong class="text-white">{{ $lastPingDiff }}</strong>
+            &nbsp;·&nbsp; Endpoint: <span class="mono" style="color:#a5b4fc;">{{ $webhookUrl }}</span>
           </div>
         </div>
-        <a href="{{ route('admin.qris.android.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+      </div>
+      <div class="col-md-5 d-flex justify-content-md-end gap-2 flex-wrap">
+        {{-- Ping test button --}}
+        <button class="btn btn-sm btn-outline-light rounded-pill px-3" id="btnPingTest">
+          <i class="fi fi-rs-signal-stream me-1"></i> Tes Koneksi
+        </button>
+        <a href="{{ route('admin.qris.android.index') }}" class="btn btn-sm rounded-pill px-3"
+           style="background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.2);">
           <i class="fi fi-rs-refresh me-1"></i> Refresh
         </a>
       </div>
     </div>
+
+    {{-- Ping result inline --}}
+    <div id="pingResult" class="mt-3 small rounded-3 px-4 py-2 d-none"
+         style="background:rgba(255,255,255,.08); color:#a5b4fc; font-family:monospace;"></div>
   </div>
 
-  {{-- ══════════ LEFT: SETUP GUIDE ══════════ --}}
-  <div class="col-xl-7">
-    <div class="card border-0 shadow h-100" style="border-radius: 1.5rem;">
-      <div class="card-header border-0 bg-white pt-4 px-4 pb-0">
-        <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
-          <span class="badge bg-primary rounded-pill p-2"><i class="fi fi-rs-book-alt"></i></span>
-          Panduan Setup Android
-        </h5>
-      </div>
-      <div class="card-body px-4 pb-4">
+  {{-- ══════════ 2. TWO COLUMNS: SETUP + CONFIG ══════════ --}}
+  <div class="row g-4">
 
-        <div class="alert alert-info border-0 rounded-3 small mb-4" role="alert">
-          <i class="fi fi-rs-info me-1"></i>
-          <strong>Rekomendasi Utama:</strong> Gunakan aplikasi mandiri <strong>WHASAPI Receiver App</strong> (source code lengkap tersedia di folder <code>whasapi-receiver-android</code> pada project Anda). Sebagai alternatif, Anda juga bisa menggunakan aplikasi <a href="https://play.google.com/store/apps/details?id=com.llamalab.automate" target="_blank" rel="noopener noreferrer"><strong>Automate</strong></a> atau <a href="https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm" target="_blank" rel="noopener noreferrer"><strong>Tasker</strong></a>.
+    {{-- ── LEFT: Setup Guide ── --}}
+    <div class="col-xl-7">
+      <div class="info-card card h-100">
+        <div class="card-header border-0 bg-white pt-4 px-4 pb-2">
+          <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+            <span class="badge rounded-3 p-2" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+              <i class="fi fi-rs-book-alt text-white"></i>
+            </span>
+            Panduan Setup Automate
+          </h5>
+          <p class="text-muted small mt-1 mb-0">Ikuti langkah berikut untuk menghubungkan HP Android ke sistem QRIS.</p>
         </div>
 
-        {{-- Steps --}}
-        <div class="d-flex flex-column gap-3">
+        <div class="card-body px-4 pb-4">
 
-          <div class="d-flex gap-3 align-items-start">
-            <div class="step-badge bg-primary text-white">1</div>
-            <div>
-              <div class="fw-bold small">Pasang Aplikasi Penerima (Receiver) di Android</div>
-              <p class="small text-muted mb-0">
-                Buka folder <code>whasapi-receiver-android</code> menggunakan <strong>Android Studio</strong>, build menjadi file APK, lalu instal di HP Android Anda.
-                <br>
-                <em>Alternatif:</em> Download <a href="https://play.google.com/store/apps/details?id=com.llamalab.automate" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline">Automate (Gratis)</a> atau <a href="https://play.google.com/store/apps/details?id=net.dinglisch.android.taskerm" target="_blank" rel="noopener noreferrer" class="fw-bold text-decoration-underline">Tasker (Berbayar)</a> dari Google Play Store.
-              </p>
-            </div>
+          {{-- Method tabs --}}
+          <div class="method-tab mb-4" id="methodTabs">
+            <button class="active" onclick="showMethod('automate', this)">
+              <i class="fi fi-rs-smartphone me-1"></i> Automate (Gratis)
+            </button>
+            <button onclick="showMethod('curl', this)">
+              <i class="fi fi-rs-terminal me-1"></i> cURL / API Manual
+            </button>
+            <button onclick="showMethod('tasker', this)">
+              <i class="fi fi-rs-settings me-1"></i> Tasker
+            </button>
           </div>
 
-          <div class="d-flex gap-3 align-items-start">
-            <div class="step-badge bg-primary text-white">2</div>
-            <div>
-              <div class="fw-bold small">Buat Flow / Task Pembaca Notifikasi</div>
-              <p class="small text-muted mb-0">
-                Buat automation yang terpicu saat ada notifikasi masuk dari aplikasi e-wallet
-                (GoPay, OVO, DANA, BCA, dll). Filter notifikasi yang mengandung kata
-                <code>berhasil</code>, <code>masuk</code>, atau <code>diterima</code>.
-              </p>
-            </div>
-          </div>
+          {{-- === AUTOMATE GUIDE === --}}
+          <div id="method-automate" class="method-content">
+            <div class="d-flex flex-column gap-4">
 
-          <div class="d-flex gap-3 align-items-start">
-            <div class="step-badge bg-primary text-white">3</div>
-            <div>
-              <div class="fw-bold small">Kirim HTTP POST ke Webhook URL Ini</div>
-              <p class="small text-muted mb-0">
-                Di dalam automation, tambahkan aksi <strong>HTTP Request</strong> dengan:
-              </p>
-                <div class="mt-2 p-3 rounded-3 small" style="background:#f8fafc; border: 1px solid #e2e8f0;">
-                <div><span class="text-muted">Method:</span> <code>POST</code></div>
-                <div><span class="text-muted">URL:</span>
-                  <code class="token-field text-primary">{{ $webhookUrl }}</code>
+              <div class="d-flex gap-3">
+                <div class="step-num">1</div>
+                <div>
+                  <div class="fw-semibold small mb-1">Download & Install Automate</div>
+                  <p class="small text-muted mb-2">
+                    Download aplikasi <strong>Automate by LlamaLab</strong> dari Google Play Store (gratis).
+                    Berikan izin akses notifikasi setelah diinstall.
+                  </p>
+                  <a href="https://play.google.com/store/apps/details?id=com.llamalab.automate"
+                     target="_blank" rel="noopener"
+                     class="btn btn-sm rounded-pill px-3"
+                     style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size:.8rem;">
+                    <i class="fi fi-rs-arrow-up-right-from-square me-1"></i> Buka Google Play
+                  </a>
                 </div>
-                <div class="mt-1"><span class="text-muted">Headers:</span></div>
-                <div class="ps-2"><code>X-Auth-Token: {{ $authToken ? $maskedToken . ' (salin dari panel token ↓)' : '[generate token dulu ↓]' }}</code></div>
-                <div class="ps-2"><code>Content-Type: application/json</code></div>
-                <div class="mt-1"><span class="text-muted">Body (JSON):</span></div>
-                <pre class="mb-0 small" style="color:#334155;">{
-  "amount": "[nominal dari teks notifikasi]",
-  "description": "[isi notifikasi lengkap]",
-  "source": "android-notification",
-  "app": "[nama aplikasi e-wallet]"
-}</pre>
+              </div>
+
+              <div class="d-flex gap-3">
+                <div class="step-num">2</div>
+                <div class="w-100">
+                  <div class="fw-semibold small mb-1">Buat Flow Baru di Automate</div>
+                  <p class="small text-muted mb-2">
+                    Buat Flow dengan block berikut (urutan dari atas ke bawah):
+                  </p>
+                  <div class="d-flex flex-column gap-2">
+                    <div class="rounded-3 px-3 py-2 d-flex align-items-start gap-2"
+                         style="background:#f8fafc; border:1px solid #e2e8f0;">
+                      <span class="badge rounded-pill mt-1" style="background:#6366f1; font-size:.6rem;">A</span>
+                      <div class="small">
+                        <strong>Notification received</strong> — trigger saat ada notifikasi masuk dari GoPay / OVO / DANA / ShopeePay / BCA
+                      </div>
+                    </div>
+                    <div class="rounded-3 px-3 py-2 d-flex align-items-start gap-2"
+                         style="background:#f8fafc; border:1px solid #e2e8f0;">
+                      <span class="badge rounded-pill mt-1" style="background:#6366f1; font-size:.6rem;">B</span>
+                      <div class="small">
+                        <strong>Text match</strong> — filter notifikasi yang mengandung kata: <code>masuk</code> / <code>diterima</code> / <code>berhasil</code> / <code>Rp</code>
+                      </div>
+                    </div>
+                    <div class="rounded-3 px-3 py-2 d-flex align-items-start gap-2"
+                         style="background:#f8fafc; border:1px solid #e2e8f0;">
+                      <span class="badge rounded-pill mt-1" style="background:#6366f1; font-size:.6rem;">C</span>
+                      <div class="small">
+                        <strong>HTTP Request</strong> — kirim POST ke webhook URL (lihat konfigurasi ↓)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex gap-3">
+                <div class="step-num">3</div>
+                <div class="w-100">
+                  <div class="fw-semibold small mb-1">Konfigurasi Block HTTP Request</div>
+                  <p class="small text-muted mb-1">Isi field pada block <strong>HTTP Request</strong> di Automate:</p>
+                  <div class="code-block">
+<span class="cmt">// Method</span>
+<span class="key">Method    </span>: <span class="val">POST</span>
+
+<span class="cmt">// URL</span>
+<span class="key">URL       </span>: <span class="url">{{ $webhookUrl }}</span>
+
+<span class="cmt">// Headers (tap + untuk tambah header)</span>
+<span class="key">X-Auth-Token </span>: <span class="str">{{ $authToken ? '[token dari panel ↓]' : '[generate token dulu ↓]' }}</span>
+<span class="key">Content-Type </span>: <span class="val">application/json</span>
+
+<span class="cmt">// Body — pilih format JSON</span>
+{
+  <span class="key">"amount"</span>     : <span class="str">"[nominal dari notif, contoh: 25123]"</span>,
+  <span class="key">"description"</span>: <span class="str">"@{{noti_text}}"</span>,
+  <span class="key">"source"</span>     : <span class="str">"android-automate"</span>
+}</div>
+                  <div class="alert border-0 rounded-3 small mt-3 py-2 px-3"
+                       style="background:#fffbeb; color:#92400e; border-left:3px solid #f59e0b !important;">
+                    <i class="fi fi-rs-info me-1"></i>
+                    <strong>Tip Automate:</strong> Gunakan variable <code>@{{noti_text}}</code> untuk menangkap isi notifikasi otomatis.
+                    Atau parse nominal dari teks notifikasi menggunakan block <strong>Text decode</strong> + regex.
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex gap-3">
+                <div class="step-num done">4</div>
+                <div>
+                  <div class="fw-semibold small mb-1">✅ Selesai — Aktifkan Flow</div>
+                  <p class="small text-muted mb-0">
+                    Aktifkan flow, lalu gunakan tombol <strong>Tes Koneksi</strong> di atas dan <strong>Simulasi Webhook</strong>
+                    di bawah untuk memverifikasi bahwa sistem bekerja sebelum transaksi riil masuk.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {{-- === CURL GUIDE === --}}
+          <div id="method-curl" class="method-content d-none">
+            <p class="small text-muted mb-3">Test webhook langsung dari terminal atau tools seperti Postman / Insomnia:</p>
+            <div class="code-block">
+<span class="cmt"># 1. Tes konektivitas (tanpa token)</span>
+<span class="val">curl</span> -X GET <span class="url">{{ $pingUrl }}</span>
+
+<span class="cmt"># 2. Kirim notifikasi pembayaran</span>
+<span class="val">curl</span> -X POST <span class="url">{{ $webhookUrl }}</span> \
+  -H <span class="str">"X-Auth-Token: {{ $authToken ?: 'TOKEN_ANDA' }}"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "amount": 25000,
+    "description": "Transfer berhasil Rp 25.000",
+    "source": "curl-test"
+  }'</span>
+
+<span class="cmt"># 3. Kirim via Authorization Bearer (alternatif)</span>
+<span class="val">curl</span> -X POST <span class="url">{{ $webhookUrl }}</span> \
+  -H <span class="str">"Authorization: Bearer {{ $authToken ?: 'TOKEN_ANDA' }}"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"amount": 25000, "description": "Test"}'</span>
+            </div>
+            <div class="alert border-0 rounded-3 small mt-3 py-2 px-3"
+                 style="background:#f0f9ff; color:#0c4a6e; border-left:3px solid #38bdf8 !important;">
+              <i class="fi fi-rs-shield-check me-1"></i>
+              Token diterima via: <code>X-Auth-Token</code> header, <code>Authorization: Bearer</code>, atau field <code>token</code> di body JSON.
+            </div>
+          </div>
+
+          {{-- === TASKER GUIDE === --}}
+          <div id="method-tasker" class="method-content d-none">
+            <p class="small text-muted mb-3">Konfigurasi Tasker untuk mengirim webhook saat notifikasi masuk:</p>
+            <div class="d-flex flex-column gap-3">
+              <div class="rounded-3 p-3" style="background:#f8fafc; border:1px solid #e2e8f0;">
+                <div class="fw-semibold small mb-2">Profile → Event → UI → Notification</div>
+                <div class="small text-muted">
+                  Set <strong>App</strong> ke aplikasi e-wallet target (GoPay, OVO, dll).
+                  Filter <strong>Title/Text</strong> berisi kata <code>masuk</code> atau <code>Rp</code>.
+                </div>
+              </div>
+              <div class="rounded-3 p-3" style="background:#f8fafc; border:1px solid #e2e8f0;">
+                <div class="fw-semibold small mb-2">Task → HTTP Request (plugin atau built-in)</div>
+                <div class="code-block mt-2">
+<span class="key">Method</span> : <span class="val">POST</span>
+<span class="key">URL</span>    : <span class="url">{{ $webhookUrl }}</span>
+<span class="key">Header</span> : <span class="str">X-Auth-Token: {{ $authToken ?: 'TOKEN_ANDA' }}</span>
+<span class="key">Body</span>   : <span class="str">{"amount":"%evtprm3","description":"%evtprm2","source":"tasker"}</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="d-flex gap-3 align-items-start">
-            <div class="step-badge bg-success text-white">4</div>
-            <div>
-              <div class="fw-bold small">Selesai — Sistem Aktif Otomatis</div>
-              <p class="small text-muted mb-0">
-                Setiap ada transfer masuk ke rekening QRIS Anda, webhook akan menerima data
-                dan secara otomatis mencocokkan nominal dengan order yang pending, lalu
-                mengaktifkan langganan pelanggan.
-              </p>
+        </div>
+      </div>
+    </div>
+
+    {{-- ── RIGHT: Config Panel ── --}}
+    <div class="col-xl-5 d-flex flex-column gap-4">
+
+      {{-- Webhook URL --}}
+      <div class="info-card card">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1 d-flex align-items-center gap-2">
+            <i class="fi fi-rs-link" style="color:#6366f1;"></i> Webhook URL
+          </h6>
+          <p class="small text-muted mb-3">URL endpoint yang menerima notifikasi dari HP Android.</p>
+          <div class="input-group">
+            <input type="text" class="form-control mono small" id="webhookUrl"
+                   value="{{ $webhookUrl }}" readonly>
+            <button class="btn btn-outline-primary" onclick="copyField('webhookUrl', this)" title="Salin">
+              <i class="fi fi-rs-copy"></i>
+            </button>
+          </div>
+
+          {{-- Ping URL --}}
+          <div class="mt-3">
+            <div class="small text-muted mb-1">URL Ping / Tes Koneksi (GET):</div>
+            <div class="input-group">
+              <input type="text" class="form-control mono small" id="pingUrl"
+                     value="{{ $pingUrl }}" readonly>
+              <button class="btn btn-outline-secondary" onclick="copyField('pingUrl', this)" title="Salin">
+                <i class="fi fi-rs-copy"></i>
+              </button>
             </div>
           </div>
-
         </div>
-
       </div>
+
+      {{-- Auth Token --}}
+      <div class="info-card card">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1 d-flex align-items-center gap-2">
+            <i class="fi fi-rs-key" style="color:#f59e0b;"></i> Token Autentikasi
+            <span class="badge rounded-pill ms-1 text-white" style="background:#ef4444; font-size:.6rem;">RAHASIA</span>
+          </h6>
+          <p class="small text-muted mb-3">
+            Sertakan di header <code>X-Auth-Token</code> setiap request dari Android.
+          </p>
+
+          @if($authToken)
+            <input type="hidden" id="tokenFull" value="{{ $authToken }}">
+            <div class="input-group mb-2">
+              <input type="text" class="form-control mono small bg-light" id="tokenDisplay"
+                     value="{{ $maskedToken }}" readonly>
+              <button class="btn btn-outline-secondary" type="button" onclick="toggleToken()" id="btnEye" title="Tampilkan/Sembunyikan">
+                <i class="fi fi-rs-eye" id="eyeIcon"></i>
+              </button>
+              <button class="btn btn-outline-primary" type="button" onclick="copyToken()" title="Salin token">
+                <i class="fi fi-rs-copy" id="copyTokenIcon"></i>
+              </button>
+            </div>
+            <div class="small text-muted mt-1">
+              <i class="fi fi-rs-shield-exclamation text-warning me-1"></i>
+              Jangan bagikan token ini. Auto-tersembunyi setelah 30 detik.
+            </div>
+          @else
+            <div class="rounded-3 p-3 text-center mb-3" style="background:#fffbeb; border:1px dashed #f59e0b;">
+              <i class="fi fi-rs-exclamation" style="color:#f59e0b; font-size:1.5rem;"></i>
+              <div class="small mt-1 text-muted">Belum ada token. Generate token baru untuk mulai menggunakan webhook.</div>
+            </div>
+          @endif
+
+          <form method="POST" action="{{ route('admin.qris.android.test') }}">
+            @csrf
+            <button type="submit" class="btn w-100 fw-bold rounded-3 mt-1"
+                    style="background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; border:0;"
+                    onclick="return confirm('{{ $authToken ? 'Generate token baru? Token lama tidak berlaku lagi.' : 'Generate token sekarang?' }}')">
+              <i class="fi fi-rs-refresh me-2"></i>
+              {{ $authToken ? 'Generate Ulang Token' : 'Generate Token Sekarang' }}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {{-- Simulate Webhook --}}
+      <div class="info-card card">
+        <div class="card-body p-4">
+          <h6 class="fw-bold mb-1 d-flex align-items-center gap-2">
+            <i class="fi fi-rs-paper-plane" style="color:#10b981;"></i> Simulasi Webhook
+          </h6>
+          <p class="small text-muted mb-3">
+            Kirim simulasi pembayaran untuk memverifikasi endpoint berfungsi.
+            @if($pendingOrders->isNotEmpty())
+              <br>Order pending yang ada:
+              @foreach($pendingOrders as $po)
+                <span class="badge rounded-pill me-1 mt-1 fw-normal"
+                      style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0;">
+                  Rp {{ number_format($po->amount, 0, ',', '.') }}
+                </span>
+              @endforeach
+            @endif
+          </p>
+          <form method="POST" action="{{ route('admin.qris.android.simulate') }}">
+            @csrf
+            <div class="input-group">
+              <span class="input-group-text text-muted small">Rp</span>
+              <input type="number" name="amount" class="form-control" placeholder="Nominal, contoh: 25123" min="100"
+                     @if($pendingOrders->isNotEmpty()) value="{{ $pendingOrders->first()->amount }}" @endif>
+              <button type="submit" class="btn fw-bold"
+                      style="background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:0;"
+                      @if(!$authToken) disabled title="Generate token terlebih dahulu" @endif>
+                <i class="fi fi-rs-paper-plane me-1"></i> Kirim
+              </button>
+            </div>
+            @if(!$authToken)
+              <div class="small text-danger mt-1"><i class="fi fi-rs-exclamation me-1"></i>Generate token terlebih dahulu.</div>
+            @endif
+          </form>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  {{-- ══════════ RIGHT: CONFIG ══════════ --}}
-  <div class="col-xl-5 d-flex flex-column gap-4">
-
-    {{-- Webhook URL --}}
-    <div class="card border-0 shadow" style="border-radius: 1.5rem;">
-      <div class="card-body p-4">
-        <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-          <i class="fi fi-rs-link text-primary"></i> Webhook URL
-        </h6>
-        <div class="input-group">
-          <input type="text" class="form-control token-field small" id="webhookUrl"
-                 value="{{ $webhookUrl }}" readonly>
-          <button class="btn btn-outline-primary" onclick="copyText('webhookUrl')" title="Salin URL">
-            <i class="fi fi-rs-copy"></i>
-          </button>
-        </div>
-        <div class="text-muted small mt-2">
-          <i class="fi fi-rs-shield-check text-success me-1"></i>
-          Endpoint ini hanya menerima POST request dengan token autentikasi yang valid.
-        </div>
-      </div>
+  {{-- ══════════ 3. RECENT TRANSACTIONS ══════════ --}}
+  <div class="info-card card">
+    <div class="card-header border-0 bg-white pt-4 px-4 pb-2 d-flex align-items-center justify-content-between">
+      <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+        <span class="badge rounded-3 p-2" style="background:linear-gradient(135deg,#10b981,#059669);">
+          <i class="fi fi-rs-check-circle text-white"></i>
+        </span>
+        Transaksi QRIS Terverifikasi Otomatis
+      </h5>
+      <span class="badge rounded-pill px-3" style="background:#ecfdf5; color:#065f46;">
+        {{ $recentOrders->count() }} transaksi
+      </span>
     </div>
-
-    {{-- Auth Token --}}
-    <div class="card border-0 shadow" style="border-radius: 1.5rem;">
-      <div class="card-body p-4">
-        <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-          <i class="fi fi-rs-key text-warning"></i> Token Autentikasi
-          <span class="badge bg-danger rounded-pill ms-1" style="font-size:.65rem;">RAHASIA</span>
-        </h6>
-
-        @if($authToken)
-          {{-- Hidden input holds the REAL token (not rendered in visible HTML body) --}}
-          <input type="hidden" id="authTokenFull" value="{{ $authToken }}">
-
-          {{-- Visible field shows MASKED version --}}
-          <div class="input-group mb-2">
-            <input type="text" class="form-control token-field small bg-light" id="authTokenDisplay"
-                   value="{{ $maskedToken }}" readonly title="Klik Tampilkan untuk melihat token penuh">
-            <button class="btn btn-outline-secondary" type="button"
-                    onclick="toggleReveal()" id="btnReveal" title="Tampilkan / Sembunyikan">
-              <i class="fi fi-rs-eye" id="eyeIcon"></i>
-            </button>
-            <button class="btn btn-outline-primary" type="button"
-                    onclick="copyFullToken()" title="Salin Token">
-              <i class="fi fi-rs-copy" id="copyIcon"></i>
-            </button>
-          </div>
-
-          <div class="alert alert-warning border-0 rounded-3 small mb-3 py-2" role="alert">
-            <i class="fi fi-rs-shield-exclamation me-1"></i>
-            <strong>Jaga kerahasiaan token ini.</strong> Jangan bagikan ke siapapun.
-            Token hanya dibutuhkan oleh aplikasi Automate/Tasker di HP Android Anda.
-          </div>
-          <div class="alert alert-info border-0 rounded-3 small mb-3 py-2" role="alert">
-            <i class="fi fi-rs-info me-1"></i>
-            Sertakan token ini di header <code>X-Auth-Token</code> setiap request dari Android.
-          </div>
-        @else
-          <div class="alert alert-warning border-0 rounded-3 small mb-3 py-2" role="alert">
-            <i class="fi fi-rs-exclamation me-1"></i>
-            Belum ada token. Generate token baru di bawah ini.
-          </div>
-        @endif
-
-        <form method="POST" action="{{ route('admin.qris.android.test') }}">
-          @csrf
-          <button type="submit" class="btn btn-warning w-100 fw-bold"
-                  onclick="return confirm('Generate token baru? Token lama tidak akan berlaku lagi dan Anda harus update di aplikasi Android.')">
-            <i class="fi fi-rs-refresh me-1"></i>
-            {{ $authToken ? 'Generate Ulang Token' : 'Generate Token Sekarang' }}
-          </button>
-        </form>
-      </div>
-    </div>
-
-  </div>
-
-  {{-- ══════════ RECENT TRANSACTIONS ══════════ --}}
-  <div class="col-12">
-    <div class="card border-0 shadow" style="border-radius: 1.5rem;">
-      <div class="card-header border-0 bg-white pt-4 px-4 pb-2">
-        <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
-          <span class="badge bg-success rounded-pill p-2"><i class="fi fi-rs-check-circle"></i></span>
-          10 Transaksi QRIS Terakhir (Terverifikasi Otomatis)
-        </h5>
-      </div>
-      <div class="card-body p-0">
-        @if($recentOrders->isEmpty())
-          <div class="text-center py-5 text-muted">
-            <i class="fi fi-rs-receipt" style="font-size:2.5rem; opacity:.3;"></i>
-            <p class="mt-3 small">Belum ada transaksi QRIS yang terverifikasi otomatis.</p>
-          </div>
-        @else
-          <div class="table-responsive">
-            <table class="table table-hover mb-0" style="font-size:.85rem;">
-              <thead class="table-light">
-                <tr>
-                  <th class="ps-4 py-3">Order #</th>
-                  <th>Pelanggan</th>
-                  <th>Paket</th>
-                  <th>Nominal</th>
-                  <th>Waktu</th>
-                  <th class="pe-4">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach($recentOrders as $order)
-                <tr>
-                  <td class="ps-4 fw-bold text-primary">{{ $order->invoice ?? '#'.$order->id }}</td>
-                  <td>{{ $order->user->name ?? '-' }}</td>
-                  <td>{{ $order->plan->name ?? '-' }}</td>
-                  <td class="fw-bold">{{ amount_format($order->amount, 'icon') }}</td>
-                  <td class="text-muted">{{ $order->updated_at->diffForHumans() }}</td>
-                  <td class="pe-4">
-                    <span class="badge bg-success rounded-pill px-3">
-                      <i class="fi fi-rs-check me-1"></i> Aktif
-                    </span>
-                  </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
-          </div>
-        @endif
-      </div>
+    <div class="card-body p-0">
+      @if($recentOrders->isEmpty())
+        <div class="text-center py-5 text-muted">
+          <i class="fi fi-rs-receipt" style="font-size:3rem; opacity:.2;"></i>
+          <p class="mt-3 small mb-0">Belum ada transaksi yang diverifikasi otomatis via webhook.</p>
+          <p class="small">Gunakan tombol <strong>Simulasi Webhook</strong> di atas untuk mencoba.</p>
+        </div>
+      @else
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" style="font-size:.85rem;">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4 py-3">Order #</th>
+                <th>Pelanggan</th>
+                <th>Paket</th>
+                <th>Nominal</th>
+                <th>Waktu</th>
+                <th class="pe-4">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($recentOrders as $order)
+              <tr>
+                <td class="ps-4 fw-bold" style="color:#6366f1;">{{ $order->invoice_no ?? '#'.$order->id }}</td>
+                <td>{{ $order->user->name ?? '-' }}</td>
+                <td>{{ $order->plan->title ?? '-' }}</td>
+                <td class="fw-bold">Rp {{ number_format($order->amount, 0, ',', '.') }}</td>
+                <td class="text-muted">{{ $order->updated_at->diffForHumans() }}</td>
+                <td class="pe-4">
+                  <span class="badge rounded-pill px-3" style="background:#ecfdf5; color:#065f46;">
+                    <i class="fi fi-rs-check me-1"></i> Aktif
+                  </span>
+                </td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+      @endif
     </div>
   </div>
 
 </div>
 
 <script>
-// Copy the visible URL field
-function copyText(id) {
-  const el = document.getElementById(id);
-  navigator.clipboard.writeText(el.value).then(() => {
-    const btn = el.nextElementSibling;
-    const orig = btn.innerHTML;
-    btn.innerHTML = '<i class="fi fi-rs-check"></i>';
-    btn.classList.add('btn-success');
-    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('btn-success'); }, 1500);
-  });
+// ── Tab switching ──────────────────────────────────────────────────
+function showMethod(id, btn) {
+  document.querySelectorAll('.method-content').forEach(el => el.classList.add('d-none'));
+  document.querySelector('#method-' + id).classList.remove('d-none');
+  document.querySelectorAll('#methodTabs button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
 }
 
-// Copy full token from hidden input (not from visible masked display)
-function copyFullToken() {
-  const fullToken = document.getElementById('authTokenFull').value;
-  navigator.clipboard.writeText(fullToken).then(() => {
-    const btn = document.getElementById('copyIcon');
-    const orig = btn.className;
-    btn.className = 'fi fi-rs-check';
-    btn.parentElement.classList.add('btn-success');
+// ── Copy field ─────────────────────────────────────────────────────
+function copyField(id, btn) {
+  const val = document.getElementById(id).value;
+  navigator.clipboard.writeText(val).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fi fi-rs-check"></i>';
+    btn.classList.replace('btn-outline-primary', 'btn-success');
+    btn.classList.replace('btn-outline-secondary', 'btn-success');
     setTimeout(() => {
-      btn.className = orig;
-      btn.parentElement.classList.remove('btn-success');
+      btn.innerHTML = orig;
+      btn.classList.replace('btn-success', 'btn-outline-primary');
+      btn.classList.replace('btn-success', 'btn-outline-secondary');
     }, 1500);
   });
 }
 
-// Toggle reveal/hide full token in the visible input
-function toggleReveal() {
-  const display = document.getElementById('authTokenDisplay');
-  const full    = document.getElementById('authTokenFull');
+// ── Token reveal ───────────────────────────────────────────────────
+let hideTimer = null;
+function toggleToken() {
+  const display = document.getElementById('tokenDisplay');
+  const full    = document.getElementById('tokenFull');
   const eye     = document.getElementById('eyeIcon');
+  if (!display || !full) return;
+
   const showing = display.value === full.value;
+  clearTimeout(hideTimer);
 
   if (showing) {
-    display.value   = '{{ $maskedToken }}';
-    eye.className   = 'fi fi-rs-eye';
+    display.value = '{{ $maskedToken }}';
+    eye.className = 'fi fi-rs-eye';
   } else {
-    display.value   = full.value;
-    eye.className   = 'fi fi-rs-eye-crossed';
+    display.value = full.value;
+    eye.className = 'fi fi-rs-eye-crossed';
+    // Auto-hide after 30 seconds
+    hideTimer = setTimeout(() => {
+      display.value = '{{ $maskedToken }}';
+      eye.className = 'fi fi-rs-eye';
+    }, 30000);
   }
 }
 
-// Auto-hide token after 30 seconds of inactivity
-@if($authToken)
-let hideTimer = null;
-document.getElementById('authTokenDisplay')?.addEventListener('click', () => {
-  clearTimeout(hideTimer);
-  hideTimer = setTimeout(() => {
-    const d = document.getElementById('authTokenDisplay');
-    const f = document.getElementById('authTokenFull');
-    if (d && d.value === f?.value) {
-      d.value = '{{ $maskedToken }}';
-      const eye = document.getElementById('eyeIcon');
-      if (eye) eye.className = 'fi fi-rs-eye';
+function copyToken() {
+  const full = document.getElementById('tokenFull');
+  if (!full) return;
+  navigator.clipboard.writeText(full.value).then(() => {
+    const icon = document.getElementById('copyTokenIcon');
+    const btn  = icon.parentElement;
+    icon.className = 'fi fi-rs-check';
+    btn.classList.replace('btn-outline-primary', 'btn-success');
+    setTimeout(() => {
+      icon.className = 'fi fi-rs-copy';
+      btn.classList.replace('btn-success', 'btn-outline-primary');
+    }, 1500);
+  });
+}
+
+// ── Ping test ──────────────────────────────────────────────────────
+document.getElementById('btnPingTest').addEventListener('click', async function() {
+  const btn = this;
+  const result = document.getElementById('pingResult');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghubungkan...';
+  result.classList.remove('d-none');
+  result.style.color = '#a5b4fc';
+  result.textContent = 'Mengirim ping ke ' + '{{ $pingUrl }}' + ' ...';
+
+  try {
+    const res  = await fetch('{{ $pingUrl }}', { method: 'GET' });
+    const data = await res.json();
+    if (res.ok) {
+      result.style.color = '#86efac';
+      result.textContent = '✅ Koneksi berhasil! Response: ' + JSON.stringify(data, null, 2);
+    } else {
+      result.style.color = '#fca5a5';
+      result.textContent = '❌ Server merespons dengan error ' + res.status + ': ' + JSON.stringify(data);
     }
-  }, 30000);
+  } catch(e) {
+    result.style.color = '#fca5a5';
+    result.textContent = '❌ Koneksi gagal: ' + e.message;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fi fi-rs-signal-stream me-1"></i> Tes Koneksi';
 });
-@endif
 </script>
+
 @endsection

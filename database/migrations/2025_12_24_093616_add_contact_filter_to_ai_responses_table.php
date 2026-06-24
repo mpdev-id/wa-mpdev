@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('ai_responses', function (Blueprint $table) {
-            $table->enum('contact_filter_mode', ['all', 'whitelist', 'blacklist'])->default('all')->after('reply_to_groups');
-            $table->text('contact_numbers')->nullable()->after('contact_filter_mode');
+            if (!Schema::hasColumn('ai_responses', 'contact_filter_mode')) {
+                $table->enum('contact_filter_mode', ['all', 'whitelist', 'blacklist'])->default('all')->after('reply_to_groups');
+            }
+            if (!Schema::hasColumn('ai_responses', 'contact_numbers')) {
+                $table->text('contact_numbers')->nullable()->after('contact_filter_mode');
+            }
         });
     }
 
@@ -23,7 +27,16 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('ai_responses', function (Blueprint $table) {
-            $table->dropColumn(['contact_filter_mode', 'contact_numbers']);
+            $cols = [];
+            if (Schema::hasColumn('ai_responses', 'contact_filter_mode')) {
+                $cols[] = 'contact_filter_mode';
+            }
+            if (Schema::hasColumn('ai_responses', 'contact_numbers')) {
+                $cols[] = 'contact_numbers';
+            }
+            if (!empty($cols)) {
+                $table->dropColumn($cols);
+            }
         });
     }
 };

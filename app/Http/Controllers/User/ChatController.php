@@ -307,6 +307,28 @@ class ChatController extends Controller
         return response()->json($data, 401);
     }
 
+    public function chatMessages(Request $request, $id)
+    {
+        $device = Device::where("user_id", Auth::id())
+            ->where("status", 1)
+            ->where("uuid", $id)
+            ->first();
+        abort_if(empty($device), 404);
+
+        $jid = $request->jid;
+        if (empty($jid)) {
+            return response()->json(['error' => 'JID is required'], 400);
+        }
+
+        $response = $this->getChatMessages($device->id, $jid);
+
+        if ($response["status"] == 200) {
+            return response()->json($response["data"]);
+        }
+
+        return response()->json(['error' => $response["message"] ?? 'Unknown error'], $response["status"]);
+    }
+
     public function groups($id)
     {
         $device = Device::where("user_id", Auth::id())

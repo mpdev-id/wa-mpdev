@@ -52,7 +52,7 @@
 										<select class="form-control" name="theme_path">
 											<option value="frontend.index" {{ $theme_path == 'frontend.index' ? 'selected' : '' }}>{{ __('Theme 1') }}</option>
 											<option value="frontend.index-1" {{ $theme_path == 'frontend.index-1' ? 'selected' : '' }}>{{ __('Theme 2') }}</option>
-											
+											<option value="frontend.index-2" {{ $theme_path == 'frontend.index-2' ? 'selected' : '' }}>{{ __('Theme 3') }}</option>
 										</select>
 									</div>
 									

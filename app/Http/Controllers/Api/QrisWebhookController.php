@@ -18,183 +18,202 @@ class QrisWebhookController extends Controller
     use Notifications;
 
     /**
+     * Simple ping endpoint — no auth needed.
+     * Automate/Tasker can call GET /api/qris-ping to test connectivity.
+     */
+    public function ping(Request $request)
+    {
+        Cache::put('qris_android_last_ping', now(), now()->addMinutes(10));
+
+        return response()->json([
+            'status'    => 'ok',
+            'message'   => 'WHASAPI QRIS Webhook aktif dan siap menerima notifikasi.',
+            'server'    => config('app.name'),
+            'timestamp' => now()->toIso8601String(),
+        ], 200);
+    }
+
+    /**
      * Handle incoming QRIS payment notification from Android device.
      *
-     * Security measures applied:
-     *  - Token only accepted via X-Auth-Token header (not body/query)
-     *  - Constant-time comparison with hash_equals() to prevent timing attacks
-     *  - Token loaded from config() not env() to respect config cache
-     *  - DB row-level lock (lockForUpdate) to prevent race conditions
-     *  - Idempotency guard: webhook_processed flag prevents double-activation
-     *  - No sensitive data returned in response body
-     *  - Stack traces never exposed publicly
-     *  - All rejections logged with IP for intrusion detection
+     * Token diterima dari:
+     *  1. Header: X-Auth-Token (recommended)
+     *  2. Header: Authorization: Bearer <token>
+     *  3. Body field: token (fallback untuk Automate yang susah set header)
+     *  4. Query string: ?token=xxx (last resort)
      */
     public function handle(Request $request)
     {
-        // ── 1. Token Authentication ────────────────────────────────────────
-        // Read ONLY from X-Auth-Token header. Never from body or query string
-        // to prevent token leakage in server access logs.
-        $receivedToken = $request->header('X-Auth-Token', '');
+        // ── 1. Update ping timestamp ────────────────────────────────────────
+        Cache::put('qris_android_last_ping', now(), now()->addMinutes(10));
 
-        // Load from config() — safe after php artisan config:cache.
-        // Falls back to Option model (DB-stored token managed via admin panel).
+        // ── 2. Token Authentication ─────────────────────────────────────────
+        // Accept token from multiple sources for Automate compatibility
+        $receivedToken = $request->header('X-Auth-Token')
+            ?: $this->extractBearerToken($request)
+            ?: $request->input('token')
+            ?: $request->query('token')
+            ?: '';
+
         $configToken = config('services.qris_android_token')
             ?: (Option::where('key', 'qris_android_token')->value('value') ?? '');
 
-        // Empty token means system is not configured — deny all.
         if (empty($configToken)) {
-            Log::error('QRIS Webhook: Token not configured. Set ANDROID_QRIS_TOKEN in .env or via admin panel.', [
-                'ip' => $request->ip(),
-            ]);
-            return response()->json(['message' => 'Service unavailable'], 503);
+            Log::error('QRIS Webhook: Token belum dikonfigurasi.', ['ip' => $request->ip()]);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Webhook belum dikonfigurasi. Generate token di panel admin.',
+            ], 503);
         }
 
-        // Constant-time comparison prevents timing side-channel attacks.
         if (empty($receivedToken) || !hash_equals($configToken, $receivedToken)) {
-            Log::warning('QRIS Webhook: Unauthorized access attempt', [
-                'ip'             => $request->ip(),
-                'user_agent'     => $request->userAgent(),
-                'has_token'      => !empty($receivedToken),
+            Log::warning('QRIS Webhook: Token tidak valid', [
+                'ip'        => $request->ip(),
+                'has_token' => !empty($receivedToken),
             ]);
-            // Return 404 instead of 401 to avoid revealing endpoint existence to attackers.
-            return response()->json(['message' => 'Not found'], 404);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Token autentikasi tidak valid. Periksa X-Auth-Token di header.',
+            ], 401);
         }
-
-        // ── 2. Ping heartbeat — update last-seen timestamp ─────────────────
-        Cache::put('qris_android_last_ping', now(), now()->addMinutes(10));
 
         // ── 3. Input Validation ────────────────────────────────────────────
-        $amount = $request->input('amount');
-        $text   = $request->input('description')
+        $amount = $request->input('amount')
+            ?: $request->input('nominal')
+            ?: null;
+
+        $text = $request->input('description')
             ?? $request->input('message')
             ?? $request->input('text')
-            ?? $request->input('body');
+            ?? $request->input('body')
+            ?? $request->input('notif_text')
+            ?? null;
 
-        // Try to parse amount from raw notification text if not provided directly.
-        if (empty($amount) && !empty($text)) {
+        // Coba parse amount dari teks notifikasi jika tidak dikirim langsung
+        if ((empty($amount) || $amount == 0) && !empty($text)) {
             $amount = $this->parseAmountFromText($text);
         }
 
         $amount = is_numeric($amount) ? (float) $amount : null;
 
         if (empty($amount) || $amount <= 0) {
-            Log::info('QRIS Webhook: Rejected — invalid or missing amount', [
+            Log::info('QRIS Webhook: Payload tidak valid (amount kosong)', [
                 'ip'   => $request->ip(),
-                'text' => substr((string) $text, 0, 200),  // truncated for log safety
+                'text' => substr((string) $text, 0, 300),
+                'body' => substr(json_encode($request->all()), 0, 500),
             ]);
-            return response()->json(['message' => 'Invalid payload'], 400);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Field amount tidak ada atau bukan angka valid. Kirim field amount (angka) atau description (teks notifikasi).',
+                'received' => [
+                    'amount' => $request->input('amount'),
+                    'description' => substr((string) $text, 0, 100),
+                ],
+            ], 400);
         }
 
-        // Enforce maximum amount sanity check (prevents absurdly large amounts).
         if ($amount > 99_999_999) {
-            Log::warning('QRIS Webhook: Rejected — amount exceeds sanity limit', [
-                'ip'     => $request->ip(),
-                'amount' => $amount,
-            ]);
-            return response()->json(['message' => 'Invalid payload'], 400);
+            return response()->json(['status' => 'error', 'message' => 'Amount melebihi batas maksimum.'], 400);
         }
 
-        // ── 4. Match & Activate Order (with DB lock + idempotency guard) ───
+        // ── 4. Match & Activate Order ──────────────────────────────────────
         DB::beginTransaction();
         try {
-            // lockForUpdate() acquires a row-level write lock, preventing
-            // concurrent requests from matching the same order simultaneously
-            // (race condition / double-activation prevention).
-            $order = Order::where('status', 2)           // status 2 = pending
+            $order = Order::where('status', 2)
                           ->where('amount', $amount)
-                          ->where('webhook_processed', 0) // idempotency guard
+                          ->where('webhook_processed', 0)
                           ->lockForUpdate()
                           ->with('user', 'plan')
                           ->first();
 
             if (!$order) {
                 DB::rollBack();
-                // Generic response — do not reveal whether order exists or not.
-                Log::info('QRIS Webhook: No matching unprocessed pending order', [
-                    'amount' => $amount,
-                ]);
-                return response()->json(['message' => 'Acknowledged'], 200);
+                Log::info('QRIS Webhook: Tidak ada order pending yang cocok', ['amount' => $amount]);
+                return response()->json([
+                    'status'  => 'acknowledged',
+                    'message' => 'Tidak ada order pending yang cocok dengan nominal tersebut.',
+                    'amount'  => $amount,
+                ], 200);
             }
 
-            // Guard: mark as webhook-processed BEFORE activating subscription
-            // to prevent any concurrent request from processing it again.
             $order->webhook_processed = 1;
-            $order->status            = 1; // Complete / Paid
+            $order->status            = 1;
             $order->save();
 
-            // 5. Activate user subscription
             $user = $order->user;
             $plan = $order->plan;
 
             if (!$user || !$plan) {
                 DB::rollBack();
-                Log::error('QRIS Webhook: Order has missing user or plan relationship', [
-                    'order_id' => $order->id,
-                ]);
-                return response()->json(['message' => 'Internal error'], 500);
+                Log::error('QRIS Webhook: Order tidak memiliki relasi user/plan', ['order_id' => $order->id]);
+                return response()->json(['status' => 'error', 'message' => 'Internal error: relasi order tidak valid.'], 500);
             }
 
             $user->plan_id    = $plan->id;
-            $user->will_expire = $order->will_expire;
-            $user->plan       = json_encode($plan->data);
+            $user->will_expire = $order->will_expire ?? now()->addDays($plan->duration ?? 30);
+            $user->plan        = json_encode($plan->data);
             $user->save();
 
-            // 6. Notify user
             $this->createNotification([
                 'user_id' => $order->user_id,
                 'title'   => 'Pembayaran QRIS sukses. Paket ' . $plan->title . ' telah diaktifkan.',
                 'url'     => '/user/subscription-history',
             ]);
 
-            $this->sentOrderMail($order);
+            try { $this->sentOrderMail($order); } catch (\Throwable $e) {
+                Log::warning('QRIS Webhook: Gagal kirim email notifikasi', ['error' => $e->getMessage()]);
+            }
 
             DB::commit();
 
-            Log::info('QRIS Webhook: Order activated successfully', [
+            Log::info('QRIS Webhook: Order berhasil diaktifkan', [
                 'order_id' => $order->id,
                 'plan'     => $plan->title,
                 'amount'   => $amount,
+                'user'     => $user->email,
             ]);
 
-            // Return minimal response — no user data, no amount, no order ID leaked.
-            return response()->json(['success' => true, 'message' => 'Processed'], 200);
+            return response()->json([
+                'status'   => 'success',
+                'message'  => 'Pembayaran diterima. Paket ' . $plan->title . ' diaktifkan.',
+                'order_id' => $order->id,
+            ], 200);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-
-            // Log full trace internally but NEVER expose it publicly.
-            Log::error('QRIS Webhook: Unhandled exception', [
+            Log::error('QRIS Webhook: Exception tidak tertangani', [
                 'error' => $th->getMessage(),
                 'file'  => $th->getFile(),
                 'line'  => $th->getLine(),
-                'trace' => $th->getTraceAsString(),
             ]);
-
-            return response()->json(['message' => 'Internal server error'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Internal server error.'], 500);
         }
     }
 
     /**
-     * Parse Indonesian Rupiah amount from raw notification text.
-     *
-     * Handles formats like:
-     *  - "Rp 50.123,00"
-     *  - "Rp50.123"
-     *  - "50123"
-     *  - "IDR 50,123.00"
+     * Extract token from Authorization: Bearer <token> header.
+     */
+    private function extractBearerToken(Request $request): ?string
+    {
+        $auth = $request->header('Authorization', '');
+        if (str_starts_with($auth, 'Bearer ')) {
+            return substr($auth, 7);
+        }
+        return null;
+    }
+
+    /**
+     * Parse Rupiah amount dari teks notifikasi Android.
+     * Handles: "Rp 50.123,00", "Rp50.123", "50123", "IDR 50,123.00"
      */
     private function parseAmountFromText(string $text): ?float
     {
-        // Strip trailing cents suffix common in Indonesian e-wallets (,00)
         $cleaned = preg_replace('/,00\b/', '', $text);
 
-        // Match: optional Rp prefix, then a number with separators
-        if (preg_match('/(?:Rp\.?\s*)?([\d]{1,3}(?:[.,]\d{3})+|\d+)/i', $cleaned, $matches)) {
-            // Normalize: remove all dots and commas to get raw integer string
+        // Match Rp/IDR diikuti angka dengan separator titik/koma
+        if (preg_match('/(?:Rp\.?\s*|IDR\s*)?([\d]{1,3}(?:[.,]\d{3})+|\d{4,})/i', $cleaned, $matches)) {
             $numeric = preg_replace('/[.,]/', '', $matches[1]);
             $value   = (float) $numeric;
-            // Sanity: must be > 0 and look like a real payment (>= Rp 100)
             return $value >= 100 ? $value : null;
         }
 

@@ -183,63 +183,79 @@
             <form method="POST" action="{{ route('user.make-payment', [$qrisGateway->id, $plan->id]) }}" enctype="multipart/form-data" class="space-y-4">
               @csrf
 
-              <!-- Screenshot Upload -->
-              <div class="form-control w-full">
-                <label class="label">
-                  <span class="label-text font-bold text-gray-700">{{ __('Bukti Pembayaran (Screenshot)') }} <span class="text-error">*</span></span>
-                </label>
+              <!-- Info Status Otomatis -->
+              <div class="bg-emerald-50 border border-emerald-250 text-emerald-850 p-4 rounded-2xl text-xs leading-relaxed flex gap-2.5 items-start">
+                <span class="material-icons text-emerald-600 text-sm mt-0.5 animate-pulse">check_circle</span>
+                <div>
+                  <strong class="text-emerald-950 font-bold block mb-0.5">⚡ Konfirmasi Otomatis Instan</strong>
+                  Setelah Anda melakukan transfer dengan nominal yang tepat, sistem kami akan memprosesnya dalam hitungan detik. Cukup tekan tombol konfirmasi di bawah.
+                </div>
+              </div>
+
+              <!-- Main Submit Button (Automatic Confirmation) -->
+              <button type="submit" class="btn btn-success text-white w-full gap-2 rounded-2xl py-3 font-bold shadow-lg shadow-success/20 hover:shadow-success/30 hover:scale-[1.01] active:scale-[0.99] transition-all" id="submit-btn">
+                <span class="material-icons text-sm">bolt</span>
+                <span>{{ __('Saya Sudah Transfer (Konfirmasi Otomatis)') }}</span>
+              </button>
+
+              <!-- Optional Manual Upload (Accordion / Collapse) -->
+              <div class="collapse collapse-arrow bg-slate-50 border border-slate-200/60 rounded-2xl mt-4">
+                <input type="checkbox" id="toggle-manual" class="peer" /> 
+                <div class="collapse-title text-xs font-bold text-gray-500 py-3.5 px-4 flex items-center gap-1.5 peer-checked:text-primary transition-colors">
+                  <span class="material-icons text-sm">upload_file</span>
+                  {{ __('Ada kendala? Unggah bukti manual (Opsional)') }}
+                </div>
                 
-                <div class="relative flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors cursor-pointer group" id="upload-box">
-                  <input type="file" name="image" id="payment-screenshot" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*" required>
-                  
-                  <div class="flex flex-col items-center text-center space-y-2 py-4" id="upload-placeholder">
-                    <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <span class="material-icons">cloud_upload</span>
+                <div class="collapse-content px-4 pb-4 space-y-4 pt-2 border-t border-slate-100">
+                  <p class="text-slate-450 text-[11px] leading-relaxed">
+                    {{ __('Gunakan form ini hanya jika paket Anda tidak aktif secara otomatis dalam waktu 5 menit setelah pembayaran.') }}
+                  </p>
+
+                  <!-- Screenshot Upload -->
+                  <div class="form-control w-full">
+                    <label class="label pt-0">
+                      <span class="label-text font-bold text-gray-700 text-xs">{{ __('Bukti Pembayaran (Screenshot)') }}</span>
+                    </label>
+                    
+                    <div class="relative flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl p-4 bg-white hover:bg-slate-100/50 transition-colors cursor-pointer group" id="upload-box">
+                      <input type="file" name="image" id="payment-screenshot" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*">
+                      
+                      <div class="flex flex-col items-center text-center space-y-2 py-3" id="upload-placeholder">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <span class="material-icons text-base">cloud_upload</span>
+                        </div>
+                        <div>
+                          <p class="text-xs font-semibold text-gray-700">{{ __('Pilih berkas bukti transfer') }}</p>
+                          <p class="text-[10px] text-gray-400 mt-0.5">{{ __('Mendukung JPG, PNG, JPEG (Maks. 2MB)') }}</p>
+                        </div>
+                      </div>
+
+                      <!-- Image Preview Container -->
+                      <div class="hidden w-full max-w-[150px] aspect-[3/4] relative rounded-lg overflow-hidden border border-slate-200 shadow-md z-0" id="preview-container">
+                        <img id="preview-image" src="#" alt="Screenshot Bukti Transfer" class="w-full h-full object-cover">
+                        <button type="button" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-650 transition-colors z-20" id="remove-preview-btn">
+                          <span class="material-icons text-[10px]">close</span>
+                        </button>
+                      </div>
                     </div>
-                    <div>
-                      <p class="text-sm font-semibold text-gray-700">{{ __('Pilih berkas bukti transfer') }}</p>
-                      <p class="text-xs text-gray-400 mt-1">{{ __('Mendukung JPG, PNG, JPEG (Maks. 2MB)') }}</p>
-                    </div>
+
+                    @error('image')
+                      <p class="text-xs text-error font-medium mt-1.5">{{ $message }}</p>
+                    @enderror
                   </div>
 
-                  <!-- Image Preview Container -->
-                  <div class="hidden w-full max-w-[200px] aspect-[3/4] relative rounded-lg overflow-hidden border border-slate-200 shadow-md z-0" id="preview-container">
-                    <img id="preview-image" src="#" alt="Screenshot Bukti Transfer" class="w-full h-full object-cover">
-                    <button type="button" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-650 transition-colors z-20" id="remove-preview-btn">
-                      <span class="material-icons text-xs">close</span>
-                    </button>
+                  <!-- Comment Area -->
+                  <div class="form-control w-full">
+                    <label class="label">
+                      <span class="label-text font-bold text-gray-700 text-xs">{{ __('Catatan Pembayaran') }}</span>
+                    </label>
+                    <textarea name="comment" class="textarea textarea-bordered h-20 rounded-2xl text-xs bg-white" placeholder="Contoh: Transfer via GoPay atas nama Budi">{{ old('comment') }}</textarea>
+                    @error('comment')
+                      <p class="text-xs text-error font-medium mt-1.5">{{ $message }}</p>
+                    @enderror
                   </div>
                 </div>
-
-                @error('image')
-                  <p class="text-xs text-error font-medium mt-1.5">{{ $message }}</p>
-                @enderror
               </div>
-
-              <!-- Comment Area -->
-              <div class="form-control w-full">
-                <label class="label">
-                  <span class="label-text font-bold text-gray-700">{{ __('Catatan Pembayaran') }} <span class="text-error">*</span></span>
-                </label>
-                <textarea name="comment" class="textarea textarea-bordered h-24 rounded-2xl text-sm" placeholder="Contoh: Pembayaran atas nama Budi, ditransfer dari rekening Bank Mandiri via e-wallet Dana." required>{{ old('comment') }}</textarea>
-                @error('comment')
-                  <p class="text-xs text-error font-medium mt-1.5">{{ $message }}</p>
-                @enderror
-              </div>
-
-              <!-- Security Info -->
-              <div class="flex items-start gap-2.5 bg-sky-50 text-sky-850 p-4 rounded-2xl text-xs leading-relaxed">
-                <span class="material-icons text-sky-600 text-sm mt-0.5">lock</span>
-                <span>
-                  {{ __('Pembayaran Anda aman. Setelah dikirim, admin kami akan memverifikasi transaksi Anda dalam waktu maksimal 1x24 jam untuk mengaktifkan paket langganan.') }}
-                </span>
-              </div>
-
-              <!-- Submit Button -->
-              <button type="submit" class="btn btn-primary w-full gap-2 rounded-2xl py-3 font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:scale-[1.01] active:scale-[0.99] transition-all" id="submit-btn">
-                <span class="material-icons text-sm">send</span>
-                <span>{{ __('Kirim Bukti Pembayaran') }}</span>
-              </button>
             </form>
           </div>
         </div>
@@ -291,7 +307,10 @@
     if (form && submitBtn) {
       form.addEventListener('submit', function() {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="loading loading-spinner loading-xs"></span> Mengirim Bukti...';
+        const hasFile = fileInput.files && fileInput.files.length > 0;
+        submitBtn.innerHTML = hasFile 
+          ? '<span class="loading loading-spinner loading-xs"></span> Mengirim Bukti Manual...' 
+          : '<span class="loading loading-spinner loading-xs"></span> Memproses Konfirmasi...';
       });
     }
   });

@@ -26,6 +26,11 @@ class PostCategorySeeder extends Seeder
           array('post_id' => '10','category_id' => '14')
         );
 
+        foreach ($postcategories as $pc) {
+            Postcategory::where('post_id', $pc['post_id'])
+                        ->where('category_id', $pc['category_id'])
+                        ->delete();
+        }
         Postcategory::insert($postcategories);
 
     }

@@ -64,19 +64,35 @@ class SubscriptionController extends Controller
             $sessionKey = 'payment_unique_code_' . $plan->id;
             if (Session::has($sessionKey)) {
                 $unique_code = Session::get($sessionKey);
-            } else {
-                do {
-                    $counter = Cache::increment('qris_unique_code_counter');
-                    if ($counter > 500) {
-                        Cache::put('qris_unique_code_counter', 1);
-                        $counter = 1;
-                    }
-                    $unique_code = $counter;
+                if ($unique_code >= 1000) {
                     $payable = $total + $unique_code;
                     $exists = Order::where('status', 2)
                                    ->where('amount', $payable)
                                    ->exists();
-                } while ($exists);
+                    if ($exists) {
+                        do {
+                            $unique_code = rand(1000, 1999);
+                            $payable = $total + $unique_code;
+                            $exists = Order::where('status', 2)
+                                           ->where('amount', $payable)
+                                           ->exists();
+                        } while ($exists);
+                        Session::put($sessionKey, $unique_code);
+                    }
+                }
+            } else {
+                $userId = Auth::user()->id;
+                if ($userId < 1000) {
+                    $unique_code = $userId;
+                } else {
+                    do {
+                        $unique_code = rand(1000, 1999);
+                        $payable = $total + $unique_code;
+                        $exists = Order::where('status', 2)
+                                       ->where('amount', $payable)
+                                       ->exists();
+                    } while ($exists);
+                }
                 Session::put($sessionKey, $unique_code);
             }
             $total = $total + $unique_code;
@@ -122,19 +138,36 @@ class SubscriptionController extends Controller
           $sessionKey = 'payment_unique_code_' . $plan->id;
           if (Session::has($sessionKey)) {
               $unique_code = Session::get($sessionKey);
-          } else {
-              do {
-                  $counter = Cache::increment('qris_unique_code_counter');
-                  if ($counter > 500) {
-                      Cache::put('qris_unique_code_counter', 1);
-                      $counter = 1;
-                  }
-                  $unique_code = $counter;
+              if ($unique_code >= 1000) {
                   $payable = $total + $unique_code;
                   $exists = Order::where('status', 2)
                                  ->where('amount', $payable)
                                  ->exists();
-              } while ($exists);
+                  if ($exists) {
+                      do {
+                          $unique_code = rand(1000, 1999);
+                          $payable = $total + $unique_code;
+                          $exists = Order::where('status', 2)
+                                         ->where('amount', $payable)
+                                         ->exists();
+                      } while ($exists);
+                      Session::put($sessionKey, $unique_code);
+                  }
+              }
+          } else {
+              $userId = Auth::user()->id;
+              if ($userId < 1000) {
+                  $unique_code = $userId;
+              } else {
+                  do {
+                      $unique_code = rand(1000, 1999);
+                      $payable = $total + $unique_code;
+                      $exists = Order::where('status', 2)
+                                     ->where('amount', $payable)
+                                     ->exists();
+                  } while ($exists);
+              }
+              Session::put($sessionKey, $unique_code);
           }
           $total = $total + $unique_code;
       }
@@ -155,11 +188,12 @@ class SubscriptionController extends Controller
       if ($gateway->is_auto == 0) {
 
         $request->validate([
-            'comment' => ['required', 'string', 'max:500'],
-            'image' => ['required', 'image', 'max:2048'], // 2MB
+            'comment' => ['nullable', 'string', 'max:500'],
+            'image' => ['nullable', 'image', 'max:2048'], // 2MB
         ]);
 
-        $payment_data['comment'] = $request->input('comment');
+        $payment_data['comment'] = $request->input('comment') ?? '';
+        $payment_data['screenshot'] = '';
         if ($request->hasFile('image')) {
             $path = 'uploads' . '/payments' . date('/y/m/');
             $name = uniqid().".".$request->file('image')->extension();

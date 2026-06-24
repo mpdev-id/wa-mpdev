@@ -1,4 +1,4 @@
-<div class="h-full flex flex-col bg-base-100">
+<div class="h-full flex flex-col">
   
   <!-- Logo -->
   <!-- <div class="p-4 border-b border-base-300">
