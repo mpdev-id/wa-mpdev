@@ -14,10 +14,10 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['auth','user
    //device routes
    Route::resource('device',                    USER\DeviceController::class);
    Route::get('device/{id}/qr',                 [USER\DeviceController::class,'scanQr'])->name('device.scan');
-   Route::post('create-session/{id}',           [USER\DeviceController::class,'getQr']);
-   Route::post('check-session/{id}',            [USER\DeviceController::class,'checkSession']);
-   Route::post('/logout-session/{id}',          [USER\DeviceController::class,'logoutSession']);
-   Route::post('/device-statics',               [USER\DeviceController::class,'deviceStatics']);
+   Route::post('create-session/{id}',           [USER\DeviceController::class,'getQr'])->name('create-session');
+   Route::post('check-session/{id}',            [USER\DeviceController::class,'checkSession'])->name('check-session');
+   Route::post('/logout-session/{id}',          [USER\DeviceController::class,'logoutSession'])->name('logout-session');
+   Route::post('/device-statics',               [USER\DeviceController::class,'deviceStatics'])->name('device-statics');
   
    Route::get('/device/chats/{uuid}',           [USER\ChatController::class,'chats']);
    Route::post('/get-chats/{uuid}',             [USER\ChatController::class,'chatHistory']);
@@ -52,6 +52,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['auth','user
    //schedule message routes
    Route::resource('schedule-message',                    USER\ScheduleController::class);
    //schedule message routes
+   Route::post('contact-bulk-delete',                     [USER\ContactController::class,'bulkDelete'])->name('contact.bulk-delete');
    Route::resource('contact',                             USER\ContactController::class);
    Route::post('contact',                                 [USER\ContactController::class,'sendtemplateBulk'])->name('contact.send-template-bulk');
    Route::post('contact/store',                           [USER\ContactController::class,'store'])->name('contact.store');

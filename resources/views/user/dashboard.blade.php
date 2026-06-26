@@ -82,7 +82,7 @@
       <h3 class="font-bold">{{ __('Congratulations!') }}</h3>
       <div class="text-sm">{{ Session::get('success') }}</div>
     </div>
-    <button class="btn btn-sm btn-ghost" onclick="this.parentElement.remove()">
+    <button class="btn btn-sm btn-ghost rounded-full" onclick="this.parentElement.remove()">
       <span class="material-icons">close</span>
     </button>
   </div>

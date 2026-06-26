@@ -49,7 +49,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Automatic Replies') }}</h1>
       <p class="text-base-content/60">{{ __('Set up chatbot auto-reply rules for incoming messages') }}</p>
     </div>
-    <button @click="showCreateModal = true; createButtons = [{displaytext: '', type: 'quickReplyButton', action: ''}]" class="btn btn-primary gap-2">
+    <button @click="showCreateModal = true; createButtons = [{displaytext: '', type: 'quickReplyButton', action: ''}]" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create Reply') }}
     </button>
@@ -105,7 +105,7 @@
       <h3 class="font-bold">{{ __('Feature Not Available') }}</h3>
       <div class="text-xs">{{ __('Chatbot features is not available in your subscription plan') }}</div>
     </div>
-    <a href="{{ url('/pricing') }}" class="btn btn-sm btn-primary">{{ __('Upgrade Plan') }}</a>
+    <a href="{{ url('/pricing') }}" class="btn btn-sm btn-primary rounded-full">{{ __('Upgrade Plan') }}</a>
   </div>
   @endif
 
@@ -120,7 +120,7 @@
     <p class="text-base-content/60 mb-6 text-center max-w-md">
       {{ __('Create your first auto-reply rule to automatically respond to messages') }}
     </p>
-    <button @click="showCreateModal = true" class="btn btn-primary gap-2">
+    <button @click="showCreateModal = true" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create Reply') }}
     </button>
@@ -196,7 +196,7 @@
                     </a>
                     
                     <a href="javascript:void(0)" 
-                       class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+                       class="delete-confirm btn btn-sm btn-ghost text-red-600 rounded-full" 
                        data-action="{{ route('user.chatbot.destroy', $reply->id) }}"
                        title="{{ __('Delete') }}">
                       <span class="material-icons text-sm">delete</span>
@@ -311,7 +311,7 @@
            <div class="space-y-4">
               <template x-for="(button, index) in createButtons" :key="index">
                  <div class="bg-base-200 p-4 rounded-xl relative group">
-                    <button type="button" @click="removeCreateButton(index)" class="absolute top-2 right-2 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition-opacity" x-show="createButtons.length > 1">✕</button>
+                    <button type="button" @click="removeCreateButton(index)" class="absolute top-2 right-2 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition-opacity rounded-full" x-show="createButtons.length > 1">✕</button>
                     
                     <div class="grid grid-cols-1 gap-2">
                        <select x-model="button.type" :name="'buttons['+index+'][type]'" class="select select-bordered select-sm w-full">
@@ -328,7 +328,7 @@
                  </div>
               </template>
               
-              <button type="button" @click="addCreateButton()" class="btn btn-outline btn-sm w-full border-dashed" x-show="createButtons.length < 3">
+              <button type="button" @click="addCreateButton()" class="btn btn-outline btn-sm w-full border-dashed rounded-full" x-show="createButtons.length < 3">
                  + {{ __('Add Button') }}
               </button>
            </div>
@@ -415,8 +415,8 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" @click="showCreateModal = false" class="btn btn-outline">{{ __('Cancel') }}</button>
-          <button type="submit" class="btn btn-primary submit-btn gap-2">
+          <button type="button" @click="showCreateModal = false" class="btn btn-outline rounded-full">{{ __('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary submit-btn gap-2 rounded-full">
             <span class="material-icons text-sm">save</span>
             {{ __('Create Reply') }}
           </button>
@@ -520,7 +520,7 @@
            <div class="space-y-4">
               <template x-for="(button, index) in editData.buttons" :key="index">
                  <div class="bg-base-200 p-4 rounded-xl relative group">
-                    <button type="button" @click="removeEditButton(index)" class="absolute top-2 right-2 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition-opacity" x-show="editData.buttons.length > 1">✕</button>
+                    <button type="button" @click="removeEditButton(index)" class="absolute top-2 right-2 btn btn-xs btn-circle btn-error opacity-0 group-hover:opacity-100 transition-opacity rounded-full" x-show="editData.buttons.length > 1">✕</button>
                     
                     <div class="grid grid-cols-1 gap-2">
                        <select x-model="button.type" :name="'buttons['+index+'][type]'" class="select select-bordered select-sm w-full">
@@ -537,7 +537,7 @@
                  </div>
               </template>
               
-              <button type="button" @click="addEditButton()" class="btn btn-outline btn-sm w-full border-dashed" x-show="editData.buttons && editData.buttons.length < 3">
+              <button type="button" @click="addEditButton()" class="btn btn-outline btn-sm w-full border-dashed rounded-full" x-show="editData.buttons && editData.buttons.length < 3">
                  + {{ __('Add Button') }}
               </button>
            </div>
@@ -624,8 +624,8 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" @click="showEditModal = false" class="btn btn-outline">{{ __('Cancel') }}</button>
-          <button type="submit" class="btn btn-primary submit-btn gap-2">
+          <button type="button" @click="showEditModal = false" class="btn btn-outline rounded-full">{{ __('Cancel') }}</button>
+          <button type="submit" class="btn btn-primary submit-btn gap-2 rounded-full">
             <span class="material-icons text-sm">save</span>
             {{ __('Update Reply') }}
           </button>

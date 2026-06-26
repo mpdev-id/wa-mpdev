@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="hacker">
 
 <head>
   <meta charset="utf-8">
@@ -18,7 +18,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -210,20 +210,282 @@
       background: rgb(147 51 234 / 0.08);
       color: rgb(147 51 234);
     }
-
-    .bg-white{
-       background-color: #f8fafc !important;
-    }
-
   </style>
   @endif
   
   <style>
     [x-cloak] { display: none !important; }
+
+    /* Global horizontal styling for Bootstrap 4 pagination */
+    .pagination {
+      display: flex !important;
+      list-style: none !important;
+      padding-left: 0 !important;
+      border-radius: 0.5rem !important;
+      gap: 0.25rem !important;
+      align-items: center !important;
+    }
+    .pagination li {
+      display: inline !important;
+    }
+    .pagination li a, 
+    .pagination li span {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 2.25rem !important;
+      height: 2.25rem !important;
+      padding: 0.25rem 0.75rem !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      color: #4b5563 !important;
+      background-color: #fff !important;
+      border: 1px solid #e5e7eb !important;
+      border-radius: 0.5rem !important;
+      text-decoration: none !important;
+      transition: all 0.2s !important;
+    }
+    .pagination li a:hover {
+      color: #10b981 !important;
+      background-color: #ecfdf5 !important;
+      border-color: #a7f3d0 !important;
+    }
+    .pagination li.active span {
+      color: #fff !important;
+      background-color: #10b981 !important;
+      border-color: #10b981 !important;
+    }
+    .pagination li.disabled span {
+      color: #9ca3af !important;
+      background-color: #f9fafb !important;
+      border-color: #e5e7eb !important;
+      cursor: not-allowed !important;
+    }
   </style>
 </head>
 
-<body class="bg-gray-50 font-sans antialiased" x-data="{ sidebarOpen: false, mobileMenuOpen: false }">
+<body class="font-sans antialiased bg-base-100 text-base-content" x-data="{ sidebarOpen: false, mobileMenuOpen: false }">
+
+  <!-- ═══ HACKER PRELOADER ═══ -->
+  <div id="hacker-preloader">
+    <canvas id="matrix-canvas"></canvas>
+    <div id="preloader-content">
+      <div id="preloader-logo">
+        <div id="preloader-brackets"><span>[</span><span id="preloader-icon"></span><span>]</span></div>
+        <div id="preloader-brand">{{ env('APP_NAME', 'WASAPI') }}</div>
+      </div>
+      <div id="preloader-terminal">
+        <div class="term-line" data-delay="0">▶ Initializing secure connection...</div>
+        <div class="term-line" data-delay="300">▶ Loading session modules...</div>
+        <div class="term-line" data-delay="600">▶ Authenticating user credentials...</div>
+        <div class="term-line" data-delay="900">▶ <span style="color:#00e87a">ACCESS GRANTED</span></div>
+      </div>
+      <div id="preloader-bar-wrap">
+        <div id="preloader-bar"></div>
+      </div>
+    </div>
+    <div id="preloader-scanline"></div>
+  </div>
+
+  <style>
+  #hacker-preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #0d0d0d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+    overflow: hidden;
+  }
+  #hacker-preloader.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* Matrix canvas background */
+  #matrix-canvas {
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+  }
+
+  /* Scanline overlay */
+  #preloader-scanline {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 3px,
+      rgba(0,0,0,0.15) 3px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Center content */
+  #preloader-content {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    width: 320px;
+  }
+
+  /* Logo */
+  #preloader-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  #preloader-brackets {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-size: 2.2rem;
+    color: #00e87a;
+    letter-spacing: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: preloader-glow 2s ease-in-out infinite alternate;
+  }
+  #preloader-brackets span:first-child,
+  #preloader-brackets span:last-child {
+    color: #3a3a3a;
+  }
+  #preloader-icon {
+    animation: preloader-bounce 0.8s ease-in-out infinite alternate;
+    display: inline-block;
+    font-style: normal;
+    line-height: 1;
+  }
+  #preloader-brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: #555;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* Terminal lines */
+  #preloader-terminal {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #1e1e1e;
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .term-line {
+    font-family: 'JetBrains Mono', 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: #3a3a3a;
+    opacity: 0;
+    transition: opacity 0.3s ease, color 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .term-line.visible {
+    opacity: 1;
+    color: #666;
+  }
+  .term-line:last-child.visible {
+    color: #00e87a;
+  }
+
+  /* Progress bar */
+  #preloader-bar-wrap {
+    width: 100%;
+    height: 2px;
+    background: #1a1a1a;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  #preloader-bar {
+    height: 100%;
+    width: 0%;
+    background: #00e87a;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(0, 232, 122, 0.6);
+  }
+
+  @keyframes preloader-glow {
+    0%   { text-shadow: 0 0 8px rgba(0,232,122,0.4); }
+    100% { text-shadow: 0 0 18px rgba(0,232,122,0.9), 0 0 40px rgba(0,232,122,0.3); }
+  }
+  @keyframes preloader-bounce {
+    0%   { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-6px) scale(1.15); }
+  }
+  </style>
+
+  <script>
+  (function() {
+    // ── Random emoji icon ──
+    const emojis = ['🤪','😵‍💫','🥴','😵','😱','🥸','🥹','🥺','🤠','🤥','🤓','🫣','👻','🤖','👾','🙊','🙈'];
+    const icon = document.getElementById('preloader-icon');
+    icon.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+    // ── Matrix rain ──
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const cols = Math.floor(canvas.width / 16);
+    const drops = Array(cols).fill(1);
+    const chars = 'アイウエオカキクケコ01ABCDEF<>{}[];:/*'.split('');
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(13,13,13,0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#00e87a';
+      ctx.font = '13px monospace';
+      drops.forEach((y, i) => {
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(ch, i * 16, y * 16);
+        if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      });
+    }
+    const matrixInterval = setInterval(drawMatrix, 50);
+
+    // ── Terminal lines ──
+    document.querySelectorAll('.term-line').forEach(line => {
+      const delay = parseInt(line.getAttribute('data-delay')) || 0;
+      setTimeout(() => line.classList.add('visible'), delay);
+    });
+
+    // ── Progress bar ──
+    const bar = document.getElementById('preloader-bar');
+    let prog = 0;
+    const progInterval = setInterval(() => {
+      prog += Math.random() * 12;
+      if (prog > 90) prog = 90;
+      bar.style.width = prog + '%';
+    }, 120);
+
+    // ── Hide on load ──
+    window.addEventListener('load', function() {
+      clearInterval(progInterval);
+      bar.style.width = '100%';
+      setTimeout(() => {
+        clearInterval(matrixInterval);
+        const loader = document.getElementById('hacker-preloader');
+        loader.classList.add('hidden');
+        setTimeout(() => loader.remove(), 600);
+      }, 400);
+    });
+  })();
+  </script>
 
   <!-- Mobile Sidebar Drawer -->
   <div x-show="sidebarOpen" class="relative z-50 md:!hidden" role="dialog" aria-modal="true" x-cloak>
@@ -250,15 +512,15 @@
         
         <!-- Close button -->
         <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
-          <button type="button" class="-m-2.5 p-2.5 text-white" @click="sidebarOpen = false">
+          <button type="button" class="-m-2.5 p-2.5 text-white rounded-full" @click="sidebarOpen = false">
             <span class="sr-only">Close sidebar</span>
             <span class="material-icons">close</span>
           </button>
         </div>
 
         <!-- Sidebar component -->
-        <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-4 pb-4 w-full h-full">
-          <div class="flex h-16 shrink-0 items-center justify-between border-b border-gray-200">
+        <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-base-100 px-4 pb-4 w-full h-full">
+          <div class="flex h-16 shrink-0 items-center justify-between border-b border-base-300">
             <a href="{{ Request::is('admin/*') ? url('/admin/dashboard') : url('/user/dashboard') }}" class="flex items-center gap-3">
               <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-20" alt="{{ env('APP_NAME') }}">
             </a>
@@ -273,9 +535,9 @@
 
   <!-- Desktop Sidebar -->
   <aside class="!hidden md:!flex md:flex-shrink-0">
-    <div class="flex flex-col w-64 border-r border-gray-200 bg-white fixed inset-y-0 z-50">
+    <div class="flex flex-col w-64 border-r border-base-300 bg-base-100 fixed inset-y-0 z-50">
       <!-- Logo -->
-      <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+      <div class="flex items-center justify-between h-16 px-6 border-b border-base-300">
         <a href="{{ url('/user/dashboard') }}" class="flex items-center gap-3">
           <img src="{{ asset(get_option('primary_data',true)->logo ?? '') }}" class="h-24" alt="{{ env('APP_NAME') }}">
         </a>
@@ -312,7 +574,7 @@
 
   @if(!Request::is('admin/*'))
   <!-- Mobile Bottom Navigation -->
-  <div class="fixed bottom-0 left-0 right-0 md:hidden z-50 border-t border-gray-200 bg-white shadow-lg">
+  <div class="fixed bottom-0 left-0 right-0 md:hidden z-50 border-t border-base-300 bg-base-100 shadow-lg">
     <div class="flex items-center justify-around h-16">
       <a href="{{ route('user.dashboard.index') }}" 
          class="btm-nav-item {{ Request::is('user/dashboard*') ? 'active' : '' }}">
@@ -354,7 +616,7 @@
     justify-content: center;
     gap: 2px;
     padding: 8px 12px;
-    color: rgb(107 114 128);
+    color: oklch(from var(--color-base-content) l c h / 0.5);
     transition: all 0.2s ease;
     position: relative;
     flex: 1;
@@ -362,8 +624,8 @@
   }
 
   .btm-nav-item.active {
-    background: linear-gradient(to top, rgb(147 51 234 / 0.15), transparent);
-    color: rgb(147 51 234);
+    background: linear-gradient(to top, oklch(from var(--color-primary) l c h / 0.15), transparent);
+    color: var(--color-primary);
     font-weight: 600;
   }
 
@@ -374,12 +636,17 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(to right, rgb(147 51 234), rgb(126 34 206));
+    background: var(--color-primary);
     border-radius: 0 0 3px 3px;
   }
 
   .btm-nav-item.active .material-icons {
     transform: scale(1.1);
+  }
+
+  .btm-nav-item:hover {
+    color: var(--color-primary);
+    background: oklch(from var(--color-primary) l c h / 0.08);
   }
 
   .btm-nav-item:active {
@@ -397,25 +664,25 @@
        x-transition:leave="transition ease-in duration-150"
        x-transition:leave-start="opacity-100 translate-y-0"
        x-transition:leave-end="opacity-0 translate-y-4"
-       class="fixed inset-x-0 bottom-16 mx-4 mb-2 bg-white rounded-2xl shadow-2xl z-40 md:hidden border border-gray-200 max-h-96 overflow-y-auto">
+       class="fixed inset-x-0 bottom-16 mx-4 mb-2 bg-base-100 rounded-2xl shadow-2xl z-40 md:hidden border border-base-300 max-h-96 overflow-y-auto">
     <div class="p-4 space-y-2">
-      <a href="{{ route('user.apps.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100">
-        <span class="material-icons text-gray-600">apps</span>
+      <a href="{{ route('user.apps.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-base-200">
+        <span class="material-icons text-base-content/60">apps</span>
         <span>My Apps</span>
       </a>
-      <a href="{{ route('user.contact.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100">
-        <span class="material-icons text-gray-600">contacts</span>
+      <a href="{{ route('user.contact.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-base-200">
+        <span class="material-icons text-base-content/60">contacts</span>
         <span>Contacts</span>
       </a>
-      <a href="{{ url('user/template') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100">
-        <span class="material-icons text-gray-600">description</span>
+      <a href="{{ url('user/template') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-base-200">
+        <span class="material-icons text-base-content/60">description</span>
         <span>Templates</span>
       </a>
-      <a href="{{ url('user/profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100">
-        <span class="material-icons text-gray-600">settings</span>
+      <a href="{{ url('user/profile') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-base-200">
+        <span class="material-icons text-base-content/60">settings</span>
         <span>Settings</span>
       </a>
-      <button class="logout-button flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600 w-full">
+      <button class="logout-button flex items-center gap-3 px-4 py-3 hover:bg-error/10 text-error w-full rounded-full">
         <span class="material-icons">logout</span>
         <span>Logout</span>
       </button>

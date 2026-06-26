@@ -23,16 +23,15 @@ class CustomTextController extends Controller
 
         $phoneCodes=file_exists('uploads/phonecode.json') ? json_decode(file_get_contents('uploads/phonecode.json')) : [];
         $devices=Device::where('user_id',Auth::id())->where('status',1)->latest()->get();
-        return view('user.singlesend.create',compact('phoneCodes','devices'));
+        $contacts = \App\Models\Contact::where('user_id', Auth::id())->get();
+        return view('user.singlesend.create',compact('phoneCodes','devices','contacts'));
     }
 
     //sent custom text msg request to api
     public function sentCustomText(Request $request,$type)
     {
-
-
         $validated = $request->validate([
-            'phone'   => ['required', new Phone],
+            'phone'   => ['required'],
             'device'=>['required','numeric'],
         ]);
 
@@ -52,14 +51,38 @@ class CustomTextController extends Controller
 
         $device=Device::where('user_id',Auth::id())->where('status',1)->findorFail($request->device);
 
-        $phone = preg_replace('/\D+/', '', $request->phone);
-        if (substr($phone, 0, 1) === '0') {
-            $phone = '62' . substr($phone, 1);
+        // Parse and clean multiple comma-separated phone numbers
+        $phones = explode(',', $request->phone);
+        $cleanPhones = [];
+        foreach ($phones as $p) {
+            $p = trim($p);
+            if (empty($p)) continue;
+            $p = preg_replace('/\D+/', '', $p);
+            if (substr($p, 0, 1) === '0') {
+                $p = '62' . substr($p, 1);
+            }
+            $cleanPhones[] = $p;
+        }
+
+        if (empty($cleanPhones)) {
+            return response()->json([
+                'message' => __('No valid phone numbers provided')
+            ], 422);
+        }
+
+        // Validate each phone number
+        $phoneRule = new Phone;
+        foreach ($cleanPhones as $p) {
+            if (!$phoneRule->passes('phone', $p)) {
+                return response()->json([
+                    'message' => __('One or more phone numbers are invalid: ') . $p
+                ], 422);
+            }
         }
 
         if ($type == 'text-with-media') {
             $validated = $request->validate([
-                'file' => 'required|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt|max:1000',
+                'file' => 'required|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt,mp4,mov,avi|max:20000',
                 'message' => 'required|max:1000',
             ]);
 
@@ -95,7 +118,7 @@ class CustomTextController extends Controller
                 'footer_text' => 'required|max:100',
                 'buttons.*' => 'required',
                 'message' => 'required|max:1000',
-                'file' => 'nullable|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt|max:2000',
+                'file' => 'nullable|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt,mp4,mov,avi|max:20000',
             ]);
 
             if ($request->hasFile('file')) {
@@ -176,7 +199,7 @@ class CustomTextController extends Controller
 
                         }
 
-                    }
+                     }
                 }
 
             }
@@ -273,10 +296,6 @@ class CustomTextController extends Controller
             }
         }
 
-
-
-
-
         if ($request->templatestatus) {
             $validated = $request->validate([
                 'template_name' => 'required|max:100',
@@ -290,31 +309,40 @@ class CustomTextController extends Controller
            }
         }
 
+        // Send to each contact
+        $successCount = 0;
+        $lastError = null;
+        $lastStatus = 500;
 
+        foreach ($cleanPhones as $p) {
+            $whatsapp = $this->messageSend($request->all(), $device->id, $p, $type);
+            if ($whatsapp['status'] == 200) {
+                $successCount++;
+                
+                $logs['user_id'] = Auth::id();
+                $logs['device_id'] = $device->id;
+                $logs['from'] = $device->phone;
+                $logs['to'] = $p;
+                $logs['type'] = 'single-send';
 
+                $this->saveLog($logs);
+            } else {
+                $lastError = $whatsapp['message'];
+                $lastStatus = $whatsapp['status'];
+            }
+        }
 
-        $whatsapp= $this->messageSend($request->all(),$device->id,$phone,$type);
-
-        if ($whatsapp['status'] != 200) {
+        if ($successCount === 0) {
             return response()->json([
-                    'message' => $whatsapp['message'],
-                ], $whatsapp['status']);
+                'message' => $lastError ?? __('Failed to send message'),
+            ], $lastStatus);
         }
 
-        else{
-           $logs['user_id']=Auth::id();
-           $logs['device_id']=$device->id;
-           $logs['from']=$device->phone;
-           $logs['to']=$phone;
-           $logs['type']='single-send';
-
-           $this->saveLog($logs);
-
-           return response()->json([
-                    'message' => __('Message sent successfully..!!'),
-                ], 200);
-        }
-
+        return response()->json([
+            'message' => $successCount === count($cleanPhones) 
+                ? __('Message sent successfully..!!') 
+                : __('Successfully sent to :success/:total numbers.', ['success' => $successCount, 'total' => count($cleanPhones)]),
+        ], 200);
     }
 
     //creating record

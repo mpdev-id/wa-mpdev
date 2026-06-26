@@ -29,6 +29,110 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: rgba(0, 0, 0, 0.25);
     }
+    .btn {
+        border-radius: 9999px !important;
+    }
+    
+    /* Hacker theme overrides for live chat */
+    html[data-theme="hacker"] .chat-bg {
+        background-color: var(--color-base-100) !important;
+        background-image: radial-gradient(rgba(0, 255, 136, 0.05) 1.5px, transparent 1.5px) !important;
+        background-size: 20px 20px !important;
+    }
+    html[data-theme="hacker"] .bg-white,
+    html[data-theme="hacker"] .modal-box {
+        background-color: var(--color-base-200) !important;
+        color: var(--color-base-content) !important;
+    }
+    html[data-theme="hacker"] .border-gray-200,
+    html[data-theme="hacker"] .border-gray-100 {
+        border-color: var(--color-base-300) !important;
+    }
+    html[data-theme="hacker"] .bg-\[\#f0f2f5\],
+    html[data-theme="hacker"] .h-16 {
+        background-color: var(--color-base-300) !important;
+    }
+    html[data-theme="hacker"] .bg-gray-100,
+    html[data-theme="hacker"] .bg-gray-50,
+    html[data-theme="hacker"] .input-bordered {
+        background-color: var(--color-base-100) !important;
+        border-color: var(--color-base-300) !important;
+        color: var(--color-base-content) !important;
+    }
+    html[data-theme="hacker"] .text-gray-800,
+    html[data-theme="hacker"] .text-gray-700 {
+        color: var(--color-base-content) !important;
+    }
+    html[data-theme="hacker"] .bg-emerald-500 {
+        background-color: var(--color-primary) !important;
+        color: var(--color-primary-content) !important;
+    }
+    html[data-theme="hacker"] .text-emerald-600,
+    html[data-theme="hacker"] .text-emerald-700 {
+        color: var(--color-primary) !important;
+    }
+    html[data-theme="hacker"] .hover\:bg-emerald-50:hover {
+        background-color: rgba(0, 255, 136, 0.1) !important;
+    }
+    html[data-theme="hacker"] .hover\:bg-gray-100:hover,
+    html[data-theme="hacker"] .hover\:bg-gray-50:hover {
+        background-color: var(--color-base-300) !important;
+    }
+    html[data-theme="hacker"] .bg-emerald-50 {
+        background-color: rgba(0, 255, 136, 0.08) !important;
+        border-color: rgba(0, 255, 136, 0.2) !important;
+    }
+    html[data-theme="hacker"] .border-emerald-500 {
+        border-color: var(--color-primary) !important;
+    }
+    html[data-theme="hacker"] .border-b-\[6px\] {
+        border-bottom-color: var(--color-primary) !important;
+    }
+    html[data-theme="hacker"] .bg-\[\#efeae2\] {
+        background-color: var(--color-base-100) !important;
+    }
+    html[data-theme="hacker"] .bg-gray-50.border-b-\[6px\] {
+        background-color: var(--color-base-200) !important;
+        border-bottom-color: var(--color-primary) !important;
+    }
+    /* Message bubble styling overrides */
+    html[data-theme="hacker"] .bg-\[\#d9fdd3\] {
+        background-color: rgba(0, 255, 136, 0.15) !important;
+        border: 1px solid var(--color-primary) !important;
+        color: var(--color-base-content) !important;
+    }
+    html[data-theme="hacker"] .bg-white.text-gray-800 {
+        background-color: var(--color-base-300) !important;
+        border: 1px solid var(--color-base-200) !important;
+        color: var(--color-base-content) !important;
+    }
+    html[data-theme="hacker"] .bg-\[\#ffeecd\] {
+        background-color: rgba(251, 191, 36, 0.15) !important;
+        border: 1px solid var(--color-warning) !important;
+        color: var(--color-warning) !important;
+    }
+    html[data-theme="hacker"] .bg-\[\#ffeecd\] .text-gray-800 {
+        color: var(--color-warning) !important;
+    }
+    html[data-theme="hacker"] .dropdown-content {
+        background-color: var(--color-base-300) !important;
+        border-color: var(--color-base-200) !important;
+    }
+    html[data-theme="hacker"] .material-icons {
+        color: var(--color-primary) !important;
+    }
+    html[data-theme="hacker"] .text-gray-300 {
+        color: var(--color-base-content) !important;
+        opacity: 0.5;
+    }
+    html[data-theme="hacker"] .text-gray-500 {
+        color: var(--color-base-content) !important;
+        opacity: 0.7;
+    }
+    html[data-theme="hacker"] .text-gray-400 {
+        color: var(--color-base-content) !important;
+        opacity: 0.6;
+    }
 </style>
 @endsection
 
@@ -56,16 +160,16 @@
                 </div>
             </div>
             <div class="flex gap-2 text-gray-600">
-                <button @click="fetchChats()" class="btn btn-ghost btn-circle btn-sm" title="{{ __('Sync Chats') }}" :class="{'animate-spin': loading}">
+                <button @click="fetchChats()" class="btn btn-ghost btn-circle btn-sm rounded-full" title="{{ __('Sync Chats') }}" :class="{'animate-spin': loading}">
                     <span class="material-icons text-lg">sync</span>
                 </button>
-                <button @click="showNewChatModal = true" class="btn btn-ghost btn-circle btn-sm" title="{{ __('New Chat') }}">
+                <button @click="showNewChatModal = true" class="btn btn-ghost btn-circle btn-sm rounded-full" title="{{ __('New Chat') }}">
                     <span class="material-icons text-lg">chat</span>
                 </button>
                 
                 <!-- More Dropdown -->
                 <div class="dropdown dropdown-end">
-                    <button tabindex="0" class="btn btn-ghost btn-circle btn-sm" title="{{ __('Menu') }}">
+                    <button tabindex="0" class="btn btn-ghost btn-circle btn-sm rounded-full" title="{{ __('Menu') }}">
                         <span class="material-icons text-lg">more_vert</span>
                     </button>
                     <ul tabindex="0" class="dropdown-content z-[100] menu p-2 shadow bg-white border border-gray-100 rounded-box w-52 text-gray-700">
@@ -76,7 +180,7 @@
                             </a>
                         </li>
                         <li>
-                            <button @click="triggerLogout()" class="text-red-600 hover:bg-red-50 py-2">
+                            <button @click="triggerLogout()" class="text-red-600 hover:bg-red-50 py-2 rounded-full">
                                 <span class="material-icons text-sm mr-2 text-red-500">power_settings_new</span>
                                 {{ __('Logout WA Session') }}
                             </button>
@@ -112,7 +216,7 @@
                 <div class="flex flex-col items-center justify-center h-full text-gray-400">
                     <span class="material-icons text-4xl mb-2">chat_bubble_outline</span>
                     <span class="text-sm">{{ __('No chats found') }}</span>
-                    <button @click="fetchChats()" class="btn btn-sm btn-link no-underline mt-2 text-emerald-600">{{ __('Try Syncing') }}</button>
+                    <button @click="fetchChats()" class="btn btn-sm btn-link no-underline mt-2 text-emerald-600 rounded-full">{{ __('Try Syncing') }}</button>
                 </div>
             </template>
 
@@ -170,7 +274,7 @@
                 <!-- Chat Header -->
                 <div class="h-16 bg-[#f0f2f5] flex items-center justify-between px-4 border-b border-gray-200 shrink-0">
                     <div class="flex items-center gap-3">
-                        <button @click="activeChat = null" class="md:hidden btn btn-ghost btn-circle btn-sm">
+                        <button @click="activeChat = null" class="md:hidden btn btn-ghost btn-circle btn-sm rounded-full">
                             <span class="material-icons">arrow_back</span>
                         </button>
                         <div class="avatar placeholder">
@@ -191,10 +295,10 @@
                         </div>
                     </div>
                     <div class="flex gap-4 text-gray-600">
-                        <button class="btn btn-ghost btn-circle btn-sm">
+                        <button class="btn btn-ghost btn-circle btn-sm rounded-full">
                             <span class="material-icons">search</span>
                         </button>
-                        <button class="btn btn-ghost btn-circle btn-sm">
+                        <button class="btn btn-ghost btn-circle btn-sm rounded-full">
                             <span class="material-icons">more_vert</span>
                         </button>
                     </div>
@@ -262,13 +366,13 @@
                                 </template>
                             </div>
                         </div>
-                        <button @click="showEmojiPicker = !showEmojiPicker" class="btn btn-ghost btn-circle btn-sm text-gray-500" title="{{ __('Emojis') }}">
+                        <button @click="showEmojiPicker = !showEmojiPicker" class="btn btn-ghost btn-circle btn-sm text-gray-500 rounded-full" title="{{ __('Emojis') }}">
                             <span class="material-icons text-lg">sentiment_satisfied_alt</span>
                         </button>
                     </div>
 
                     <!-- Send Template (Attachment Button) -->
-                    <button @click="showTemplateModal = true" class="btn btn-ghost btn-circle btn-sm text-gray-500 shrink-0" title="{{ __('Send Predefined Template') }}">
+                    <button @click="showTemplateModal = true" class="btn btn-ghost btn-circle btn-sm text-gray-500 shrink-0 rounded-full" title="{{ __('Send Predefined Template') }}">
                         <span class="material-icons text-lg">attach_file</span>
                     </button>
                     
@@ -281,7 +385,7 @@
                     </div>
 
                     <button @click="sendMessage()" 
-                            class="btn btn-circle btn-sm border-none shrink-0"
+                            class="btn btn-circle btn-sm border-none shrink-0 rounded-full"
                             :class="messageInput.trim() ? 'btn-success text-white' : 'btn-ghost text-gray-500'">
                         <span class="material-icons text-lg" x-text="messageInput.trim() ? 'send' : 'mic'"></span>
                     </button>
@@ -308,7 +412,7 @@
                            placeholder="e.g. 628123456789" 
                            class="input input-bordered input-sm flex-1 bg-gray-50 border-gray-200 text-gray-800 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none text-sm" 
                            @keydown.enter.prevent="startNewChat()">
-                    <button class="btn btn-success btn-sm text-white" @click="startNewChat()">{{ __('Start') }}</button>
+                    <button class="btn btn-success btn-sm text-white rounded-full" @click="startNewChat()">{{ __('Start') }}</button>
                 </div>
             </div>
             
@@ -345,7 +449,7 @@
             </div>
             
             <div class="modal-action mt-2 shrink-0">
-                <button class="btn btn-ghost text-gray-500 btn-sm hover:bg-gray-100" @click="showNewChatModal = false">{{ __('Cancel') }}</button>
+                <button class="btn btn-ghost text-gray-500 btn-sm hover:bg-gray-100 rounded-full" @click="showNewChatModal = false">{{ __('Cancel') }}</button>
             </div>
         </div>
     </div>
@@ -371,7 +475,7 @@
                 @endif
             </div>
             <div class="modal-action">
-                <button class="btn btn-ghost text-gray-500 btn-sm hover:bg-gray-100" @click="showTemplateModal = false">{{ __('Cancel') }}</button>
+                <button class="btn btn-ghost text-gray-500 btn-sm hover:bg-gray-100 rounded-full" @click="showTemplateModal = false">{{ __('Cancel') }}</button>
             </div>
         </div>
     </div>

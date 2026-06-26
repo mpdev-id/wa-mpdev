@@ -1,3 +1,4 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import 'dotenv/config'
 import express from 'express'
 import nodeCleanup from 'node-cleanup'
@@ -9,7 +10,7 @@ const app = express()
 
 // const host = process.env.WA_SERVER_HOST || undefined
 // const port = parseInt(process.env.WA_SERVER_PORT ?? 8000)
-const host = process.env.HOST || undefined
+const host = process.env.HOST || '127.0.0.1'
 const port = parseInt(process.env.PORT ?? 3005)
 
 app.use(cors())

@@ -14,11 +14,11 @@
       <p class="text-base-content/60">{{ __('Organize your contacts into groups') }}</p>
     </div>
     <div class="flex gap-3">
-      <a href="{{ route('user.contact.index') }}" class="btn btn-outline gap-2">
+      <a href="{{ route('user.contact.index') }}" class="btn btn-outline gap-2 rounded-full">
         <span class="material-icons text-sm">contacts</span>
         {{ __('Contact List') }}
       </a>
-      <button @click="showCreateModal = true" class="btn btn-primary gap-2">
+      <button @click="showCreateModal = true" class="btn btn-primary gap-2 rounded-full">
         <span class="material-icons text-sm">add</span>
         {{ __('Create Group') }}
       </button>
@@ -110,7 +110,7 @@
                     </a>
                     
                     <a href="javascript:void(0)" 
-                       class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+                       class="delete-confirm btn btn-sm btn-ghost text-red-600 rounded-full" 
                        data-action="{{ route('user.group.destroy', $group->id) }}"
                        title="{{ __('Delete') }}">
                       <span class="material-icons text-sm">delete</span>
@@ -142,7 +142,7 @@
     <p class="text-base-content/60 mb-6 text-center max-w-md">
       {{ __('Create your first contact group to organize your contacts better') }}
     </p>
-    <button @click="showCreateModal = true" class="btn btn-primary gap-2">
+    <button @click="showCreateModal = true" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create Group') }}
     </button>
@@ -178,10 +178,10 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" @click="showCreateModal = false" class="btn btn-outline">
+          <button type="button" @click="showCreateModal = false" class="btn btn-outline rounded-full">
             {{ __('Cancel') }}
           </button>
-          <button type="submit" class="btn btn-primary submit-btn gap-2">
+          <button type="submit" class="btn btn-primary submit-btn gap-2 rounded-full">
             <span class="material-icons text-sm">save</span>
             {{ __('Create Group') }}
           </button>
@@ -221,10 +221,10 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" @click="showEditModal = false" class="btn btn-outline">
+          <button type="button" @click="showEditModal = false" class="btn btn-outline rounded-full">
             {{ __('Cancel') }}
           </button>
-          <button type="submit" class="btn btn-primary submit-btn gap-2">
+          <button type="submit" class="btn btn-primary submit-btn gap-2 rounded-full">
             <span class="material-icons text-sm">save</span>
             {{ __('Save Changes') }}
           </button>

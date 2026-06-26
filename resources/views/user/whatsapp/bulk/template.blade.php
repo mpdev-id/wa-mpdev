@@ -52,7 +52,7 @@
 
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-primary col-12" data-dismiss="modal">{{ __('Close') }}</button>
+				<button type="button" class="btn btn-outline-primary col-12 rounded-full" data-dismiss="modal">{{ __('Close') }}</button>
 			</div>	
 		</div>
 	</div>
@@ -87,7 +87,7 @@
 			</div>
 			<div class="modal-footer">
 
-				<button type="button" class="btn btn-outline-primary col-12" data-dismiss="modal">{{ __('Close') }}</button>
+				<button type="button" class="btn btn-outline-primary col-12 rounded-full" data-dismiss="modal">{{ __('Close') }}</button>
 				
 			</div>	
 		</div>
@@ -121,8 +121,8 @@
 				</div>
 			</div>
 			<div class="modal-header">
-				<button type="button" class="btn btn-outline-primary" data-dismiss="modal">{{ __('Close') }}</button>
-				<button class="btn btn-outline-primary add_custom_row" type="submit">{{ __('Add Now') }}</button>
+				<button type="button" class="btn btn-outline-primary rounded-full" data-dismiss="modal">{{ __('Close') }}</button>
+				<button class="btn btn-outline-primary add_custom_row rounded-full" type="submit">{{ __('Add Now') }}</button>
 			</div>	
 		</div>
 	</div>
@@ -149,7 +149,7 @@
 									</div>
 							</div>	
 							<div class="col-sm-2">
-								<button class="btn  btn-neutral btn-sm  send_now float-right" type="button"><i class="ni ni-send"></i>&nbsp&nbsp{{ __('Send Now') }}</button>
+								<button class="btn btn-neutral btn-sm send_now float-right rounded-full" type="button"><i class="ni ni-send"></i>&nbsp&nbsp{{ __('Send Now') }}</button>
 							</div>
 						</div>					
 					</div>

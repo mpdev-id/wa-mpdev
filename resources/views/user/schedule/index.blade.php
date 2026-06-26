@@ -13,7 +13,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Schedule Messages') }}</h1>
       <p class="text-base-content/60">{{ __('Manage your scheduled WhatsApp messages') }}</p>
     </div>
-    <a href="{{ route('user.schedule-message.create') }}" class="btn btn-primary gap-2">
+    <a href="{{ route('user.schedule-message.create') }}" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">schedule_send</span>
       {{ __('Create Schedule') }}
     </a>
@@ -82,7 +82,7 @@
       <h3 class="font-bold">{{ __('Feature Not Available') }}</h3>
       <div class="text-xs">{{ __('Schedule Message feature is not available in your subscription plan') }}</div>
     </div>
-    <a href="{{ url('/pricing') }}" class="btn btn-sm btn-primary">{{ __('Upgrade Plan') }}</a>
+    <a href="{{ url('/pricing') }}" class="btn btn-sm btn-primary rounded-full">{{ __('Upgrade Plan') }}</a>
   </div>
   @endif
 
@@ -167,7 +167,7 @@
                     
                     @if($post->status == 'pending')
                     <a href="javascript:void(0)" 
-                       class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+                       class="delete-confirm btn btn-sm btn-ghost text-red-600 rounded-full" 
                        data-action="{{ route('user.schedule-message.destroy', $post->id) }}"
                        title="{{ __('Remove') }}">
                       <span class="material-icons text-sm">delete</span>
@@ -200,7 +200,7 @@
     <p class="text-base-content/60 mb-6 text-center max-w-md">
       {{ __('Create your first scheduled message to send WhatsApp messages at specific times') }}
     </p>
-    <a href="{{ route('user.schedule-message.create') }}" class="btn btn-primary gap-2">
+    <a href="{{ route('user.schedule-message.create') }}" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create Schedule') }}
     </a>

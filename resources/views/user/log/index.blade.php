@@ -69,7 +69,7 @@
     <p class="text-base-content/60 mb-6 text-center max-w-md">
       {{ __('Start sending messages to see your transaction logs here') }}
     </p>
-    <a href="{{ route('user.sent.customtext', 'plain-text') }}" class="btn btn-primary gap-2">
+    <a href="{{ route('user.sent.customtext', 'plain-text') }}" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">send</span>
       {{ __('Send Message') }}
     </a>

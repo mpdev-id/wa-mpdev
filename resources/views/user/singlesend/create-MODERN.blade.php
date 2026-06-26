@@ -24,19 +24,19 @@
       <!-- Tab Navigation -->
       <div class="border-b border-base-200">
         <div class="tabs tabs-boxed bg-transparent p-4 pb-0 gap-2" role="tablist">
-          <button class="tab tab-active gap-2" data-tab="plain-text">
+          <button class="tab tab-active gap-2 rounded-full" data-tab="plain-text">
             <span class="material-icons text-sm">text_fields</span>
             {{ __('Plain Text') }}
           </button>
-          <button class="tab gap-2" data-tab="with-media">
+          <button class="tab gap-2 rounded-full" data-tab="with-media">
             <span class="material-icons text-sm">image</span>
             {{ __('With Media') }}
           </button>
-          <button class="tab gap-2" data-tab="with-button">
+          <button class="tab gap-2 rounded-full" data-tab="with-button">
             <span class="material-icons text-sm">smart_button</span>
             {{ __('With Button') }}
           </button>
-          <button class="tab gap-2" data-tab="location">
+          <button class="tab gap-2 rounded-full" data-tab="location">
             <span class="material-icons text-sm">location_on</span>
             {{ __('Send Location') }}
           </button>
@@ -100,19 +100,19 @@
               
               <!-- Formatting Toolbar -->
               <div class="btn-group mb-2">
-                <button type="button" class="btn btn-sm btn-outline" onclick="insertTag('myTextarea', '*', '*')">
+                <button type="button" class="btn btn-sm btn-outline rounded-full" onclick="insertTag('myTextarea', '*', '*')">
                   <strong>B</strong>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline" onclick="insertTag('myTextarea', '_', '_')">
+                <button type="button" class="btn btn-sm btn-outline rounded-full" onclick="insertTag('myTextarea', '_', '_')">
                   <em>I</em>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline" onclick="insertTag('myTextarea', '```', '```')">
+                <button type="button" class="btn btn-sm btn-outline rounded-full" onclick="insertTag('myTextarea', '```', '```')">
                   <code>{}</code>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline" onclick="insertTag('myTextarea', '~', '~')">
+                <button type="button" class="btn btn-sm btn-outline rounded-full" onclick="insertTag('myTextarea', '~', '~')">
                   <s>S</s>
                 </button>
-                <button type="button" class="btn btn-sm btn-outline emojipick">
+                <button type="button" class="btn btn-sm btn-outline emojipick rounded-full">
                   <span class="material-icons text-sm">emoji_emotions</span>
                 </button>
               </div>
@@ -151,11 +151,11 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end gap-3">
-              <button type="reset" class="btn btn-outline">
+              <button type="reset" class="btn btn-outline rounded-full">
                 <span class="material-icons text-sm">refresh</span>
                 {{ __('Reset') }}
               </button>
-              <button type="submit" class="btn btn-primary gap-2">
+              <button type="submit" class="btn btn-primary gap-2 rounded-full">
                 <span class="material-icons text-sm">send</span>
                 {{ __('Send Message') }}
               </button>

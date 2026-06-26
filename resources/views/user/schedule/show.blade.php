@@ -12,7 +12,7 @@
       <p class="text-base-content/60">{{ __('Scheduled message information') }}</p>
     </div>
     <div class="flex gap-2">
-      <a href="{{ route('user.schedule-message.index') }}" class="btn btn-outline gap-2">
+      <a href="{{ route('user.schedule-message.index') }}" class="btn btn-outline gap-2 rounded-full">
         <span class="material-icons text-sm">arrow_back</span>
         {{ __('Back') }}
       </a>

@@ -8,13 +8,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        'primary': '#10b981',
-        'secondary': '#8b5cf6',
-        'accent': '#f59e0b',
-        'neutral': '#3d4451',
-        'base-100': '#ffffff',
-      },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui'],
       },
@@ -72,41 +65,29 @@ module.exports = {
           warning: "#fbbd23",
           error: "#f87272",
         },
-        
-dark: {
-  name: "dark";
-  default: false;
-  prefersdark: true;
-  color-scheme: "dark";
-  --color-base-100: oklch(14% 0 0);
-  --color-base-200: oklch(20% 0 0);
-  --color-base-300: oklch(26% 0 0);
-  --color-base-content: oklch(97% 0 0);
-  --color-primary: oklch(70% 0.14 182.503);
-  --color-primary-content: oklch(98% 0.014 180.72);
-  --color-secondary: oklch(65% 0.241 354.308);
-  --color-secondary-content: oklch(97% 0.014 343.198);
-  --color-accent: oklch(55% 0.013 58.071);
-  --color-accent-content: oklch(98% 0.001 106.423);
-  --color-neutral: oklch(43% 0 0);
-  --color-neutral-content: oklch(98% 0 0);
-  --color-info: oklch(74% 0.16 232.661);
-  --color-info-content: oklch(29% 0.066 243.157);
-  --color-success: oklch(76% 0.177 163.223);
-  --color-success-content: oklch(26% 0.051 172.552);
-  --color-warning: oklch(75% 0.183 55.934);
-  --color-warning-content: oklch(26% 0.079 36.259);
-  --color-error: oklch(71% 0.202 349.761);
-  --color-error-content: oklch(28% 0.109 3.907);
-  --radius-selector: 2rem;
-  --radius-field: 2rem;
-  --radius-box: 2rem;
-  --size-selector: 0.3125rem;
-  --size-field: 0.28125rem;
-  --border: 0.5px;
-  --depth: 1;
-  --noise: 0;
-}
+        hacker: {
+          "color-scheme": "dark",
+          "--color-base-100": "#040907",
+          "--color-base-200": "#0a120e",
+          "--color-base-300": "#111d17",
+          "--color-base-content": "#d1fae5",
+          "--color-primary": "#00ff88",
+          "--color-primary-content": "#040907",
+          "--color-secondary": "#10b981",
+          "--color-secondary-content": "#040907",
+          "--color-accent": "#34d399",
+          "--color-accent-content": "#ffffff",
+          "--color-neutral": "#0c1511",
+          "--color-neutral-content": "#d1fae5",
+          "--color-info": "#38bdf8",
+          "--color-info-content": "#040907",
+          "--color-success": "#00ff88",
+          "--color-success-content": "#040907",
+          "--color-warning": "#fbbf24",
+          "--color-warning-content": "#040907",
+          "--color-error": "#ff3366",
+          "--color-error-content": "#ffffff",
+        },
       },
     ],
     darkTheme: "dark",

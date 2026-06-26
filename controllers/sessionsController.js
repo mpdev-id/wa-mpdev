@@ -57,14 +57,7 @@ const add = async (req, res) => {
         console.log('Session exists, deleting old session first...');
         try {
             const existingSession = getSession(id);
-            if (existingSession) {
-                try {
-                    await existingSession.logout();
-                } catch (err) {
-                    console.log('Logout error (ignored):', err.message);
-                }
-            }
-            deleteSession(id, isLegacy === 'true');
+            await deleteSession(id, isLegacy === 'true');
             console.log('Old session deleted successfully');
         } catch (err) {
             console.error('Error deleting old session:', err);
@@ -83,7 +76,7 @@ const del = async (req, res) => {
         await session.logout()
     } catch {
     } finally {
-        deleteSession(id, session.isLegacy)
+        await deleteSession(id, session.isLegacy)
     }
 
     response(res, 200, true, 'The session has been successfully deleted.')

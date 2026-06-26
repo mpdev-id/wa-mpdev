@@ -13,7 +13,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Apps Integration') }}</h1>
       <p class="text-base-content/60">{{ __('Manage your connected applications') }}</p>
     </div>
-    <button @click="showCreateModal = true" class="btn btn-primary gap-2">
+    <button @click="showCreateModal = true" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create App') }}
     </button>
@@ -72,7 +72,7 @@
     <p class="text-base-content/60 mb-6 text-center max-w-md">
       {{ __('Create your first app to integrate WhatsApp messaging into your applications') }}
     </p>
-    <button @click="showCreateModal = true" class="btn btn-primary gap-2">
+    <button @click="showCreateModal = true" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create App') }}
     </button>
@@ -108,7 +108,7 @@
             </a>
             
             <a href="javascript:void(0)" 
-               class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+               class="delete-confirm btn btn-sm btn-ghost text-red-600 rounded-full" 
                data-action="{{ route('user.apps.destroy', $app->uuid) }}"
                title="{{ __('Remove') }}">
               <span class="material-icons text-sm">delete</span>
@@ -205,10 +205,10 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" @click="showCreateModal = false" class="btn btn-outline">
+          <button type="button" @click="showCreateModal = false" class="btn btn-outline rounded-full">
             {{ __('Cancel') }}
           </button>
-          <button type="submit" class="btn btn-primary gap-2">
+          <button type="submit" class="btn btn-primary gap-2 rounded-full">
             <span class="material-icons text-sm">add</span>
             {{ __('Create App') }}
           </button>

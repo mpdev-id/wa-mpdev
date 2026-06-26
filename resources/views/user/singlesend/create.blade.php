@@ -7,9 +7,6 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/select2/dist/css/select2.min.css') }}">
 <style>
 [x-cloak] { display: none !important; }
-.glass-card {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl;
-}
 .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
 }
@@ -27,7 +24,7 @@
 <div class="max-w-7xl mx-auto ">
   
   <!-- Page Header -->
-  <div class="mb-8  bg-[#fff] rounded-2xl p-6">
+  <div class="mb-8 bg-base-200 border border-base-300 rounded-2xl p-6">
     <h1 class="text-3xl font-bold text-base-content mb-2">{{ __('Send Custom Message') }}</h1>
     <p class="text-base-content/60 text-lg">{{ __('Send WhatsApp messages using different formats') }}</p>
   </div>
@@ -64,7 +61,7 @@
     </div>
 
     <!-- Sidebar Navigation (Desktop) -->
-    <div class="hidden lg:block lg:col-span-3 p-4 bg-[#fff] rounded-2xl">
+    <div class="hidden lg:block lg:col-span-3">
       <div class="glass-card rounded-3xl sticky top-24 overflow-hidden">
         <div class="p-6">
           <div class="flex items-center gap-3 mb-8 px-2">
@@ -88,7 +85,7 @@
         </div>
         
         <!-- Quick Stats/Info -->
-        <div class="bg-primary/5 p-6 mt-4 border-t border-primary/10">
+        <div class="bg-base-200/50 p-6 border-t border-base-300">
           <div class="flex items-center gap-3 text-primary mb-2">
             <span class="material-symbols-outlined text-sm">info</span>
             <span class="text-xs font-bold uppercase tracking-wider">{{ __('Quick Tip') }}</span>
@@ -102,7 +99,7 @@
 
     <!-- Main Content -->
     <div class="lg:col-span-9">
-      <div class="glass-card rounded-3xl overflow-hidden p-4  bg-[#fff] rounded-2xl">
+      <div class="glass-card rounded-3xl overflow-hidden">
         <div class="p-8 md:p-12">
           
           <!-- Plain Text Tab -->
@@ -149,7 +146,7 @@
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
                   <div class="relative group">
-                    <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                    <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                     <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-base-content/30 group-hover:text-primary transition-colors">
                       <span class="material-symbols-outlined">call</span>
                     </div>
@@ -173,7 +170,7 @@
               </div>
 
               <div class="pt-4">
-                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 rounded-2xl shadow-xl shadow-primary/20 gap-3 group">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send Message') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
@@ -215,7 +212,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -243,7 +240,7 @@
               </div>
 
               <div class="pt-4">
-                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 rounded-2xl shadow-xl shadow-primary/20 gap-3 group">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send Media') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
@@ -286,7 +283,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -328,7 +325,7 @@
 
                 <template x-for="(section, sIndex) in sections" :key="sIndex">
                   <div class="bg-base-200/30 rounded-3xl p-6 md:p-8 border border-base-300 relative group/section">
-                    <button type="button" @click="sections.splice(sIndex, 1)" class="absolute top-4 right-4 btn btn-ghost btn-sm btn-circle text-error opacity-0 group-hover/section:opacity-100 transition-opacity" x-show="sections.length > 1">
+                    <button type="button" @click="sections.splice(sIndex, 1)" class="absolute top-4 right-4 btn btn-ghost btn-sm btn-circle text-error opacity-0 group-hover/section:opacity-100 transition-opacity rounded-full" x-show="sections.length > 1">
                       <span class="material-symbols-outlined">close</span>
                     </button>
 
@@ -349,7 +346,7 @@
                             <input type="text" x-model="row.description" :name="'section['+sIndex+'][value]['+rIndex+'][description]'" class="input input-bordered w-full rounded-xl bg-base-100" placeholder="{{ __('Description (Optional)') }}" maxlength="50" />
                           </div>
                           <div class="md:col-span-1 flex justify-center pt-2">
-                            <button type="button" @click="section.rows.splice(rIndex, 1)" class="btn btn-ghost btn-sm btn-circle text-error opacity-0 group-hover/row:opacity-100 transition-opacity" x-show="section.rows.length > 1">
+                            <button type="button" @click="section.rows.splice(rIndex, 1)" class="btn btn-ghost btn-sm btn-circle text-error opacity-0 group-hover/row:opacity-100 transition-opacity rounded-full" x-show="section.rows.length > 1">
                               <span class="material-symbols-outlined text-sm">delete</span>
                             </button>
                           </div>
@@ -357,21 +354,21 @@
                       </template>
                     </div>
                     
-                    <button type="button" @click="section.rows.push({title: '', description: ''})" class="btn btn-ghost btn-sm gap-2 mt-6 text-primary font-bold hover:bg-primary/10 rounded-xl">
+                    <button type="button" @click="section.rows.push({title: '', description: ''})" class="btn btn-ghost btn-sm gap-2 mt-6 text-primary font-bold hover:bg-primary/10 rounded-full">
                       <span class="material-symbols-outlined text-sm">add_circle</span>
                       {{ __('Add Option') }}
                     </button>
                   </div>
                 </template>
 
-                <button type="button" @click="sections.push({title: '', rows: [{title: '', description: ''}]})" class="btn btn-outline btn-lg w-full border-dashed border-2 rounded-3xl gap-3 hover:bg-primary/5 hover:border-primary transition-all" x-show="sections.length < 20">
+                <button type="button" @click="sections.push({title: '', rows: [{title: '', description: ''}]})" class="btn btn-outline btn-lg w-full border-dashed border-2 gap-3 hover:bg-primary/5 hover:border-primary transition-all rounded-full" x-show="sections.length < 20">
                   <span class="material-symbols-outlined">add_box</span>
                   <span class="font-bold">{{ __('Add New Section') }}</span>
                 </button>
               </div>
 
               <div class="pt-8">
-                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 rounded-2xl shadow-xl shadow-primary/20 gap-3 group">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send List Message') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
@@ -413,7 +410,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -447,7 +444,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <template x-for="(button, index) in buttons" :key="index">
                     <div class="bg-base-200/30 rounded-3xl p-6 border border-base-300 relative group/btn">
-                      <button type="button" @click="buttons.splice(index, 1)" class="absolute -top-2 -right-2 btn btn-error btn-xs btn-circle shadow-lg opacity-0 group-hover/btn:opacity-100 transition-opacity" x-show="buttons.length > 1">
+                      <button type="button" @click="buttons.splice(index, 1)" class="absolute -top-2 -right-2 btn btn-error btn-xs btn-circle shadow-lg opacity-0 group-hover/btn:opacity-100 transition-opacity rounded-full" x-show="buttons.length > 1">
                         <span class="material-symbols-outlined text-xs">close</span>
                       </button>
 
@@ -469,7 +466,7 @@
                     </div>
                   </template>
 
-                  <button type="button" @click="buttons.push({displaytext: '', type: 'quickReplyButton', action: ''})" class="btn btn-outline h-auto py-8 border-dashed border-2 rounded-3xl gap-3 hover:bg-primary/5 hover:border-primary transition-all" x-show="buttons.length < 3">
+                  <button type="button" @click="buttons.push({displaytext: '', type: 'quickReplyButton', action: ''})" class="btn btn-outline h-auto py-2 border-dashed border-2 gap-1 hover:bg-primary/5 hover:border-primary transition-all" x-show="buttons.length < 3">
                     <span class="material-symbols-outlined">add_circle</span>
                     <span class="font-bold">{{ __('Add Button') }}</span>
                   </button>
@@ -477,7 +474,7 @@
               </div>
 
               <div class="pt-8">
-                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 rounded-2xl shadow-xl shadow-primary/20 gap-3 group">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send Template') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
@@ -519,7 +516,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -540,14 +537,14 @@
                   <template x-for="(option, index) in options" :key="index">
                     <div class="flex gap-2 group/opt">
                       <input type="text" :name="'options[]'" x-model="options[index]" class="input input-bordered w-full rounded-xl bg-base-100" :placeholder="'Option ' + (index + 1)" required maxlength="100" />
-                      <button type="button" @click="options.splice(index, 1)" class="btn btn-ghost btn-circle btn-sm text-error opacity-0 group-hover/opt:opacity-100 transition-opacity" x-show="options.length > 2">
+                      <button type="button" @click="options.splice(index, 1)" class="btn btn-ghost btn-circle btn-sm text-error opacity-0 group-hover/opt:opacity-100 transition-opacity rounded-full" x-show="options.length > 2">
                         <span class="material-symbols-outlined text-sm">delete</span>
                       </button>
                     </div>
                   </template>
                 </div>
 
-                <button type="button" @click="options.push('')" class="btn btn-ghost btn-sm gap-2 text-primary font-bold hover:bg-primary/10 rounded-xl" x-show="options.length < 12">
+                <button type="button" @click="options.push('')" class="btn btn-ghost btn-sm gap-2 text-primary font-bold hover:bg-primary/10 rounded-full" x-show="options.length < 12">
                   <span class="material-symbols-outlined text-sm">add_circle</span>
                   {{ __('Add Option') }}
                 </button>
@@ -561,7 +558,7 @@
               </div>
 
               <div class="pt-8">
-                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 rounded-2xl shadow-xl shadow-primary/20 gap-3 group">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send Poll') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
@@ -603,7 +600,7 @@
                   <label class="label px-1">
                     <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
                   </label>
-                  <input type="text" name="phone" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                  <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
                 </div>
               </div>
 
@@ -632,7 +629,7 @@
               </div>
 
               <div class="pt-8">
-                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 rounded-2xl shadow-xl shadow-primary/20 gap-3 group">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send Location') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
@@ -646,6 +643,13 @@
 
   </div>
 </div>
+
+<!-- Datalist for autocomplete using imported contacts -->
+<datalist id="contact-list">
+  @foreach($contacts ?? [] as $contact)
+    <option value="{{ $contact->phone }}">{{ $contact->name }}</option>
+  @endforeach
+</datalist>
 
 @endsection
 

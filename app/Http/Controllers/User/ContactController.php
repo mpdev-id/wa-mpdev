@@ -200,6 +200,43 @@ class ContactController extends Controller
         ], 200);
     }
 
+    public function bulkDelete(Request $request)
+    {
+        if ($request->get('all') == 'true' || $request->get('all') === true) {
+            $query = Contact::where('user_id', Auth::id());
+            
+            $search = $request->get('search');
+            if (!empty($search)) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'LIKE', '%' . $search . '%')
+                      ->orWhere('phone', 'LIKE', '%' . $search . '%');
+                });
+            }
+            
+            $query->delete();
+            
+            $message = !empty($search) 
+                ? __('All matching contacts deleted successfully..!!') 
+                : __('All contacts deleted successfully..!!');
+        } else {
+            $validated = $request->validate([
+                'ids' => 'required|array',
+                'ids.*' => 'required|integer',
+            ]);
+
+            Contact::where('user_id', Auth::id())
+                ->whereIn('id', $request->ids)
+                ->delete();
+                
+            $message = __('Selected contacts deleted successfully..!!');
+        }
+
+        return response()->json([
+            'message'  => $message,
+            'redirect' =>  route('user.contact.index')
+        ], 200);
+    }
+
     public function sendtemplateBulk(Request $request)
     {
        
@@ -402,19 +439,13 @@ class ContactController extends Controller
             ->findOrFail($request->device_id);
 
         try {
-            // Call WhatsApp API to get contacts (using chats endpoint)
+            // Call WhatsApp API to get contacts (using /contacts endpoint)
             $whatsServer = config('services.whatsapp.server_url');
-            // Use device_{id} format if uuid is not set or different
             $sessionId = 'device_' . $device->id; 
             
-            // Use device_{id} format
-            $sessionId = 'device_' . $device->id; 
+            $url = $whatsServer . '/contacts?id=' . $sessionId;
             
-            // We use /chats endpoint because /contacts endpoint is not available on this server
-            // This will fetch all active conversations
-            $url = $whatsServer . '/chats?id=' . $sessionId;
-            
-            Log::info('Syncing active contacts from: ' . $url);
+            Log::info('Syncing contacts from: ' . $url);
             
             $response = Http::timeout(30)->get($url);
 
@@ -450,7 +481,7 @@ class ContactController extends Controller
                     // Normalize contact data structure
                     // /chats endpoint might return different structure than /contacts
                     $contactId = $contact['id'] ?? null;
-                    $contactName = $contact['name'] ?? $contact['notify'] ?? null;
+                    $contactName = $contact['name'] ?? $contact['pushName'] ?? $contact['verifiedName'] ?? $contact['notify'] ?? null;
                     
                     // Skip if no ID or if it's a group (usually ends with @g.us)
                     if (empty($contactId) || strpos($contactId, '@g.us') !== false) {
@@ -484,7 +515,15 @@ class ContactController extends Controller
                         
                         $syncedCount++;
                     } else {
-                        $skippedCount++;
+                        // If contact exists but has phone number as name, update to real name if available
+                        if ($existingContact->name === $existingContact->phone && $name !== $phone) {
+                            $existingContact->update([
+                                'name' => $name
+                            ]);
+                            $syncedCount++;
+                        } else {
+                            $skippedCount++;
+                        }
                     }
                 }
 

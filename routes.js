@@ -4,11 +4,14 @@ import chatsRoute from './routes/chatsRoute.js'
 import groupsRoute from './routes/groupsRoute.js'
 import response from './response.js'
 
+import contactsRoute from './routes/contactsRoute.js'
+
 const router = Router()
 
 router.use('/sessions', sessionsRoute)
 router.use('/chats', chatsRoute)
 router.use('/groups', groupsRoute)
+router.use('/contacts', contactsRoute)
 
 router.all('*', (req, res) => {
     response(res, 404, false, 'The requested url cannot be found.')

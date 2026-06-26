@@ -11,7 +11,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Bulk Import') }}</h1>
       <p class="text-base-content/60">{{ __('Import multiple templates at once') }}</p>
     </div>
-    <a href="{{ route('user.template.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.template.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back') }}
     </a>
@@ -66,10 +66,10 @@
         </div>
 
         <div class="flex justify-end gap-3 pt-6 border-t border-base-200">
-          <a href="{{ route('user.template.index') }}" class="btn btn-outline">
+          <a href="{{ route('user.template.index') }}" class="btn btn-outline rounded-full">
             {{ __('Cancel') }}
           </a>
-          <button type="submit" class="btn btn-primary submit-btn gap-2">
+          <button type="submit" class="btn btn-primary submit-btn gap-2 rounded-full">
             <span class="material-icons text-sm">cloud_upload</span>
             {{ __('Import Templates') }}
           </button>
@@ -88,7 +88,7 @@
       <p class="text-sm text-base-content/70 mb-4">
         {{ __('Download a sample file to see the correct format') }}
       </p>
-      <a href="#" class="btn btn-outline btn-sm gap-2">
+      <a href="#" class="btn btn-outline btn-sm gap-2 rounded-full">
         <span class="material-icons text-xs">download</span>
         {{ __('Download CSV Sample') }}
       </a>

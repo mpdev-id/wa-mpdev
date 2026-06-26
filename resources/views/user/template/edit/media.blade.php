@@ -45,7 +45,7 @@
                </label>
             </div>
             <div class="col-sm-4">
-               <button type="submit" class="btn btn-outline-primary submit-button float-right">{{ __('Save Template') }}</button>
+               <button type="submit" class="btn btn-outline-primary submit-button float-right rounded-full">{{ __('Save Template') }}</button>
             </div>
          </div>
       </div>

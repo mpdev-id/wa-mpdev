@@ -61,7 +61,7 @@
     </div>
     <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('No Templates Yet') }}</h3>
     <p class="text-gray-600 mb-6 text-center max-w-md">{{ __('Create your first message template to save time and send messages faster') }}</p>
-    <a href="{{ route('user.template.create') }}" class="btn btn-primary gap-2">
+    <a href="{{ route('user.template.create') }}" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create Template') }}
     </a>
@@ -99,7 +99,7 @@
             </a>
             
             <a href="javascript:void(0)" 
-               class="delete-confirm btn btn-sm btn-ghost text-red-600" 
+               class="delete-confirm btn btn-sm btn-ghost text-red-600 rounded-full" 
                data-action="{{ route('user.template.destroy',$template->id) }}"
                title="{{ __('Remove') }}">
               <span class="material-icons text-sm">delete</span>
@@ -115,7 +115,7 @@
         </div>
 
         <div class="flex justify-end">
-           <a href="{{ route('user.bulk-message.create') }}?template={{ $template->id }}" class="btn btn-sm btn-primary gap-2 w-full">
+           <a href="{{ route('user.bulk-message.create') }}?template={{ $template->id }}" class="btn btn-primary gap-2 w-full rounded-full">
              <span class="material-icons text-sm">send</span>
              {{ __('Use Template') }}
            </a>
@@ -142,7 +142,7 @@
       <!-- Modal Header -->
       <div class="flex items-start justify-between mb-4">
         <h3 class="text-xl font-bold text-gray-900" x-text="modalTitle"></h3>
-        <button @click="showModal = false" class="btn btn-ghost btn-sm btn-circle">
+        <button @click="showModal = false" class="btn btn-ghost btn-sm btn-circle rounded-full">
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -162,11 +162,11 @@
 
       <!-- Modal Footer -->
       <div class="flex justify-end gap-2">
-        <button @click="showModal = false" class="btn btn-outline">
+        <button @click="showModal = false" class="btn btn-outline rounded-full">
           {{ __('Close') }}
         </button>
         <button @click="navigator.clipboard.writeText(modalId); $dispatch('toast', {message: 'Template ID copied!', type: 'success'})" 
-                class="btn btn-primary gap-2">
+                class="btn btn-primary gap-2 rounded-full">
           <span class="material-icons text-sm">content_copy</span>
           {{ __('Copy ID') }}
         </button>

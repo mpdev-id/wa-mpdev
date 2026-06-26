@@ -15,21 +15,16 @@
   .qris-container {
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   }
-  .glass-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-  }
 </style>
 
 <div class="max-w-5xl mx-auto px-4 py-4">
   
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h1 class="text-3xl font-black text-gray-900 tracking-tight">{{ __('Selesaikan Pembayaran') }}</h1>
-      <p class="text-gray-500 mt-1 text-sm md:text-base">{{ __('Pindai kode QRIS dan unggah bukti transfer Anda untuk mengaktifkan langganan') }}</p>
+      <h1 class="text-3xl font-black text-base-content tracking-tight">{{ __('Selesaikan Pembayaran') }}</h1>
+      <p class="text-base-content/60 mt-1 text-sm md:text-base">{{ __('Pindai kode QRIS dan unggah bukti transfer Anda untuk mengaktifkan langganan') }}</p>
     </div>
-    <a href="{{ route('user.subscription.index') }}" class="btn btn-ghost border-gray-200 hover:bg-gray-100 gap-2 rounded-2xl shadow-sm">
+    <a href="{{ route('user.subscription.index') }}" class="btn btn-ghost border-base-300 hover:bg-base-200 gap-2 shadow-sm rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       <span>{{ __('Kembali') }}</span>
     </a>
@@ -184,16 +179,16 @@
               @csrf
 
               <!-- Info Status Otomatis -->
-              <div class="bg-emerald-50 border border-emerald-250 text-emerald-850 p-4 rounded-2xl text-xs leading-relaxed flex gap-2.5 items-start">
-                <span class="material-icons text-emerald-600 text-sm mt-0.5 animate-pulse">check_circle</span>
+              <div class="bg-success/10 border border-success/20 text-success p-4 rounded-2xl text-xs leading-relaxed flex gap-2.5 items-start">
+                <span class="material-icons text-success text-sm mt-0.5 animate-pulse">check_circle</span>
                 <div>
-                  <strong class="text-emerald-950 font-bold block mb-0.5">⚡ Konfirmasi Otomatis Instan</strong>
+                  <strong class="text-primary font-bold block mb-0.5">⚡ Konfirmasi Otomatis Instan</strong>
                   Setelah Anda melakukan transfer dengan nominal yang tepat, sistem kami akan memprosesnya dalam hitungan detik. Cukup tekan tombol konfirmasi di bawah.
                 </div>
               </div>
 
               <!-- Main Submit Button (Automatic Confirmation) -->
-              <button type="submit" class="btn btn-success text-white w-full gap-2 rounded-2xl py-3 font-bold shadow-lg shadow-success/20 hover:shadow-success/30 hover:scale-[1.01] active:scale-[0.99] transition-all" id="submit-btn">
+              <button type="submit" class="btn btn-success text-white w-full gap-2 py-3 font-bold shadow-lg shadow-success/20 hover:shadow-success/30 hover:scale-[1.01] active:scale-[0.99] transition-all rounded-full" id="submit-btn">
                 <span class="material-icons text-sm">bolt</span>
                 <span>{{ __('Saya Sudah Transfer (Konfirmasi Otomatis)') }}</span>
               </button>

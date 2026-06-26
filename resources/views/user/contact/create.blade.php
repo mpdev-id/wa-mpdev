@@ -1,6 +1,11 @@
 @extends('layouts.main.app')
 @section('head')
 @include('layouts.main.headersection',['title'=>__('Create Contact')])
+<style>
+  .btn {
+    border-radius: 9999px !important;
+  }
+</style>
 @endsection
 
 @section('content')
@@ -11,13 +16,13 @@
       <h1 class="text-2xl font-bold">{{ __('Add Contact') }}</h1>
       <p class="text-base-content/60">{{ __('Add new contact to your list') }}</p>
     </div>
-    <a href="{{ route('user.contact.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.contact.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back') }}
     </a>
   </div>
 
-  <div class="card bg-white shadow-xl">
+  <div class="glass-card rounded-3xl shadow-xl">
     <div class="card-body">
       <form method="POST" class="space-y-4" action="{{ route('user.contact.store') }}">
         @csrf
@@ -51,8 +56,8 @@
         </div>
 
         <div class="flex justify-end gap-3 pt-6 border-t">
-          <a href="{{ route('user.contact.index') }}" class="btn btn-outline">{{ __('Cancel') }}</a>
-          <button type="submit" class="btn btn-primary gap-2">
+          <a href="{{ route('user.contact.index') }}" class="btn btn-outline rounded-full">{{ __('Cancel') }}</a>
+          <button type="submit" class="btn btn-primary gap-2 rounded-full">
             <span class="material-icons text-sm">person_add</span>
             {{ __('Add Contact') }}
           </button>

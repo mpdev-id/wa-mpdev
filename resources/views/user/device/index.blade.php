@@ -120,7 +120,7 @@
             </a>
 
             <a href="javascript:void(0)" 
-               class="delete-confirm btn btn-sm btn-ghost text-red-600 px-1" 
+               class="delete-confirm btn btn-sm btn-ghost text-red-600 px-1 rounded-full" 
                data-action="{{ route('user.device.destroy',$device->uuid) }}"
                title="{{ __('Remove') }}">
               <span class="material-icons text-sm">delete</span>
@@ -131,12 +131,19 @@
         <!-- Status Badge -->
         <div class="card-actions">
           <a href="{{ route('user.device.scan',$device->uuid) }}" class="w-full">
-            <div class="flex items-center justify-between p-3 rounded-xl {{ $device->status == 1 ? 'bg-green-50' : 'bg-orange-50' }}">
-              <span class="text-sm font-medium text-gray-700">{{ __('Status') }}</span>
-              <span class="badge {{ $device->status == 1 ? 'badge-success' : 'badge-warning' }} gap-2">
-                <span class="material-icons text-xs">{{ $device->status == 1 ? 'check_circle' : 'error' }}</span>
-                {{ $device->status == 1 ? __('Active') : __('Inactive') }}
-              </span>
+            <div class="flex items-center justify-between p-3 rounded-xl transition-all duration-200 border border-transparent hover:border-primary/20 {{ $device->status == 1 ? 'bg-success/10 text-success' : 'bg-error/10 text-error' }} status-indicator-container">
+              <span class="text-sm font-mono tracking-wider font-semibold">{{ __('STATUS') }}</span>
+              @if($device->status == 1)
+                <span class="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase">
+                  <span class="w-2 h-2 rounded-full bg-success animate-ping"></span>
+                  {{ __('ACTIVE') }}
+                </span>
+              @else
+                <span class="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase">
+                  <span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+                  {{ __('INACTIVE') }}
+                </span>
+              @endif
             </div>
           </a>
         </div>
@@ -152,7 +159,7 @@
     </div>
     <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ __('No Devices Found') }}</h3>
     <p class="text-gray-600 mb-6 text-center">{{ __('Create your first device to start sending WhatsApp messages') }}</p>
-    <a href="{{ route('user.device.create') }}" class="btn btn-primary gap-2">
+    <a href="{{ route('user.device.create') }}" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create Device') }}
     </a>

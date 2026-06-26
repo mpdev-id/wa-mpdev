@@ -46,7 +46,7 @@
                         <label>{{ __('Button') }} {{ $key+1 }} {{ __('Text') }}</label>
                     </div>
                     <div class="col-6">
-                        <a href="javascript:void(0)" data-target=".exist_button{{ $key+1 }}" class="btn btn-sm btn-danger float-right mb-1 remove-button"><i class="fa fa-trash"></i></a>
+                        <a href="javascript:void(0)" data-target=".exist_button{{ $key+1 }}" class="btn btn-sm btn-danger float-right mb-1 remove-button rounded-full"><i class="fa fa-trash"></i></a>
                     </div>
                 </div>
                 <input type="text" class="form-control" name="buttons[]" required="" autofocus="" maxlength="50" value="{{ $button['buttonText']['displayText'] ?? '' }}">
@@ -66,7 +66,7 @@
             <label class="mt-1 ml-1" for="template-status"><h4>{{ __('Make it active template?') }}</h4></label>
         </div>
         <div class="col-sm-4">
-         <button type="submit" class="btn btn-outline-primary submit-button float-right">{{ __('Save Template') }}</button>
+         <button type="submit" class="btn btn-outline-primary submit-button float-right rounded-full">{{ __('Save Template') }}</button>
      </div>
  </div>
 </div>

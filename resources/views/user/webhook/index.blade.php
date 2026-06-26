@@ -66,7 +66,7 @@
     <p class="text-base-content/60 mb-6 text-center max-w-md">
       {{ __('Webhook logs will appear here once you configure webhooks and start sending messages') }}
     </p>
-    <a href="{{ url('/docs/webhooks') }}" target="_blank" class="btn btn-primary gap-2">
+    <a href="{{ url('/docs/webhooks') }}" target="_blank" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">menu_book</span>
       {{ __('View Documentation') }}
     </a>
@@ -192,7 +192,7 @@
 
       <div class="modal-action">
         <form method="dialog">
-          <button class="btn">{{ __('Close') }}</button>
+          <button class="btn rounded-full">{{ __('Close') }}</button>
         </form>
       </div>
     </div>

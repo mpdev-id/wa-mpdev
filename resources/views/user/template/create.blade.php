@@ -11,7 +11,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Create Template') }}</h1>
       <p class="text-base-content/60">{{ __('Create reusable message template') }}</p>
     </div>
-    <a href="{{ route('user.template.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.template.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back') }}
     </a>
@@ -63,11 +63,11 @@
               
               <!-- Variable Helpers -->
               <div class="flex flex-wrap gap-2 mt-2">
-                <button type="button" @click="insertVar('{1}')" class="btn btn-xs btn-outline btn-sm normal-case">{1}</button>
-                <button type="button" @click="insertVar('{2}')" class="btn btn-xs btn-outline btn-sm normal-case">{2}</button>
-                <button type="button" @click="insertVar('{3}')" class="btn btn-xs btn-outline btn-sm normal-case">{3}</button>
-                <button type="button" @click="insertVar('{name}')" class="btn btn-xs btn-outline btn-sm normal-case">{name}</button>
-                <button type="button" @click="insertVar('{phone}')" class="btn btn-xs btn-outline btn-sm normal-case">{phone}</button>
+                <button type="button" @click="insertVar('{1}')" class="btn btn-xs btn-outline btn-sm normal-case rounded-full">{1}</button>
+                <button type="button" @click="insertVar('{2}')" class="btn btn-xs btn-outline btn-sm normal-case rounded-full">{2}</button>
+                <button type="button" @click="insertVar('{3}')" class="btn btn-xs btn-outline btn-sm normal-case rounded-full">{3}</button>
+                <button type="button" @click="insertVar('{name}')" class="btn btn-xs btn-outline btn-sm normal-case rounded-full">{name}</button>
+                <button type="button" @click="insertVar('{phone}')" class="btn btn-xs btn-outline btn-sm normal-case rounded-full">{phone}</button>
               </div>
               <label class="label">
                 <span class="label-text-alt text-gray-500">{{ __('Click variables to insert them into the message.') }}</span>
@@ -97,13 +97,13 @@
               <template x-for="(btn, index) in buttons" :key="index">
                 <div class="flex gap-2">
                   <input type="text" :name="'buttons['+index+']'" x-model="buttons[index]" class="input input-bordered w-full" :placeholder="'Button ' + (index + 1)" required />
-                  <button type="button" @click="removeButton(index)" class="btn btn-square btn-outline btn-error">
+                  <button type="button" @click="removeButton(index)" class="btn btn-square btn-outline btn-error rounded-full">
                     <span class="material-icons">delete</span>
                   </button>
                 </div>
               </template>
               
-              <button type="button" @click="addButton()" class="btn btn-sm btn-outline w-full" x-show="buttons.length < 3">
+              <button type="button" @click="addButton()" class="btn btn-sm btn-outline w-full rounded-full" x-show="buttons.length < 3">
                 <span class="material-icons text-sm">add</span> {{ __('Add Button') }}
               </button>
             </div>
@@ -134,7 +134,7 @@
                       <label class="label py-0"><span class="label-text text-xs font-bold">{{ __('Section Title') }}</span></label>
                       <input type="text" :name="'section['+sIndex+'][title]'" x-model="section.title" class="input input-sm input-bordered w-full" placeholder="e.g. Main Menu" required />
                     </div>
-                    <button type="button" @click="removeSection(sIndex)" class="btn btn-ghost btn-xs text-error" x-show="listSections.length > 1">
+                    <button type="button" @click="removeSection(sIndex)" class="btn btn-ghost btn-xs text-error rounded-full" x-show="listSections.length > 1">
                       <span class="material-icons text-sm">close</span>
                     </button>
                   </div>
@@ -144,19 +144,19 @@
                       <div class="grid grid-cols-1 md:grid-cols-2 gap-2 relative group">
                         <input type="text" :name="'section['+sIndex+'][value]['+iIndex+'][title]'" x-model="item.title" class="input input-xs input-bordered w-full" placeholder="Option Title" required />
                         <input type="text" :name="'section['+sIndex+'][value]['+iIndex+'][description]'" x-model="item.description" class="input input-xs input-bordered w-full" placeholder="Description (Optional)" />
-                        <button type="button" @click="removeListItem(sIndex, iIndex)" class="absolute -right-6 top-0 btn btn-ghost btn-xs text-error opacity-0 group-hover:opacity-100" x-show="section.items.length > 1">
+                        <button type="button" @click="removeListItem(sIndex, iIndex)" class="absolute -right-6 top-0 btn btn-ghost btn-xs text-error opacity-0 group-hover:opacity-100 rounded-full" x-show="section.items.length > 1">
                           <span class="material-icons text-[10px]">close</span>
                         </button>
                       </div>
                     </template>
-                    <button type="button" @click="addListItem(sIndex)" class="btn btn-ghost btn-xs gap-1">
+                    <button type="button" @click="addListItem(sIndex)" class="btn btn-ghost btn-xs gap-1 rounded-full">
                       <span class="material-icons text-xs">add</span> {{ __('Add Option') }}
                     </button>
                   </div>
                 </div>
               </template>
 
-              <button type="button" @click="addSection()" class="btn btn-sm btn-outline w-full" x-show="listSections.length < 20">
+              <button type="button" @click="addSection()" class="btn btn-sm btn-outline w-full rounded-full" x-show="listSections.length < 20">
                 <span class="material-icons text-sm">add</span> {{ __('Add Section') }}
               </button>
             </div>
@@ -175,10 +175,10 @@
 
             <!-- Submit Actions -->
             <div class="flex justify-end gap-3 pt-6 border-t border-base-200">
-              <a href="{{ route('user.template.index') }}" class="btn btn-outline">
+              <a href="{{ route('user.template.index') }}" class="btn btn-outline rounded-full">
                 {{ __('Cancel') }}
               </a>
-              <button type="submit" class="btn btn-primary submit-btn gap-2" :disabled="!isValid">
+              <button type="submit" class="btn btn-primary submit-btn gap-2 rounded-full" :disabled="!isValid">
                 <span class="material-icons text-sm">save</span>
                 {{ __('Create Template') }}
               </button>
@@ -225,7 +225,7 @@
               <template x-if="type === 'text-with-button' && buttons.length > 0">
                 <div class="flex flex-col gap-2 mt-2 w-full max-w-[90%]">
                   <template x-for="btn in buttons">
-                    <button class="btn btn-sm bg-white border-none text-blue-500 hover:bg-gray-50 shadow-sm w-full normal-case" x-text="btn"></button>
+                    <button class="btn btn-sm bg-white border-none text-blue-500 hover:bg-gray-50 shadow-sm w-full normal-case rounded-full" x-text="btn"></button>
                   </template>
                 </div>
               </template>
@@ -233,7 +233,7 @@
               <!-- List Button Preview -->
               <template x-if="type === 'text-with-list' && listButton">
                  <div class="mt-2 w-full max-w-[90%]">
-                    <button class="btn btn-sm bg-white border-none text-blue-500 hover:bg-gray-50 shadow-sm w-full normal-case flex justify-between items-center px-4">
+                    <button class="btn btn-sm bg-white border-none text-blue-500 hover:bg-gray-50 shadow-sm w-full normal-case flex justify-between items-center px-4 rounded-full">
                       <span class="material-icons text-sm">list</span>
                       <span x-text="listButton"></span>
                     </button>

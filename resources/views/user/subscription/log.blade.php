@@ -11,7 +11,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Transaction History') }}</h1>
       <p class="text-base-content/60">{{ __('All your payment transactions') }}</p>
     </div>
-    <a href="{{ route('user.subscription.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.subscription.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back') }}
     </a>

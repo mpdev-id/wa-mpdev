@@ -11,7 +11,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('New Support Ticket') }}</h1>
       <p class="text-base-content/60">{{ __('We\'re here to help you') }}</p>
     </div>
-    <a href="{{ route('user.support.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.support.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back') }}
     </a>
@@ -111,10 +111,10 @@
         </div>
 
         <div class="flex justify-end gap-3 pt-6 border-t border-base-200">
-          <a href="{{ route('user.support.index') }}" class="btn btn-outline">
+          <a href="{{ route('user.support.index') }}" class="btn btn-outline rounded-full">
             {{ __('Cancel') }}
           </a>
-          <button type="submit" class="btn btn-primary gap-2">
+          <button type="submit" class="btn btn-primary gap-2 rounded-full">
             <span class="material-icons text-sm">send</span>
             {{ __('Submit Ticket') }}
           </button>
@@ -133,11 +133,11 @@
       <div class="text-sm text-base-content/70 space-y-2">
         <p>{{ __('Have you checked our FAQ or documentation?') }}</p>
         <div class="flex gap-2">
-          <a href="#" class="btn btn-outline btn-sm gap-1">
+          <a href="#" class="btn btn-outline btn-sm gap-1 rounded-full">
             <span class="material-icons text-xs">book</span>
             {{ __('Documentation') }}
           </a>
-          <a href="#" class="btn btn-outline btn-sm gap-1">
+          <a href="#" class="btn btn-outline btn-sm gap-1 rounded-full">
             <span class="material-icons text-xs">question_answer</span>
             {{ __('FAQ') }}
           </a>

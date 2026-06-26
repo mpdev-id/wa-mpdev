@@ -18,7 +18,7 @@
          <div class="form-row mb-1">
             <label class="col-6">{{ __('Message:') }}</label>
             <div class="col-6">
-               <button type="button" data-toggle="modal" data-target="#help-modal" class="btn btn-neutral btn-sm float-right"><i class="fas fas fa-code"></i>&nbsp{{ __('Shortcodes') }}</button>
+               <button type="button" data-toggle="modal" data-target="#help-modal" class="btn btn-neutral btn-sm float-right rounded-full"><i class="fas fas fa-code"></i>&nbsp{{ __('Shortcodes') }}</button>
             </div>
          </div>
          <div class="form-group">
@@ -44,7 +44,7 @@
                   <h4 class="mt-2">{{ __('List Options') }}</h4>
                </div>
                <div class="col-6">
-                  <a href="javascript:void(0)" id="add-more-option" class="btn btn-sm btn-primary btn-neutral float-right mb-1"><i class="fa fa-plus"></i>&nbsp; {{ __('Add More Card') }}</a>
+                  <a href="javascript:void(0)" id="add-more-option" class="btn btn-sm btn-primary btn-neutral float-right mb-1 rounded-full"><i class="fa fa-plus"></i>&nbsp; {{ __('Add More Card') }}</a>
                </div>
             </div>
             <div class="list-area">
@@ -75,7 +75,7 @@
                            <div class="form-group">
                               <label>{{ __('Enter List Value Description') }}</label>
                               @if($rowKey != 0)
-                              <a href="javascript:void(0)" class="float-right btn btn-sm btn-danger remove-option-item" data-addbutton=".option-item-btn1" data-target=".item-{{ $sectionKey+1 }}-{{ $rowKey+1 }}">X</a>
+                              <a href="javascript:void(0)" class="float-right btn btn-sm btn-danger remove-option-item rounded-full" data-addbutton=".option-item-btn1" data-target=".item-{{ $sectionKey+1 }}-{{ $rowKey+1 }}">X</a>
                               @endif
                               <input  type="text" class="form-control" name="section[1][value][{{$rowKey}}][description]" placeholder="{{ __('Example: Banana is a healthly food') }}" value="{{ $row['description'] ?? '' }}"   maxlength="50" />
                            </div>
@@ -84,7 +84,7 @@
                      </div>
                      <div class="row">
                         <div class="col-12 text-right">
-                           <a href="javascript:void(0)" class="text-right btn btn-sm btn-neutral add-more-option-item option-item-btn1" data-target=".list-item-area1" data-key="1"><i class="fas fa-plus"></i>&nbsp{{ __('Add More Item') }}</a>
+                           <a href="javascript:void(0)" class="text-right btn btn-sm btn-neutral add-more-option-item option-item-btn1 rounded-full" data-target=".list-item-area1" data-key="1"><i class="fas fa-plus"></i>&nbsp{{ __('Add More Item') }}</a>
                         </div>
                      </div>
                   </div>
@@ -94,7 +94,7 @@
                   <div class="card-header">
                      <h4>List {{$sectionKey+1}}</h4>
                      <div class="card-header-action">
-                        <a href="javascript:void(0)" class="btn btn-danger btn-sm delete-card" data-target=".card-area{{$sectionKey+1}}">
+                        <a href="javascript:void(0)" class="btn btn-danger btn-sm delete-card rounded-full" data-target=".card-area{{$sectionKey+1}}">
                         <i class="fas fa-trash"></i>
                         </a>
                      </div>
@@ -120,7 +120,7 @@
                            <div class="form-group">
                               <label>{{ __('Enter List Value Description') }}</label>
                               @if($rowKey != 0)
-                              <a href="javascript:void(0)" class="float-right btn btn-sm btn-danger remove-option-item" data-addbutton=".option-item-btn1" data-target=".item-{{ $sectionKey+1 }}-{{ $rowKey+1 }}">X</a>
+                              <a href="javascript:void(0)" class="float-right btn btn-sm btn-danger remove-option-item rounded-full" data-addbutton=".option-item-btn1" data-target=".item-{{ $sectionKey+1 }}-{{ $rowKey+1 }}">X</a>
                               @endif
                               <input type="text" class="form-control" name="section[{{$sectionKey+1}}][value][{{$rowKey}}][description]" placeholder="Example: Banana is a healthly food" value="{{ $row['description'] ?? '' }}" maxlength="50" />
                            </div>
@@ -129,7 +129,7 @@
                      </div>
                      <div class="row">
                         <div class="col-12 text-right">
-                           <a href="javascript:void(0)" class="text-right btn btn-sm btn-neutral add-more-option-item option-item-btn{{$sectionKey+1}}" data-target=".list-item-area{{$sectionKey+1}}" data-key="{{$sectionKey+1}}"><i class="fas fa-plus"></i>&nbsp;{{ __('Add More Item') }}</a>
+                           <a href="javascript:void(0)" class="text-right btn btn-sm btn-neutral add-more-option-item option-item-btn{{$sectionKey+1}} rounded-full" data-target=".list-item-area{{$sectionKey+1}}" data-key="{{$sectionKey+1}}"><i class="fas fa-plus"></i>&nbsp;{{ __('Add More Item') }}</a>
                         </div>
                      </div>
                   </div>
@@ -151,7 +151,7 @@
                </label>
             </div>
             <div class="col-sm-4">
-               <button type="submit" class="btn btn-outline-primary submit-button float-right">{{ __('Save Template') }}</button>
+               <button type="submit" class="btn btn-outline-primary submit-button float-right rounded-full">{{ __('Save Template') }}</button>
             </div>
          </div>
       </div>

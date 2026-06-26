@@ -27,6 +27,7 @@ const getMessages = async (req, res) => {
         } else {
             messages = await session.store.loadMessages(jid, limit, useCursor)
         }
+        console.log(`Loaded ${messages ? messages.length : 0} messages for JID ${jid} in session ${res.locals.sessionId}`);
 
         response(res, 200, true, '', messages)
     } catch {

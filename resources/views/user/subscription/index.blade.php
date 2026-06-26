@@ -49,15 +49,15 @@
       </div>
 
       <div class="flex gap-3 mt-6 pt-6 border-t border-base-200">
-        <button class="btn btn-primary gap-2">
+        <button class="btn btn-primary gap-2 rounded-full">
           <span class="material-icons text-sm">upgrade</span>
           {{ __('Upgrade Plan') }}
         </button>
-        <button class="btn btn-outline gap-2">
+        <button class="btn btn-outline gap-2 rounded-full">
           <span class="material-icons text-sm">credit_card</span>
           {{ __('Payment Method') }}
         </button>
-        <a href="{{ route('user.subscription.log') }}" class="btn btn-outline gap-2">
+        <a href="{{ route('user.subscription.log') }}" class="btn btn-outline gap-2 rounded-full">
           <span class="material-icons text-sm">receipt_long</span>
           {{ __('View History') }}
         </a>

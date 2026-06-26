@@ -18,6 +18,17 @@
   font-weight: 800;
   font-family: 'Courier New', monospace;
 }
+@keyframes scan {
+  0%, 100% { top: 0%; }
+  50% { top: 100%; }
+}
+.scanner-line {
+  animation: scan 3s ease-in-out infinite;
+  box-shadow: 0 0 15px 4px var(--color-primary), 0 0 6px 1px var(--color-primary);
+}
+.scanner-corner {
+  filter: drop-shadow(0 0 4px var(--color-primary));
+}
 </style>
 @endpush
 
@@ -26,7 +37,7 @@
   
   <!-- Back Button -->
   <div class="mb-6">
-    <a href="{{ route('user.device.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.device.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back to Devices') }}
     </a>
@@ -57,7 +68,7 @@
                 </template>
               </div>
             </div>
-            <button @click="logout()" x-show="connected" class="btn btn-error btn-sm gap-2">
+            <button @click="logout()" x-show="connected" class="btn btn-error btn-sm gap-2 rounded-full">
               <span class="material-icons text-sm">logout</span>
               {{ __('Logout') }}
             </button>
@@ -83,38 +94,84 @@
           <div x-show="method === 'qr'" x-cloak>
             <div class="qr-code-display">
               <!-- Loading State -->
-              <div x-show="!qrCode && !connected && !error" class="text-center">
-                <span class="loading loading-spinner loading-lg text-primary mb-4"></span>
-                <p class="text-lg font-semibold">{{ __('Generating QR Code...') }}</p>
-                <p class="text-sm text-base-content/60 mt-2">{{ __('Please wait') }}</p>
+              <div x-show="!qrCode && !connected && !error" class="text-center p-8 border border-primary/20 rounded-3xl bg-base-300/30 relative overflow-hidden backdrop-blur-md max-w-md mx-auto w-full">
+                <!-- Glow effect -->
+                <div class="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent"></div>
+                
+                <!-- Hacker-style scanning line -->
+                <div class="w-full h-0.5 bg-primary/45 absolute left-0 top-0 scanner-line"></div>
+                
+                <!-- Tech loader icon -->
+                <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                  <div class="absolute inset-0 rounded-full border-4 border-dashed border-primary animate-spin" style="animation-duration: 8s;"></div>
+                  <div class="absolute inset-2 rounded-full border-4 border-dotted border-secondary animate-spin" style="animation-duration: 4s; animation-direction: reverse;"></div>
+                  <span class="material-symbols-outlined text-4xl text-primary animate-pulse">terminal</span>
+                </div>
+                
+                <p class="text-lg font-bold tracking-wider text-primary font-mono mb-2 uppercase">{{ __('Initializing Socket...') }}</p>
+                <div class="font-mono text-[10px] text-base-content/60 space-y-1 mb-2 text-left bg-base-300/50 p-4 rounded-xl border border-base-content/5 max-h-[140px] overflow-y-auto">
+                  <template x-for="log in terminalLogs">
+                    <div x-text="log" class="font-mono"></div>
+                  </template>
+                  <div class="animate-pulse font-mono text-primary/70">>> CONNECTING_WS_STREAM<span class="inline-block w-1.5 h-3 bg-primary ml-1 animate-pulse"></span></div>
+                </div>
               </div>
 
               <!-- QR Code Display -->
               <div x-show="qrCode && !connected" class="flex flex-col items-center">
-                <div class="bg-white p-6 rounded-2xl shadow-lg mb-4">
-                  <img :src="qrCode" alt="QR Code" class="w-64 h-64" />
+                <div class="relative p-6 bg-white rounded-2xl border-4 border-primary/20 shadow-2xl mb-6 group/qr overflow-hidden">
+                  <!-- Laser Line Scanning Effect -->
+                  <div class="absolute left-0 right-0 h-0.5 bg-primary/60 scanner-line z-10"></div>
+                  <!-- Corner Neon brackets -->
+                  <div class="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-primary scanner-corner"></div>
+                  <div class="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-primary scanner-corner"></div>
+                  <div class="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-primary scanner-corner"></div>
+                  <div class="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-primary scanner-corner"></div>
+                  
+                  <img :src="qrCode" alt="QR Code" class="w-64 h-64 relative z-0" />
                 </div>
-                <p class="text-center font-semibold">{{ __('Scan this code with WhatsApp') }}</p>
+                <p class="text-center font-mono font-bold uppercase tracking-wider text-primary animate-pulse mb-1">
+                  <span class="inline-block w-2.5 h-2.5 rounded-full bg-primary animate-ping mr-1"></span>
+                  {{ __('Waiting for Scan...') }}
+                </p>
+                <p class="text-center text-xs text-base-content/50 font-mono">{{ __('Navigate to WhatsApp > Linked Devices') }}</p>
               </div>
 
               <!-- Connected State -->
-              <div x-show="connected" class="text-center">
-                <div class="w-24 h-24 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
-                  <span class="material-icons text-6xl text-success">check_circle</span>
+              <div x-show="connected" class="text-center p-8 border border-success/30 rounded-3xl bg-success/5 backdrop-blur-md max-w-md mx-auto w-full">
+                <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                  <div class="absolute inset-0 rounded-full border border-success/40 animate-ping"></div>
+                  <div class="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center">
+                    <span class="material-icons text-4xl text-success">wifi</span>
+                  </div>
                 </div>
-                <h3 class="text-2xl font-bold text-success mb-2">{{ __('Connected!') }}</h3>
-                <p class="text-base-content/60">{{ __('Your device is now connected') }}</p>
+                <h3 class="text-2xl font-black text-success font-mono uppercase tracking-wider mb-2">[ {{ __('Secure Connected') }} ]</h3>
+                <div class="font-mono text-xs text-success/70 space-y-1 bg-success/5 p-4 rounded-xl border border-success/10 text-left">
+                  <div>SYSTEM_STATUS: ONLINE</div>
+                  <div>IP: SECURED</div>
+                  <div>DEVICE_AGENT: READY_TO_BROADCAST</div>
+                </div>
               </div>
 
               <!-- Error State -->
-              <div x-show="error" class="text-center">
-                <div class="w-24 h-24 rounded-full bg-error/20 flex items-center justify-center mx-auto mb-4">
-                  <span class="material-icons text-6xl text-error">error</span>
+              <div x-show="error" class="text-center p-8 border border-error/30 rounded-3xl bg-error/5 backdrop-blur-md max-w-md mx-auto w-full cyber-glow-red">
+                <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
+                  <div class="absolute inset-0 rounded-full border-2 border-dashed border-error animate-spin" style="animation-duration: 6s;"></div>
+                  <div class="w-16 h-16 rounded-full bg-error/15 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-4xl text-error animate-pulse">dangerous</span>
+                  </div>
                 </div>
-                <h3 class="text-2xl font-bold text-error mb-2">{{ __('Connection Failed') }}</h3>
-                <p class="text-base-content/60" x-text="errorMessage"></p>
-                <button @click="reconnect()" class="btn btn-primary mt-4">
-                  {{ __('Try Again') }}
+                <h3 class="text-2xl font-black text-error font-mono uppercase tracking-wider mb-2">[ {{ __('CONNECTION_TERMINATED') }} ]</h3>
+                
+                <div class="font-mono text-[10px] text-error/80 space-y-1 bg-error/10 p-4 rounded-xl border border-error/20 text-left mb-4">
+                  <div class="font-bold">>> ERROR_CODE: SOCKET_FAILED</div>
+                  <div>>> DIAGNOSTICS: <span x-text="errorMessage || 'HANDSHAKE_TIMEOUT'"></span></div>
+                  <div class="animate-pulse text-error">>> SYSTEM: ACCESS_DENIED. PROTOCOL_ABORTED.</div>
+                </div>
+                
+                <button @click="reconnect()" class="btn btn-error btn-outline rounded-full font-mono uppercase tracking-wider gap-2">
+                  <span class="material-symbols-outlined">restart_alt</span>
+                  {{ __('Reboot socket') }}
                 </button>
               </div>
             </div>
@@ -153,7 +210,7 @@
                            maxlength="20" />
                     <button @click="requestPairing()" 
                             :disabled="!phoneNumber || phoneNumber.length < 10 || loading"
-                            class="btn btn-primary btn-lg gap-2 min-w-[150px]">
+                            class="btn btn-primary btn-lg gap-2 min-w-[150px] rounded-full">
                       <span x-show="!loading" class="material-icons">phone</span>
                       <span x-show="loading" class="loading loading-spinner"></span>
                       <span x-text="loading ? '{{ __('Getting...') }}' : '{{ __('Get Code') }}'"></span>
@@ -199,14 +256,14 @@
 
                   <!-- Copy Button -->
                   <button @click="navigator.clipboard.writeText(pairingCode); $dispatch('notify', {message: 'Code copied!'})" 
-                          class="btn btn-outline btn-primary gap-2 mb-2">
+                          class="btn btn-outline btn-primary gap-2 mb-2 rounded-full">
                     <span class="material-icons text-sm">content_copy</span>
                     {{ __('Copy Code') }}
                   </button>
                   
                   <!-- Retry Button -->
                   <button @click="requestPairing()" 
-                          class="btn btn-outline gap-2">
+                          class="btn btn-outline gap-2 rounded-full">
                     <span class="material-icons text-sm">refresh</span>
                     {{ __('Get New Code') }}
                   </button>
@@ -375,8 +432,12 @@ function deviceConnection() {
     loading: false,
     deviceId: '{{ $device->uuid }}',
     pollingInterval: null,
+    terminalLogs: ['>> SYSTEM: INITIATING DIAL PROTOCOLS...'],
+    logTimer: null,
 
     init() {
+      // Start terminal log simulation
+      this.simulateLogs();
       // Check existing session first
       this.checkExistingSession();
     },
@@ -430,6 +491,10 @@ function deviceConnection() {
         this.pollingInterval = null;
         console.log('Polling stopped');
       }
+      if (this.logTimer) {
+        clearInterval(this.logTimer);
+        this.logTimer = null;
+      }
 
       // Reset states (but not connected status)
       this.qrCode = null;
@@ -443,9 +508,34 @@ function deviceConnection() {
 
       // Only create new session if not connected
       if (newMethod === 'qr' && !this.connected) {
+        this.simulateLogs();
         this.connectDevice();
       }
       // For phone pairing, wait for user to click "Get Code"
+    },
+
+    simulateLogs() {
+      const messages = [
+        '>> ACCESS_TOKEN: VALIDATING...',
+        '>> SOCKET_HOST: DIALING API SOCKET...',
+        '>> TCP_ESTABLISHED: SHAKEHAND INITIATED...',
+        '>> CRYPTO_SHIELD: INJECTING ENCRYPTION...',
+        '>> SESSION_SECRET: VERIFIED...',
+        '>> STREAM_CHANNEL: LISTENING FOR PACKETS...',
+        '>> SYSTEM: SYNCING WITH BAILEYS ENGINE...',
+        '>> GENERATING_QR_STREAM_PAYLOAD...'
+      ];
+      let idx = 0;
+      this.terminalLogs = ['>> SYSTEM: INITIATING DIAL PROTOCOLS...'];
+      if (this.logTimer) clearInterval(this.logTimer);
+      this.logTimer = setInterval(() => {
+        if (idx < messages.length) {
+          this.terminalLogs.push(messages[idx]);
+          idx++;
+        } else {
+          clearInterval(this.logTimer);
+        }
+      }, 500);
     },
 
     async deleteSessionAndReconnect() {
@@ -627,6 +717,7 @@ function deviceConnection() {
       this.qrCode = null;
       this.pairingCode = null;
       this.phoneNumber = '';
+      this.simulateLogs();
       this.connectDevice();
     },
 

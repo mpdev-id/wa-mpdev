@@ -42,7 +42,7 @@
           </div>
           <h3 class="text-xl font-bold mb-2">{{ __('No Devices Connected') }}</h3>
           <p class="text-base-content/60 mb-6">{{ __('Connect a device to enable AI Response') }}</p>
-          <a href="{{ route('user.device.index') }}" class="btn btn-primary">
+          <a href="{{ route('user.device.index') }}" class="btn btn-primary rounded-full">
             <span class="material-icons text-lg">add</span>
             {{ __('Add Device') }}
           </a>
@@ -281,14 +281,14 @@
                 <!-- Actions -->
                 <div class="divider"></div>
                 <div class="flex gap-3">
-                  <button type="submit" class="btn btn-primary flex-1">
+                  <button type="submit" class="btn btn-primary flex-1 rounded-full">
                     <span class="material-icons text-lg">save</span>
                     {{ __('Save Configuration') }}
                   </button>
                   
                   @if($aiSetting)
                     <button type="button" 
-                            class="btn btn-outline btn-error delete-ai-btn"
+                            class="btn btn-outline btn-error delete-ai-btn rounded-full"
                             data-ai-id="{{ $aiSetting->id }}">
                       <span class="material-icons text-lg">delete_outline</span>
                       {{ __('Delete') }}

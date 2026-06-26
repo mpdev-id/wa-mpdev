@@ -11,7 +11,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Support Tickets') }}</h1>
       <p class="text-base-content/60">{{ __('Get help from our support team') }}</p>
     </div>
-    <a href="{{ route('user.support.create') }}" class="btn btn-primary gap-2">
+    <a href="{{ route('user.support.create') }}" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('New Ticket') }}
     </a>
@@ -122,7 +122,7 @@
     <p class="text-base-content/60 mb-6 text-center max-w-md">
       {{ __('You haven\'t created any support tickets yet') }}
     </p>
-    <a href="{{ route('user.support.create') }}" class="btn btn-primary gap-2">
+    <a href="{{ route('user.support.create') }}" class="btn btn-primary gap-2 rounded-full">
       <span class="material-icons text-sm">add</span>
       {{ __('Create First Ticket') }}
     </a>

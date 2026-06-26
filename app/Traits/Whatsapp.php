@@ -261,13 +261,17 @@ trait Whatsapp
         }
         elseif ($type == 'text-with-media') {
             $content['caption']=$message;
-            $explode=explode('.', $data['attachment']);
-            $file_type=strtolower(end($explode));
+            $file_path = parse_url($data['attachment'], PHP_URL_PATH);
+            $file_type = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
             $extentions=[
                 'jpg'=>'image',
                 'jpeg'=>'image',
                 'png'=>'image',
                 'webp'=>'image',
+                'gif'=>'image',
+                'mp4'=>'video',
+                'mov'=>'video',
+                'avi'=>'video',
                 'pdf'=>'document',
                 'docx'=>'document',
                 'xlsx'=>'document',
@@ -275,7 +279,8 @@ trait Whatsapp
                 'txt'=>'document'
             ];
 
-            $content[$extentions[$file_type]]=['url' => asset($data['attachment'])];
+            $media_type = $extentions[$file_type] ?? 'document';
+            $content[$media_type]=['url' => asset($data['attachment'])];
 
         }
         elseif ($type == 'text-with-button') {
@@ -362,18 +367,22 @@ trait Whatsapp
             );
         }
         elseif ($type == 'text-with-vcard') {
-            $vcard='BEGIN:VCARD\n' // metadata of the contact card
-            . 'VERSION:3.0\n'
-            . 'FN:'.$data['full_name'].'\n' // full name
-            . 'ORG:'.$data['org_name'].';\n' // the organization of the contact
-            . 'TEL;type=CELL;type=VOICE;waid='.$data['contact_number'].':'.$data['wa_number'].'\n' // WhatsApp ID + phone number
-            . 'END:VCARD';
-
+            $wa_id = preg_replace('/\D+/', '', $data['wa_number'] ?? '');
+            $vcard = "BEGIN:VCARD\n"
+                . "VERSION:3.0\n"
+                . "FN:" . ($data['full_name'] ?? '') . "\n"
+                . "ORG:" . ($data['org_name'] ?? '') . ";\n"
+                . "TEL;type=CELL;type=VOICE;waid=" . $wa_id . ":" . ($data['contact_number'] ?? '') . "\n"
+                . "END:VCARD";
 
             $content = [
              "contacts" => [
-               "displayName" => "maruf",
-               "contacts" => [[$vcard]]
+               "displayName" => $data['display_name'] ?? 'Contact',
+               "contacts" => [
+                   [
+                       "vcard" => $vcard
+                   ]
+               ]
              ]
             ];
         }

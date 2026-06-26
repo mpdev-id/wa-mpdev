@@ -20,7 +20,7 @@
       </div>
       <p class="text-base-content/60">{{ $support->subject }}</p>
     </div>
-    <a href="{{ route('user.support.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.support.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back') }}
     </a>
@@ -124,7 +124,7 @@
         </div>
 
         <div class="flex justify-end gap-3">
-          <button type="submit" class="btn btn-primary gap-2">
+          <button type="submit" class="btn btn-primary gap-2 rounded-full">
             <span class="material-icons text-sm">send</span>
             {{ __('Send Reply') }}
           </button>

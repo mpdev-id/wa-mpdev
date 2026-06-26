@@ -12,7 +12,7 @@
          <div class="form-row mb-1">
             <label class="col-6">{{ __('Message:') }}</label>
             <div class="col-6">
-               <button type="button" data-toggle="modal" data-target="#help-modal" class="btn btn-neutral btn-sm float-right"><i class="fas fas fa-code"></i>&nbsp{{ __('Shortcodes') }}</button>
+               <button type="button" data-toggle="modal" data-target="#help-modal" class="btn btn-neutral btn-sm float-right rounded-full"><i class="fas fas fa-code"></i>&nbsp{{ __('Shortcodes') }}</button>
             </div>
          </div>
          <div class="form-group">
@@ -102,7 +102,7 @@
                   <div class="card-header">
                      <h4>{{ __('Button') }} {{ $key+1 }}</h4>
                      <div class="card-header-action">
-                        <a href="javascript:void(0)" data-target=".exist-action{{ $key+1 }}" class="btn btn-sm btn-danger remove-action">
+                        <a href="javascript:void(0)" data-target=".exist-action{{ $key+1 }}" class="btn btn-sm btn-danger remove-action rounded-full">
                         <i class="fas fa-trash"></i>
                         </a>
                      </div>
@@ -155,7 +155,7 @@
                </label>
             </div>
             <div class="col-sm-4">
-               <button type="submit" class="btn btn-outline-primary submit-button float-right">{{ __('Save Template') }}</button>
+               <button type="submit" class="btn btn-outline-primary submit-button float-right rounded-full">{{ __('Save Template') }}</button>
             </div>
          </div>
       </div>

@@ -4,9 +4,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css" integrity="sha512-qveKnGrvOChbSzAdtSs8p69eoLegyh+1hwOMbmpCViIwj7rn4oJjdmMvWOuyQlTOZgTlZA0N2PXA7iA8/2TUYA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
 [x-cloak] { display: none !important; }
-.glass-card {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl;
-}
 .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
 }
@@ -47,15 +44,15 @@
       <p class="text-base-content/60 text-lg font-medium">{{ __('Create and launch high-impact messaging campaigns') }}</p>
     </div>
     <div class="flex flex-wrap gap-3">
-      <button onclick="addRecord.showModal()" class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20 gap-2 px-6">
+      <button onclick="addRecord.showModal()" class="btn btn-primary btn-lg shadow-xl shadow-primary/20 gap-2 px-6 rounded-full">
         <span class="material-symbols-outlined">add_circle</span>
         <span class="font-bold">{{ __('Add Record') }}</span>
       </button>
-      <button onclick="import_from_contact.showModal()" class="btn btn-secondary btn-lg rounded-2xl shadow-xl shadow-secondary/20 gap-2 px-6">
+      <button onclick="import_from_contact.showModal()" class="btn btn-secondary btn-lg shadow-xl shadow-secondary/20 gap-2 px-6 rounded-full">
         <span class="material-symbols-outlined">group</span>
         <span class="font-bold">{{ __('From Contacts') }}</span>
       </button>
-      <button onclick="exampleModal.showModal()" class="btn btn-accent btn-lg rounded-2xl shadow-xl shadow-accent/20 gap-2 px-6">
+      <button onclick="exampleModal.showModal()" class="btn btn-accent btn-lg shadow-xl shadow-accent/20 gap-2 px-6 rounded-full">
         <span class="material-symbols-outlined">upload_file</span>
         <span class="font-bold">{{ __('Import CSV') }}</span>
       </button>
@@ -132,7 +129,7 @@
             <div id="slider" class="mx-2"></div>
           </div>
 
-          <button class="btn btn-primary btn-lg h-20 px-10 rounded-3xl shadow-2xl shadow-primary/30 gap-3 group send_now">
+          <button class="btn btn-primary btn-lg h-20 px-10 shadow-2xl shadow-primary/30 gap-3 group send_now rounded-full">
             <span class="font-black text-lg uppercase tracking-wider">{{ __('Launch Now') }}</span>
             <span class="material-symbols-outlined text-3xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">rocket_launch</span>
           </button>
@@ -183,7 +180,7 @@
           <h5 class="text-2xl font-black tracking-tight">{{ __('Import from CSV') }}</h5>
         </div>
         <form method="dialog">
-          <button class="btn btn-ghost btn-circle">
+          <button class="btn btn-ghost btn-circle rounded-full">
             <span class="material-symbols-outlined">close</span>
           </button>
         </form>
@@ -217,7 +214,7 @@
 
     <div class="p-8 pt-0 border-t border-base-200/50">
         <form method="dialog" class="w-full">
-          <button class="btn btn-outline btn-lg w-full rounded-2xl">{{ __('Close') }}</button>
+          <button class="btn btn-outline btn-lg w-full rounded-full">{{ __('Close') }}</button>
         </form>
       </div>
     </div>
@@ -238,7 +235,7 @@
             </div>
             <h5 class="text-2xl font-black tracking-tight">{{ __('Import from Contacts') }}</h5>
           </div>
-          <div class="btn btn-ghost btn-circle" onclick="import_from_contact.close()">
+          <div class="btn btn-ghost btn-circle rounded-full" onclick="import_from_contact.close()">
             <span class="material-symbols-outlined">close</span>
           </div>
         </div>
@@ -278,8 +275,8 @@
       </div>
 
       <div class="grid grid-cols-2 gap-4 p-8 pt-0 border-t border-base-200/50">
-          <button type="button" class="btn btn-outline btn-lg rounded-2xl" onclick="import_from_contact.close()">{{ __('Close') }}</button>
-          <button type="submit" class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20">{{ __('Import Now') }}</button>
+          <button type="button" class="btn btn-outline btn-lg rounded-full" onclick="import_from_contact.close()">{{ __('Close') }}</button>
+          <button type="submit" class="btn btn-primary btn-lg shadow-xl shadow-primary/20 rounded-full">{{ __('Import Now') }}</button>
         </div>
       </div>
     </form>
@@ -300,7 +297,7 @@
           <h5 class="text-2xl font-black tracking-tight">{{ __('Add Custom Row') }}</h5>
         </div>
         <form method="dialog">
-          <button class="btn btn-ghost btn-circle">
+          <button class="btn btn-ghost btn-circle rounded-full">
             <span class="material-symbols-outlined">close</span>
           </button>
         </form>
@@ -341,9 +338,9 @@
 
     <div class="grid grid-cols-2 gap-4 p-8 pt-0 border-t border-base-200/50">
       <form method="dialog" class="w-full">
-        <button class="btn btn-outline btn-lg w-full rounded-2xl">{{ __('Close') }}</button>
+        <button class="btn btn-outline btn-lg w-full rounded-full">{{ __('Close') }}</button>
       </form>
-      <button class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20 add_custom_row">{{ __('Add Now') }}</button>
+      <button class="btn btn-primary btn-lg shadow-xl shadow-primary/20 add_custom_row rounded-full">{{ __('Add Now') }}</button>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">

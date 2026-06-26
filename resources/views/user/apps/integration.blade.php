@@ -13,7 +13,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('API Integration') }}</h1>
       <p class="text-base-content/60">{{ __('REST API documentation and code examples') }}</p>
     </div>
-    <a href="{{ route('user.apps.index') }}" class="btn btn-outline gap-2">
+    <a href="{{ route('user.apps.index') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Back to Apps') }}
     </a>
@@ -32,7 +32,7 @@
           <p class="text-sm font-medium text-gray-600 mb-2">{{ __('API Endpoint') }}</p>
           <div class="flex gap-2">
             <input type="text" class="input input-bordered input-sm w-full font-mono text-xs" value="{{ route('api.create.message') }}" readonly />
-            <button onclick="copyText('{{ route('api.create.message') }}')" class="btn btn-sm btn-square btn-outline">
+            <button onclick="copyText('{{ route('api.create.message') }}')" class="btn btn-sm btn-square btn-outline rounded-full">
               <span class="material-icons text-sm">content_copy</span>
             </button>
           </div>
@@ -42,7 +42,7 @@
           <p class="text-sm font-medium text-gray-600 mb-2">{{ __('App Key') }}</p>
           <div class="flex gap-2">
             <input type="text" class="input input-bordered input-sm w-full font-mono text-xs" value="{{ $key }}" readonly />
-            <button onclick="copyText('{{ $key }}')" class="btn btn-sm btn-square btn-outline">
+            <button onclick="copyText('{{ $key }}')" class="btn btn-sm btn-square btn-outline rounded-full">
               <span class="material-icons text-sm">content_copy</span>
             </button>
           </div>
@@ -57,15 +57,15 @@
       <h2 class="card-title mb-4">{{ __('Code Examples') }}</h2>
       
       <!-- Tabs -->
-      <div class="tabs tabs-boxed bg-base-200 mb-4" role="tablist">
-        <a class="tab tab-active" data-tab="curl">cURL</a>
-        <a class="tab" data-tab="php">PHP</a>
-        <a class="tab" data-tab="nodejs">Node.js</a>
-        <a class="tab" data-tab="python">Python</a>
+      <div class="tabs tabs-boxed bg-base-200 mb-4" role="tablist" id="code-tabs">
+        <a class="tab tab-active" data-tab="curl" role="tab">cURL</a>
+        <a class="tab" data-tab="php" role="tab">PHP</a>
+        <a class="tab" data-tab="nodejs" role="tab">Node.js</a>
+        <a class="tab" data-tab="python" role="tab">Python</a>
       </div>
 
       <!-- cURL Tab -->
-      <div id="tab-curl" class="tab-content">
+      <div id="tab-curl" class="tab-content-panel">
         <h3 class="font-bold text-lg mb-3">{{ __('Text Message Only') }}</h3>
         <div class="mockup-code mb-6">
           <pre><code>curl --location --request POST '{{ route('api.create.message') }}' \
@@ -87,7 +87,7 @@
       </div>
 
       <!-- PHP Tab -->
-      <div id="tab-php" class="tab-content hidden">
+      <div id="tab-php" class="tab-content-panel" style="display:none">
         <h3 class="font-bold text-lg mb-3">{{ __('GET Method') }}</h3>
         <div class="mockup-code mb-6">
           <pre><code>{{ route('api.create.message') }}?appkey={{ $key }}&authkey={{ Auth::user()->authkey }}&to=RECEIVER_NUMBER&message=Example message</code></pre>
@@ -116,7 +116,7 @@ echo $response;</code></pre>
       </div>
 
       <!-- Node.js Tab -->
-      <div id="tab-nodejs" class="tab-content hidden">
+      <div id="tab-nodejs" class="tab-content-panel" style="display:none">
         <h3 class="font-bold text-lg mb-3">{{ __('Using Request Module') }}</h3>
         <div class="mockup-code">
           <pre><code>var request = require('request');
@@ -140,7 +140,7 @@ request(options, function (error, response) {
       </div>
 
       <!-- Python Tab -->
-      <div id="tab-python" class="tab-content hidden">
+      <div id="tab-python" class="tab-content-panel" style="display:none">
         <h3 class="font-bold text-lg mb-3">{{ __('Using Requests') }}</h3>
         <div class="mockup-code">
           <pre><code>import requests
@@ -264,19 +264,22 @@ print(response.text)</code></pre>
 
 @push('js')
 <script>
-// Tab switching
-document.querySelectorAll('.tab').forEach(tab => {
+// Tab switching — use inline style to bypass Bootstrap's tab-content override
+document.querySelectorAll('#code-tabs .tab').forEach(tab => {
   tab.addEventListener('click', function() {
     const targetId = this.getAttribute('data-tab');
-    
+
     // Remove active from all tabs
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
-    // Hide all tab contents
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-    
-    // Show selected tab
+    document.querySelectorAll('#code-tabs .tab').forEach(t => t.classList.remove('tab-active'));
+    // Hide all panels via inline style
+    document.querySelectorAll('.tab-content-panel').forEach(panel => {
+      panel.style.display = 'none';
+    });
+
+    // Show selected panel
     this.classList.add('tab-active');
-    document.getElementById('tab-' + targetId).classList.remove('hidden');
+    const target = document.getElementById('tab-' + targetId);
+    if (target) target.style.display = 'block';
   });
 });
 

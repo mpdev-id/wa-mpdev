@@ -13,7 +13,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Profile Settings') }}</h1>
       <p class="text-base-content/60">{{ __('Manage your account information and security') }}</p>
     </div>
-    <a href="{{ url('user/dashboard') }}" class="btn btn-outline gap-2">
+    <a href="{{ url('user/dashboard') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Dashboard') }}
     </a>
@@ -97,7 +97,7 @@
 
         <!-- Submit Button -->
         <div class="flex justify-end mt-6 pt-6 border-t border-base-200">
-          <button type="submit" class="btn btn-primary submit-button gap-2">
+          <button type="submit" class="btn btn-primary submit-button gap-2 rounded-full">
             <span class="material-icons text-sm">save</span>
             {{ __('Update Profile') }}
           </button>
@@ -191,7 +191,7 @@
 
         <!-- Submit Button -->
         <div class="flex justify-end mt-6 pt-6 border-t border-base-200">
-          <button type="submit" class="btn btn-error submit-button gap-2">
+          <button type="submit" class="btn btn-error submit-button gap-2 rounded-full">
             <span class="material-icons text-sm">lock_reset</span>
             {{ __('Update Password') }}
           </button>

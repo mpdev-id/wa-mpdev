@@ -13,7 +13,7 @@
       <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('API Authentication') }}</h1>
       <p class="text-base-content/60">{{ __('Manage your API authentication key') }}</p>
     </div>
-    <a href="{{ url('user/dashboard') }}" class="btn btn-outline gap-2">
+    <a href="{{ url('user/dashboard') }}" class="btn btn-outline gap-2 rounded-full">
       <span class="material-icons text-sm">arrow_back</span>
       {{ __('Dashboard') }}
     </a>
@@ -51,7 +51,7 @@
           />
           <button 
             onclick="copyToClipboard()" 
-            class="btn btn-square btn-outline"
+            class="btn btn-square btn-outline rounded-full"
             title="{{ __('Copy to clipboard') }}"
           >
             <span class="material-icons">content_copy</span>
@@ -76,7 +76,7 @@
       <div class="flex justify-end mt-6 pt-6 border-t border-base-200">
         <button 
           @click="showRegenerateConfirm = true" 
-          class="btn btn-error gap-2"
+          class="btn btn-error gap-2 rounded-full"
         >
           <span class="material-icons text-sm">refresh</span>
           {{ __('Regenerate API Key') }}
@@ -128,7 +128,7 @@
             <h4 class="font-semibold">{{ __('Full Documentation') }}</h4>
             <p class="text-sm">{{ __('Visit our API documentation for complete reference') }}</p>
           </div>
-          <a href="{{ url('/docs/api') }}" target="_blank" class="btn btn-sm btn-primary">
+          <a href="{{ url('/docs/api') }}" target="_blank" class="btn btn-sm btn-primary rounded-full">
             {{ __('View Docs') }}
           </a>
         </div>
@@ -160,10 +160,10 @@
         @method('PUT')
         
         <div class="modal-action">
-          <button type="button" @click="showRegenerateConfirm = false" class="btn btn-outline">
+          <button type="button" @click="showRegenerateConfirm = false" class="btn btn-outline rounded-full">
             {{ __('Cancel') }}
           </button>
-          <button type="submit" class="btn btn-error submit-button gap-2">
+          <button type="submit" class="btn btn-error submit-button gap-2 rounded-full">
             <span class="material-icons text-sm">refresh</span>
             {{ __('Yes, Regenerate') }}
           </button>
