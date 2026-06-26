@@ -15,6 +15,7 @@ class AiResponse extends Model
         'ai_type',
         'gemini_api_key',
         'is_active',
+        'use_ai_label',
         'reply_to_groups',
         'contact_filter_mode',
         'contact_numbers',
@@ -27,6 +28,7 @@ class AiResponse extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'use_ai_label' => 'boolean',
         'reply_to_groups' => 'boolean',
         'settings' => 'array',
         'max_tokens' => 'integer',

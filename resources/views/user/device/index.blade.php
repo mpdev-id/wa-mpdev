@@ -129,7 +129,17 @@
         </div>
 
         <!-- Status Badge -->
-        <div class="card-actions">
+        <div class="card-actions flex flex-col gap-2">
+          <!-- AI Label Toggle -->
+          <div class="flex items-center justify-between w-full p-2 bg-base-50 rounded-lg border border-base-200">
+            <span class="text-sm font-medium text-gray-700">{{ __('Chat Label AI') }}</span>
+            <label class="swap swap-flip ai-label-toggle cursor-pointer" data-id="{{ $device->uuid }}">
+              <input type="checkbox" {{ optional($device->aiResponse)->use_ai_label ? 'checked' : '' }} />
+              <div class="swap-on text-success font-bold text-xs uppercase">{{ __('ON') }}</div>
+              <div class="swap-off text-gray-400 font-bold text-xs uppercase">{{ __('OFF') }}</div>
+            </label>
+          </div>
+
           <a href="{{ route('user.device.scan',$device->uuid) }}" class="w-full">
             <div class="flex items-center justify-between p-3 rounded-xl transition-all duration-200 border border-transparent hover:border-primary/20 {{ $device->status == 1 ? 'bg-success/10 text-success' : 'bg-error/10 text-error' }} status-indicator-container">
               <span class="text-sm font-mono tracking-wider font-semibold">{{ __('STATUS') }}</span>
@@ -174,4 +184,50 @@
 
 @push('js')
 <script src="{{ asset('assets/js/pages/user/device.js') }}"></script>
+<script>
+$(document).ready(function() {
+    $('.ai-label-toggle input').on('change', function() {
+        var $toggle = $(this);
+        var uuid = $toggle.closest('.ai-label-toggle').data('id');
+        var isChecked = $toggle.is(':checked');
+        
+        $toggle.prop('disabled', true);
+        
+        $.ajax({
+            url: '/user/device/' + uuid + '/toggle-ai-label',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                $toggle.prop('disabled', false);
+                if(response.success) {
+                    Toastify({
+                        text: response.message,
+                        duration: 3000,
+                        close: true,
+                        gravity: "bottom", 
+                        position: "center", 
+                        backgroundColor: "#4f46e5",
+                    }).showToast();
+                } else {
+                    $toggle.prop('checked', !isChecked);
+                }
+            },
+            error: function(xhr) {
+                $toggle.prop('disabled', false);
+                $toggle.prop('checked', !isChecked);
+                Toastify({
+                    text: 'Failed to update AI Label status',
+                    duration: 3000,
+                    close: true,
+                    gravity: "bottom", 
+                    position: "center", 
+                    backgroundColor: "#ef4444",
+                }).showToast();
+            }
+        });
+    });
+});
+</script>
 @endpush

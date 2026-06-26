@@ -49,6 +49,7 @@
   "scripts": {
     "start": "node .",
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "postinstall": "node patch-baileys.js"
   }
 }

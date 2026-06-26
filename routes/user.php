@@ -18,6 +18,7 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['auth','user
    Route::post('check-session/{id}',            [USER\DeviceController::class,'checkSession'])->name('check-session');
    Route::post('/logout-session/{id}',          [USER\DeviceController::class,'logoutSession'])->name('logout-session');
    Route::post('/device-statics',               [USER\DeviceController::class,'deviceStatics'])->name('device-statics');
+   Route::post('/device/{id}/toggle-ai-label',  [USER\DeviceController::class,'toggleAiLabel'])->name('device.toggle-ai-label');
   
    Route::get('/device/chats/{uuid}',           [USER\ChatController::class,'chats']);
    Route::post('/get-chats/{uuid}',             [USER\ChatController::class,'chatHistory']);

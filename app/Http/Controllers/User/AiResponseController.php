@@ -59,6 +59,7 @@ class AiResponseController extends Controller
             [
                 'ai_type' => $request->ai_type,
                 'gemini_api_key' => $request->ai_type === 'custom' ? $request->gemini_api_key : null,
+                'use_ai_label' => $request->use_ai_label ?? false,
                 'reply_to_groups' => $request->reply_to_groups ?? false,
                 'contact_filter_mode' => $request->contact_filter_mode ?? 'all',
                 'contact_numbers' => $request->contact_numbers,

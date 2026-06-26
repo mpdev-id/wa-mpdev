@@ -38,4 +38,9 @@ class Device extends Model
     {
         return $this->hasMany('App\Models\Smstransaction');
     }
+
+    public function aiResponse()
+    {
+        return $this->hasOne(AiResponse::class);
+    }
 }

@@ -64,7 +64,8 @@ class AiResponseController extends Controller
             }
 
             return response()->json([
-                'reply' => $reply
+                'reply' => $reply,
+                'use_ai_label' => $aiResponse->use_ai_label
             ], 200);
 
         } catch (\Exception $e) {

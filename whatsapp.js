@@ -220,6 +220,9 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
                 try {
                   await sock.sendMessage(message.key.remoteJid, {
                     text: aiResponse.data.reply
+                  }, { 
+                    quoted: message,
+                    markAsAi: aiResponse.data.use_ai_label === true 
                   });
                   logger.info('AI auto-reply sent', {
                     to: message.key.remoteJid,

@@ -227,6 +227,33 @@ class DeviceController extends Controller
         }
     }
 
+    public function toggleAiLabel(Request $request, $id)
+    {
+        $device = Device::where('user_id', Auth::id())->where('uuid', $id)->first();
+        if (!$device) {
+            return response()->json(['success' => false, 'message' => 'Device not found'], 404);
+        }
+
+        $aiResponse = \App\Models\AiResponse::firstOrCreate(
+            ['user_id' => Auth::id(), 'device_id' => $device->id],
+            [
+                'ai_type' => 'default',
+                'model' => 'gemini-2.5-flash',
+                'use_ai_label' => false,
+                'is_active' => true,
+            ]
+        );
+
+        $aiResponse->use_ai_label = !$aiResponse->use_ai_label;
+        $aiResponse->save();
+
+        return response()->json([
+            'success' => true, 
+            'use_ai_label' => $aiResponse->use_ai_label,
+            'message' => 'AI Label status updated successfully'
+        ], 200);
+    }
+
     public function checkSession($id)
     {
        $device=Device::where('user_id',Auth::id())->where('uuid',$id)->first();
