@@ -12,6 +12,13 @@
 
   <title>{{ env('APP_NAME') }}</title>
   
+  <script>
+    (function() {
+      var theme = localStorage.getItem('app-theme') || 'hacker';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  
   <!-- Favicon -->
   <link rel="icon" href="{{ asset(get_option('primary_data',true)->favicon ?? '') }}" type="image/png">
   
@@ -261,6 +268,22 @@
       border-color: #e5e7eb !important;
       cursor: not-allowed !important;
     }
+
+    /* Professional Theme: Remove gradients */
+    html[data-theme="profesional"] [class*="bg-gradient-"] {
+      background-image: none !important;
+      background-color: var(--tw-gradient-from, var(--color-primary)) !important;
+    }
+    
+    html[data-theme="profesional"] .bg-gradient-to-br,
+    html[data-theme="profesional"] .bg-gradient-to-r,
+    html[data-theme="profesional"] .bg-gradient-to-tr,
+    html[data-theme="profesional"] .bg-gradient-to-bl,
+    html[data-theme="profesional"] .bg-gradient-to-t,
+    html[data-theme="profesional"] .bg-gradient-to-b,
+    html[data-theme="profesional"] .bg-gradient-to-l {
+      background-image: none !important;
+    }
   </style>
 </head>
 
@@ -431,6 +454,12 @@
 
   <script>
   (function() {
+    if (localStorage.getItem('app-theme') === 'profesional') {
+      var loader = document.getElementById('hacker-preloader');
+      if (loader) loader.remove();
+      return;
+    }
+
     // ── Random emoji icon ──
     const emojis = ['🤪','😵‍💫','🥴','😵','😱','🥸','🥹','🥺','🤠','🤥','🤓','🫣','👻','🤖','👾','🙊','🙈'];
     const icon = document.getElementById('preloader-icon');
@@ -574,36 +603,46 @@
 
   @if(!Request::is('admin/*'))
   <!-- Mobile Bottom Navigation -->
-  <div class="fixed bottom-0 left-0 right-0 md:hidden z-50 border-t border-base-300 bg-base-100 shadow-lg">
-    <div class="flex items-center justify-around h-16">
+  <div class="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-base-100 shadow-[0_-4px_25px_-5px_rgba(0,0,0,0.05)] border-t border-base-200/50" style="padding-bottom: env(safe-area-inset-bottom);">
+    <div class="flex items-center justify-around h-16 px-1">
       <a href="{{ route('user.dashboard.index') }}" 
-         class="btm-nav-item {{ Request::is('user/dashboard*') ? 'active' : '' }}">
-        <span class="material-icons text-2xl">dashboard</span>
-        <span class="btm-nav-label text-xs">Dashboard</span>
+         class="btm-nav-item group {{ Request::is('user/dashboard*') ? 'active' : '' }}">
+        <div class="btm-nav-icon-wrap group-active:scale-95">
+          <span class="material-icons text-[22px]">dashboard</span>
+        </div>
+        <span class="btm-nav-label">Dashboard</span>
       </a>
       
       <a href="{{ route('user.device.index') }}" 
-         class="btm-nav-item {{ Request::is('user/device*') ? 'active' : '' }}">
-        <span class="material-icons text-2xl">devices</span>
-        <span class="btm-nav-label text-xs">Devices</span>
+         class="btm-nav-item group {{ Request::is('user/device*') ? 'active' : '' }}">
+        <div class="btm-nav-icon-wrap group-active:scale-95">
+          <span class="material-icons text-[22px]">devices</span>
+        </div>
+        <span class="btm-nav-label">Devices</span>
       </a>
       
       <a href="{{ url('user/sent-text-message') }}" 
-         class="btm-nav-item {{ Request::is('user/sent-text-message*') ? 'active' : '' }}">
-        <span class="material-icons text-2xl">send</span>
-        <span class="btm-nav-label text-xs">Send</span>
+         class="btm-nav-item group {{ Request::is('user/sent-text-message*') ? 'active' : '' }}">
+        <div class="btm-nav-icon-wrap group-active:scale-95">
+          <span class="material-icons text-[22px]">send</span>
+        </div>
+        <span class="btm-nav-label">Send</span>
       </a>
       
       <a href="{{ route('user.chatbot.index') }}" 
-         class="btm-nav-item {{ Request::is('user/chatbot*') ? 'active' : '' }}">
-        <span class="material-icons text-2xl">smart_toy</span>
-        <span class="btm-nav-label text-xs">Chatbot</span>
+         class="btm-nav-item group {{ Request::is('user/chatbot*') ? 'active' : '' }}">
+        <div class="btm-nav-icon-wrap group-active:scale-95">
+          <span class="material-icons text-[22px]">smart_toy</span>
+        </div>
+        <span class="btm-nav-label">Chatbot</span>
       </a>
       
       <a href="{{ url('/user/profile') }}" 
-         class="btm-nav-item {{ Request::is('user/profile*') ? 'active' : '' }}">
-        <span class="material-icons text-2xl">person</span>
-        <span class="btm-nav-label text-xs">Profile</span>
+         class="btm-nav-item group {{ Request::is('user/profile*') ? 'active' : '' }}">
+        <div class="btm-nav-icon-wrap group-active:scale-95">
+          <span class="material-icons text-[22px]">person</span>
+        </div>
+        <span class="btm-nav-label">Profile</span>
       </a>
     </div>
   </div>
@@ -614,43 +653,45 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
-    padding: 8px 12px;
-    color: oklch(from var(--color-base-content) l c h / 0.5);
-    transition: all 0.2s ease;
-    position: relative;
+    gap: 4px;
+    height: 100%;
     flex: 1;
     text-decoration: none;
+    color: oklch(from var(--color-base-content) l c h / 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .btm-nav-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* padding: 4px 16px; */
+    border-radius: 9999px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btm-nav-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hover state for non-active */
+  .btm-nav-item:not(.active):hover {
+    color: oklch(from var(--color-base-content) l c h / 0.8);
+  }
+
+  /* Active State (Soft Pill Design) */
   .btm-nav-item.active {
-    background: linear-gradient(to top, oklch(from var(--color-primary) l c h / 0.15), transparent);
     color: var(--color-primary);
-    font-weight: 600;
   }
 
-  .btm-nav-item.active::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--color-primary);
-    border-radius: 0 0 3px 3px;
+  .btm-nav-item.active .btm-nav-icon-wrap {
+    background-color: oklch(from var(--color-primary) l c h / 0.12);
   }
 
-  .btm-nav-item.active .material-icons {
-    transform: scale(1.1);
-  }
-
-  .btm-nav-item:hover {
-    color: var(--color-primary);
-    background: oklch(from var(--color-primary) l c h / 0.08);
-  }
-
-  .btm-nav-item:active {
-    transform: scale(0.95);
+  .btm-nav-item.active .btm-nav-label {
+    font-weight: 700;
   }
   </style>
 
@@ -682,7 +723,18 @@
         <span class="material-icons text-base-content/60">settings</span>
         <span>Settings</span>
       </a>
-      <button class="logout-button flex items-center gap-3 px-4 py-3 hover:bg-error/10 text-error w-full rounded-full">
+      
+      <div class="divider my-1"></div>
+      
+      <button onclick="toggleTheme()" class="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-base-200 w-full text-left">
+        <div class="flex items-center gap-3">
+          <span class="material-icons text-base-content/60" id="mobile-theme-icon">dark_mode</span>
+          <span id="mobile-theme-text">Hacker (Dark)</span>
+        </div>
+        <span class="material-icons text-base-content/40">swap_horiz</span>
+      </button>
+
+      <button class="logout-button flex items-center gap-3 px-4 py-3 hover:bg-error/10 text-error w-full rounded-full mt-2">
         <span class="material-icons">logout</span>
         <span>Logout</span>
       </button>

@@ -93,6 +93,55 @@
                 <span class="text-xs font-medium text-base-content/80">{{ __('Reports') }}</span>
               </a>
             </div>
+            
+            <div class="divider my-1"></div>
+            
+            <button onclick="toggleTheme()" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-base-200 transition-colors">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-base-content">
+                  <span class="material-icons" id="theme-icon">dark_mode</span>
+                </div>
+                <div class="text-left">
+                  <div class="text-sm font-semibold text-base-content">{{ __('Theme') }}</div>
+                  <div class="text-xs text-base-content/60" id="theme-text">{{ __('Hacker (Dark)') }}</div>
+                </div>
+              </div>
+              <span class="material-icons text-base-content/40">swap_horiz</span>
+            </button>
+            
+            <script>
+              function toggleTheme() {
+                var currentTheme = localStorage.getItem('app-theme') || 'hacker';
+                var newTheme = currentTheme === 'hacker' ? 'profesional' : 'hacker';
+                localStorage.setItem('app-theme', newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme);
+                updateThemeUI();
+              }
+              
+              function updateThemeUI() {
+                var currentTheme = localStorage.getItem('app-theme') || 'hacker';
+                
+                var icon = document.getElementById('theme-icon');
+                var text = document.getElementById('theme-text');
+                var mobIcon = document.getElementById('mobile-theme-icon');
+                var mobText = document.getElementById('mobile-theme-text');
+                
+                var isPro = currentTheme === 'profesional';
+                
+                if(icon && text) {
+                  icon.textContent = isPro ? 'light_mode' : 'dark_mode';
+                  text.textContent = isPro ? 'Professional (Light)' : 'Hacker (Dark)';
+                }
+                
+                if(mobIcon && mobText) {
+                  mobIcon.textContent = isPro ? 'light_mode' : 'dark_mode';
+                  mobText.textContent = isPro ? 'Professional (Light)' : 'Hacker (Dark)';
+                }
+              }
+              
+              // Run on load
+              document.addEventListener('DOMContentLoaded', updateThemeUI);
+            </script>
           </div>
         </div>
         @endif
