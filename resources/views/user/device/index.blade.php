@@ -21,7 +21,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Devices') }}</p>
           <div x-show="loading" class="skeleton h-8 w-20"></div>
-          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-gray-900" id="total-device">0</h3>
+          <h3 x-show="!loading" x-cloak class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900" id="total-device">0</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-blue-500 to-blue-600">
           <span class="material-icons">devices</span>
@@ -35,7 +35,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Active Devices') }}</p>
           <div x-show="loading" class="skeleton h-8 w-20"></div>
-          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-green-600" id="total-active">0</h3>
+          <h3 x-show="!loading" x-cloak class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-green-600" id="total-active">0</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-green-500 to-green-600">
           <span class="material-icons">check_circle</span>
@@ -49,7 +49,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Inactive Devices') }}</p>
           <div x-show="loading" class="skeleton h-8 w-20"></div>
-          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-orange-600" id="total-inactive">0</h3>
+          <h3 x-show="!loading" x-cloak class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-orange-600" id="total-inactive">0</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-orange-500 to-orange-600">
           <span class="material-icons">error</span>

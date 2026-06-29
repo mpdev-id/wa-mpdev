@@ -9,7 +9,7 @@
   
   <!-- Page Header -->
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Webhook Logs') }}</h1>
+    <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Webhook Logs') }}</h1>
     <p class="text-base-content/60">{{ __('Monitor webhook payload deliveries and responses') }}</p>
   </div>
 
@@ -20,7 +20,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Payloads') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($total) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($total) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
           <span class="material-icons">webhook</span>
@@ -33,7 +33,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Sent Hooks') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($sent_hooks) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($sent_hooks) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">check_circle</span>
@@ -46,7 +46,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Failed Hooks') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($failed) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($failed) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-error to-error/80">
           <span class="material-icons">error</span>

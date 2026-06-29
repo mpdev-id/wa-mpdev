@@ -21,7 +21,7 @@
   
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h1 class="text-3xl font-black text-base-content tracking-tight">{{ __('Selesaikan Pembayaran') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black text-base-content tracking-tight">{{ __('Selesaikan Pembayaran') }}</h1>
       <p class="text-base-content/60 mt-1 text-sm md:text-base">{{ __('Pindai kode QRIS dan unggah bukti transfer Anda untuk mengaktifkan langganan') }}</p>
     </div>
     <a href="{{ route('user.subscription.index') }}" class="btn btn-ghost border-base-300 hover:bg-base-200 gap-2 shadow-sm rounded-full">

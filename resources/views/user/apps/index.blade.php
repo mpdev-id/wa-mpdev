@@ -10,7 +10,7 @@
   <!-- Page Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Apps Integration') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Apps Integration') }}</h1>
       <p class="text-base-content/60">{{ __('Manage your connected applications') }}</p>
     </div>
     <button @click="showCreateModal = true" class="btn btn-primary gap-2 rounded-full">
@@ -26,7 +26,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Apps') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ $limit }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ $limit }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
           <span class="material-icons">apps</span>
@@ -39,7 +39,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Messages Sent') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($total) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($total) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">send</span>
@@ -52,7 +52,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Last 30 Days') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($last30_messages ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($last30_messages ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-info to-info/80">
           <span class="material-icons">trending_up</span>

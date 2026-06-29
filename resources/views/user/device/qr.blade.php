@@ -53,7 +53,7 @@
           <!-- Header with Status & Logout -->
           <div class="flex items-center justify-between mb-6">
             <div class="flex-1">
-              <h2 class="text-2xl font-bold mb-1">{{ __('Connect WhatsApp') }}</h2>
+              <h2 class="text-xl md:text-2xl break-words font-bold mb-1">{{ __('Connect WhatsApp') }}</h2>
               
               <!-- Status Indicator -->
               <div class="flex items-center gap-2">
@@ -105,7 +105,7 @@
                 <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                   <div class="absolute inset-0 rounded-full border-4 border-dashed border-primary animate-spin" style="animation-duration: 8s;"></div>
                   <div class="absolute inset-2 rounded-full border-4 border-dotted border-secondary animate-spin" style="animation-duration: 4s; animation-direction: reverse;"></div>
-                  <span class="material-symbols-outlined text-4xl text-primary animate-pulse">terminal</span>
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words text-primary animate-pulse">terminal</span>
                 </div>
                 
                 <p class="text-lg font-bold tracking-wider text-primary font-mono mb-2 uppercase">{{ __('Initializing Socket...') }}</p>
@@ -142,10 +142,10 @@
                 <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                   <div class="absolute inset-0 rounded-full border border-success/40 animate-ping"></div>
                   <div class="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center">
-                    <span class="material-icons text-4xl text-success">wifi</span>
+                    <span class="material-icons text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words text-success">wifi</span>
                   </div>
                 </div>
-                <h3 class="text-2xl font-black text-success font-mono uppercase tracking-wider mb-2">[ {{ __('Secure Connected') }} ]</h3>
+                <h3 class="text-xl md:text-2xl break-words font-black text-success font-mono uppercase tracking-wider mb-2">[ {{ __('Secure Connected') }} ]</h3>
                 <div class="font-mono text-xs text-success/70 space-y-1 bg-success/5 p-4 rounded-xl border border-success/10 text-left">
                   <div>SYSTEM_STATUS: ONLINE</div>
                   <div>IP: SECURED</div>
@@ -158,10 +158,10 @@
                 <div class="relative w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                   <div class="absolute inset-0 rounded-full border-2 border-dashed border-error animate-spin" style="animation-duration: 6s;"></div>
                   <div class="w-16 h-16 rounded-full bg-error/15 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-4xl text-error animate-pulse">dangerous</span>
+                    <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words text-error animate-pulse">dangerous</span>
                   </div>
                 </div>
-                <h3 class="text-2xl font-black text-error font-mono uppercase tracking-wider mb-2">[ {{ __('CONNECTION_TERMINATED') }} ]</h3>
+                <h3 class="text-xl md:text-2xl break-words font-black text-error font-mono uppercase tracking-wider mb-2">[ {{ __('CONNECTION_TERMINATED') }} ]</h3>
                 
                 <div class="font-mono text-[10px] text-error/80 space-y-1 bg-error/10 p-4 rounded-xl border border-error/20 text-left mb-4">
                   <div class="font-bold">>> ERROR_CODE: SOCKET_FAILED</div>
@@ -241,7 +241,7 @@
                             <span class="text-6xl font-black text-primary tracking-widest font-mono" x-text="pairingCode.substring(0, 4)"></span>
                           </div>
                           <div class="flex items-center">
-                            <span class="text-4xl text-base-content/30 font-bold">-</span>
+                            <span class="text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words text-base-content/30 font-bold">-</span>
                           </div>
                           <div class="bg-white rounded-2xl px-8 py-6 shadow-lg">
                             <span class="text-6xl font-black text-primary tracking-widest font-mono" x-text="pairingCode.substring(4, 8)"></span>
@@ -330,7 +330,7 @@
                 <div class="w-24 h-24 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
                   <span class="material-icons text-6xl text-success">check_circle</span>
                 </div>
-                <h3 class="text-2xl font-bold text-success mb-2">{{ __('Connected!') }}</h3>
+                <h3 class="text-xl md:text-2xl break-words font-bold text-success mb-2">{{ __('Connected!') }}</h3>
                 <p class="text-base-content/60">{{ __('Your device is now connected') }}</p>
               </div>
             </div>

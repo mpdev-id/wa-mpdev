@@ -13,7 +13,7 @@
   
   <!-- Page Header -->
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Send Custom Message') }}</h1>
+    <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Send Custom Message') }}</h1>
     <p class="text-base-content/60">{{ __('Send personalized WhatsApp messages with various formats') }}</p>
   </div>
 

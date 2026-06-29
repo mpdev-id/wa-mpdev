@@ -13,7 +13,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold">{{ __('Add Contact') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold">{{ __('Add Contact') }}</h1>
       <p class="text-base-content/60">{{ __('Add new contact to your list') }}</p>
     </div>
     <a href="{{ route('user.contact.index') }}" class="btn btn-outline gap-2 rounded-full">

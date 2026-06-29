@@ -40,7 +40,7 @@
   <!-- Page Header -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
     <div>
-      <h1 class="text-4xl font-black text-base-content tracking-tight mb-2">{{ __('Bulk Sender') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words font-black text-base-content tracking-tight mb-2">{{ __('Bulk Sender') }}</h1>
       <p class="text-base-content/60 text-lg font-medium">{{ __('Create and launch high-impact messaging campaigns') }}</p>
     </div>
     <div class="flex flex-wrap gap-3">
@@ -107,7 +107,7 @@
         <div class="flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="flex items-center gap-6">
             <div class="w-20 h-20 rounded-3xl bg-primary flex flex-col items-center justify-center text-primary-content shadow-2xl shadow-primary/40">
-              <span class="text-2xl font-black leading-none total_sent">0</span>
+              <span class="text-xl md:text-2xl break-words font-black leading-none total_sent">0</span>
               <div class="w-8 h-px bg-primary-content/30 my-1"></div>
               <span class="text-xs font-bold opacity-60 total_records">0</span>
             </div>
@@ -131,7 +131,7 @@
 
           <button class="btn btn-primary btn-lg h-20 px-10 shadow-2xl shadow-primary/30 gap-3 group send_now rounded-full">
             <span class="font-black text-lg uppercase tracking-wider">{{ __('Launch Now') }}</span>
-            <span class="material-symbols-outlined text-3xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">rocket_launch</span>
+            <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">rocket_launch</span>
           </button>
         </div>
       </div>
@@ -143,7 +143,7 @@
             <div class="w-12 h-12 rounded-2xl bg-base-200 flex items-center justify-center">
               <span class="material-symbols-outlined">list_alt</span>
             </div>
-            <h2 class="text-2xl font-black tracking-tight">{{ __('Queue List') }}</h2>
+            <h2 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Queue List') }}</h2>
           </div>
 
           <div class="overflow-x-auto -mx-8 md:-mx-10 px-8 md:px-10">
@@ -177,7 +177,7 @@
           <div class="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-accent-content shadow-lg shadow-accent/20">
             <span class="material-symbols-outlined">upload_file</span>
           </div>
-          <h5 class="text-2xl font-black tracking-tight">{{ __('Import from CSV') }}</h5>
+          <h5 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Import from CSV') }}</h5>
         </div>
         <form method="dialog">
           <button class="btn btn-ghost btn-circle rounded-full">
@@ -233,7 +233,7 @@
             <div class="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-secondary-content shadow-lg shadow-secondary/20">
               <span class="material-symbols-outlined">group</span>
             </div>
-            <h5 class="text-2xl font-black tracking-tight">{{ __('Import from Contacts') }}</h5>
+            <h5 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Import from Contacts') }}</h5>
           </div>
           <div class="btn btn-ghost btn-circle rounded-full" onclick="import_from_contact.close()">
             <span class="material-symbols-outlined">close</span>
@@ -294,7 +294,7 @@
           <div class="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-content shadow-lg shadow-primary/20">
             <span class="material-symbols-outlined">add_circle</span>
           </div>
-          <h5 class="text-2xl font-black tracking-tight">{{ __('Add Custom Row') }}</h5>
+          <h5 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Add Custom Row') }}</h5>
         </div>
         <form method="dialog">
           <button class="btn btn-ghost btn-circle rounded-full">

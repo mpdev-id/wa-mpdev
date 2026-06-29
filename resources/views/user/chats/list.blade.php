@@ -1,6 +1,7 @@
 @extends('layouts.main.app')
 @section('head')
 @include('layouts.main.headersection',['title'=>__('Chats')])
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <style>
     .chat-bg {
         background-color: #efeae2;
@@ -214,7 +215,7 @@
 
             <template x-if="!loading && filteredChats.length === 0">
                 <div class="flex flex-col items-center justify-center h-full text-gray-400">
-                    <span class="material-icons text-4xl mb-2">chat_bubble_outline</span>
+                    <span class="material-icons text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words mb-2">chat_bubble_outline</span>
                     <span class="text-sm">{{ __('No chats found') }}</span>
                     <button @click="fetchChats()" class="btn btn-sm btn-link no-underline mt-2 text-emerald-600 rounded-full">{{ __('Try Syncing') }}</button>
                 </div>
@@ -256,7 +257,7 @@
         <template x-if="!activeChat">
             <div class="flex-1 flex flex-col items-center justify-center bg-gray-50 border-b-[6px] border-emerald-500">
                 <div class="text-center max-w-md px-6">
-                    <h2 class="text-3xl font-light text-gray-600 mb-4">{{ __('WhatsApp Web') }}</h2>
+                    <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-light text-gray-600 mb-4">{{ __('WhatsApp Web') }}</h2>
                     <p class="text-gray-500 text-sm mb-8">
                         {{ __('Send and receive messages without keeping your phone online.') }}<br>
                         {{ __('Use WhatsApp on up to 4 linked devices and 1 phone at the same time.') }}
@@ -348,6 +349,16 @@
                                 </div>
                             </template>
                         </div>
+                    </template>
+
+                    <!-- Scroll to Bottom Badge (WhatsApp style) -->
+                    <template x-if="showScrollBadge">
+                        <button @click="scrollToBottom()" class="absolute bottom-[90px] right-6 z-50 btn btn-circle shadow-lg bg-white border border-gray-200 hover:bg-gray-50 text-gray-500 w-10 h-10 min-h-0 animate-bounce">
+                            <span class="material-icons text-xl">keyboard_arrow_down</span>
+                            <template x-if="unreadMessagesCount > 0">
+                                <div class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold h-5 min-w-[1.25rem] rounded-full flex items-center justify-center px-1 shadow-sm" x-text="unreadMessagesCount"></div>
+                            </template>
+                        </button>
                     </template>
                 </div>
 
@@ -504,6 +515,16 @@
             showEmojiPicker: false,
             newChatNumber: '',
 
+
+            // Polling and UX
+            pollingMessages: false,
+            showScrollBadge: false,
+            unreadMessagesCount: 0,
+            shouldAutoScroll: true,
+            chatListInterval: null,
+            messageInterval: null,
+            notificationAudio: new Audio('data:audio/wav;base64,UklGRmYBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YUoBAAApSjN/h4+XoaeqrK2ur7CwsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/wAAAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHx8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w=='),
+
             // Toast system
             showToast: false,
             toastMessage: '',
@@ -533,17 +554,116 @@
             init() {
                 this.fetchChats();
 
-                // 1. Silent poll for the chat list every 10 seconds
-                setInterval(() => {
-                    this.silentFetchChats();
-                }, 10000);
+                // Connect to Socket.io server
+                let socketUrl = '{{ config("services.whatsapp.server_url") }}';
+                // Try to upgrade to HTTPS if current site is HTTPS to avoid mixed content
+                if (window.location.protocol === 'https:' && socketUrl.startsWith('http://')) {
+                    socketUrl = socketUrl.replace('http://', 'https://');
+                }
 
-                // 2. Silent poll for new messages in the active chat every 3 seconds
-                setInterval(() => {
-                    if (this.activeChat) {
-                        this.fetchMessages(this.activeChat, true);
+                const startPolling = () => {
+                    if (!this.chatListInterval) {
+                        this.chatListInterval = setInterval(() => this.silentFetchChats(), 5000);
                     }
-                }, 3000);
+                    if (!this.messageInterval) {
+                        this.messageInterval = setInterval(() => {
+                            if (this.activeChat && !this.pollingMessages) {
+                                this.fetchMessages(this.activeChat, true);
+                            }
+                        }, 1500);
+                    }
+                };
+
+                const stopPolling = () => {
+                    if (this.chatListInterval) { clearInterval(this.chatListInterval); this.chatListInterval = null; }
+                    if (this.messageInterval) { clearInterval(this.messageInterval); this.messageInterval = null; }
+                };
+
+                if (typeof io !== 'undefined') {
+                    const socket = io(socketUrl, {
+                        reconnectionAttempts: 3,
+                        timeout: 5000
+                    });
+                    
+                    socket.on('connect', () => {
+                        console.log('Socket connected successfully, stopping polling');
+                        stopPolling();
+                    });
+
+                    socket.on('connect_error', (error) => {
+                        console.warn('Socket connection failed, falling back to polling:', error);
+                        startPolling();
+                    });
+
+                    socket.on('new_message', (data) => {
+                        if (data.sessionId !== 'device_{{ $device->id }}') return;
+                        
+                        this.silentFetchChats();
+
+                        if (this.activeChat) {
+                            const activeJid = this.activeChat.jid || (this.activeChat.number ? this.activeChat.number + '@s.whatsapp.net' : '');
+                            const isGroup = activeJid.endsWith('@g.us');
+                            
+                            let compareActiveJid = activeJid;
+                            if (compareActiveJid === data.remoteJid) {
+                                if (!this.pollingMessages) {
+                                    this.fetchMessages(this.activeChat, true);
+                                }
+                            }
+                        } else {
+                            if (!data.message.key.fromMe) {
+                                this.notificationAudio.play().catch(e => console.log('Audio play blocked', e));
+                            }
+                        }
+                    });
+                } else {
+                    // Fallback to polling if socket.io library fails to load completely
+                    startPolling();
+                }
+
+                // Instantly fetch when user returns to tab
+                document.addEventListener("visibilitychange", () => {
+                    if (document.visibilityState === "visible") {
+                        if (this.activeChat && !this.pollingMessages) {
+                            this.fetchMessages(this.activeChat, true);
+                        }
+                        this.silentFetchChats();
+                    }
+                });
+
+                // Scroll detection for smart scrolling
+                this.$nextTick(() => {
+                    const container = document.getElementById('messages-container');
+                    if (container) {
+                        container.addEventListener('scroll', () => {
+                            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+                            if (isAtBottom) {
+                                this.showScrollBadge = false;
+                                this.unreadMessagesCount = 0;
+                                this.shouldAutoScroll = true;
+                            } else {
+                                this.shouldAutoScroll = false;
+                            }
+                        });
+                    }
+                });
+            },
+
+            scrollToBottom() {
+                const container = document.getElementById('messages-container');
+                if (container) {
+                    container.scrollTop = container.scrollHeight;
+                    this.showScrollBadge = false;
+                    this.unreadMessagesCount = 0;
+                    this.shouldAutoScroll = true;
+                }
+            },
+
+            playNotification() {
+                try {
+                    this.notificationAudio.currentTime = 0;
+                    this.notificationAudio.play().catch(e => console.log('Audio play prevented', e));
+                } catch(e) {}
             },
 
             triggerToast(msg) {
@@ -605,6 +725,10 @@
             selectChat(chat) {
                 this.activeChat = chat;
                 this.activeChatMessages = [];
+                this.showScrollBadge = false;
+                this.unreadMessagesCount = 0;
+                this.shouldAutoScroll = true;
+                this.pollingMessages = false;
                 this.fetchMessages(chat, false);
             },
 
@@ -612,6 +736,9 @@
                 if (!chat) return;
                 const jid = chat.jid || (chat.number ? chat.number + '@s.whatsapp.net' : '');
                 if (!jid) return;
+
+                if (this.pollingMessages && silent) return;
+                this.pollingMessages = true;
 
                 if (!silent) {
                     this.loadingMessages = true;
@@ -631,24 +758,60 @@
                         const oldLength = this.activeChatMessages.length;
                         const oldLastId = oldLength > 0 ? this.activeChatMessages[oldLength - 1].key.id : null;
                         
-                        this.activeChatMessages = data;
-                        
                         const newLength = data.length;
                         const newLastId = newLength > 0 ? data[newLength - 1].key.id : null;
 
-                        // Scroll to bottom if this is initial load, or if new messages arrived
-                        if (oldLength === 0 || oldLastId !== newLastId) {
+                        let hasNewIncomingMessage = false;
+
+                        // Only reassign if data actually changed to prevent DOM flicker
+                        if (oldLastId !== newLastId || oldLength !== newLength) {
+                            // Check if the new message is an incoming message
+                            if (oldLength > 0 && newLastId && oldLastId !== newLastId) {
+                                const newestMsg = data[newLength - 1];
+                                if (!newestMsg.key.fromMe) {
+                                    hasNewIncomingMessage = true;
+                                }
+                            }
+                            
+                            this.activeChatMessages = data;
+
                             this.$nextTick(() => {
-                                const container = document.getElementById('messages-container');
-                                if (container) container.scrollTop = container.scrollHeight;
+                                if (oldLength === 0) {
+                                    // Initial load, always scroll to bottom
+                                    this.scrollToBottom();
+                                } else if (hasNewIncomingMessage) {
+                                    // New incoming message
+                                    if (this.shouldAutoScroll) {
+                                        this.scrollToBottom();
+                                    } else {
+                                        this.showScrollBadge = true;
+                                        this.unreadMessagesCount++;
+                                    }
+                                    // Play sound for incoming message
+                                    this.playNotification();
+                                } else if (oldLastId !== newLastId) {
+                                    // Likely user sent a message (fromMe = true) or replaced tempId
+                                    this.scrollToBottom();
+                                }
                             });
+                        } else {
+                            // Soft update for statuses without replacing the array to avoid DOM flicker
+                            for (let i = 0; i < data.length; i++) {
+                                if (this.activeChatMessages[i] && this.activeChatMessages[i].key.id === data[i].key.id) {
+                                    if (this.activeChatMessages[i].status !== data[i].status) {
+                                        this.activeChatMessages[i].status = data[i].status;
+                                    }
+                                }
+                            }
                         }
                     }
-                    this.loadingMessages = false;
                 })
                 .catch(error => {
                     console.error('Error fetching messages:', error);
+                })
+                .finally(() => {
                     this.loadingMessages = false;
+                    this.pollingMessages = false;
                 });
             },
 
@@ -945,8 +1108,7 @@
                 if (chat.jid && chat.jid.endsWith('@g.us')) {
                     return chat.name || chat.pushName || chat.number;
                 }
-                const saved = this.getContactByNumber(chat.number);
-                return saved ? saved.name : (chat.name || chat.pushName || chat.number);
+                return chat.name || chat.pushName || chat.number;
             },
 
             hasSavedContact(chat) {
@@ -954,7 +1116,7 @@
                 if (chat.jid && chat.jid.endsWith('@g.us')) {
                     return false;
                 }
-                return !!this.getContactByNumber(chat.number);
+                return !!(chat.name || chat.pushName);
             },
 
             getContactByNumber(number) {

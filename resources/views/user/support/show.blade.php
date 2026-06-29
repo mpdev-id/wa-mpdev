@@ -9,7 +9,7 @@
   <div class="flex items-center justify-between mb-6">
     <div>
       <div class="flex items-center gap-3 mb-2">
-        <h1 class="text-2xl font-bold text-base-content">{{ __('Ticket') }} #{{ $support->id }}</h1>
+        <h1 class="text-xl md:text-2xl break-words font-bold text-base-content">{{ __('Ticket') }} #{{ $support->id }}</h1>
         @if($support->status == 1)
           <span class="badge badge-warning">{{ __('Open') }}</span>
         @elseif($support->status == 2)

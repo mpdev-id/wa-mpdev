@@ -8,7 +8,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Transaction History') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Transaction History') }}</h1>
       <p class="text-base-content/60">{{ __('All your payment transactions') }}</p>
     </div>
     <a href="{{ route('user.subscription.index') }}" class="btn btn-outline gap-2 rounded-full">
@@ -23,7 +23,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Transactions') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($total ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($total ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
           <span class="material-icons">receipt</span>
@@ -35,7 +35,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Paid') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ amount_format($totalPaid ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ amount_format($totalPaid ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">paid</span>
@@ -47,7 +47,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Pending') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($pending ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($pending ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-warning to-warning/80">
           <span class="material-icons">schedule</span>

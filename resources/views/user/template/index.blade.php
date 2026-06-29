@@ -18,7 +18,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Templates') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ $limit }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ $limit }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-blue-500 to-blue-600">
           <span class="material-icons">description</span>
@@ -31,7 +31,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Active Templates') }}</p>
-          <h3 class="text-3xl font-bold text-green-600">{{ $active_templates }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-green-600">{{ $active_templates }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-green-500 to-green-600">
           <span class="material-icons">check_circle</span>
@@ -44,7 +44,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Inactive Templates') }}</p>
-          <h3 class="text-3xl font-bold text-orange-600">{{ $inactive_templates }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-orange-600">{{ $inactive_templates }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-orange-500 to-orange-600">
           <span class="material-icons">error</span>

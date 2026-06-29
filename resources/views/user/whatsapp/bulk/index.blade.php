@@ -30,7 +30,7 @@
   <!-- Page Header -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 p-6 rounded-2xl bg-base-200 border border-base-300">
     <div>
-      <h1 class="text-4xl font-black text-base-content tracking-tight mb-2">{{ __('Bulk Messages') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words font-black text-base-content tracking-tight mb-2">{{ __('Bulk Messages') }}</h1>
       <p class="text-base-content/60 text-lg font-medium">{{ __('Manage and track your bulk message campaigns') }}</p>
     </div>
     <div class="flex flex-wrap gap-3">
@@ -50,10 +50,10 @@
     <div class="stat-card group">
       <div class="flex items-center justify-between mb-4">
         <div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500">
-          <span class="material-symbols-outlined text-3xl">rocket_launch</span>
+          <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">rocket_launch</span>
         </div>
         <div class="text-right">
-          <div class="text-3xl font-black tracking-tight">{{ number_format($total) }}</div>
+          <div class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ number_format($total) }}</div>
           <div class="text-xs font-bold text-base-content/40 uppercase tracking-widest">{{ __('Total Sent') }}</div>
         </div>
       </div>
@@ -65,10 +65,10 @@
     <div class="stat-card group">
       <div class="flex items-center justify-between mb-4">
         <div class="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform duration-500">
-          <span class="material-symbols-outlined text-3xl">calendar_month</span>
+          <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">calendar_month</span>
         </div>
         <div class="text-right">
-          <div class="text-3xl font-black tracking-tight">{{ number_format($last30_messages ?? 0) }}</div>
+          <div class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ number_format($last30_messages ?? 0) }}</div>
           <div class="text-xs font-bold text-base-content/40 uppercase tracking-widest">{{ __('Last 30 Days') }}</div>
         </div>
       </div>
@@ -80,10 +80,10 @@
     <div class="stat-card group">
       <div class="flex items-center justify-between mb-4">
         <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center text-accent group-hover:scale-110 transition-transform duration-500">
-          <span class="material-symbols-outlined text-3xl">today</span>
+          <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">today</span>
         </div>
         <div class="text-right">
-          <div class="text-3xl font-black tracking-tight">{{ number_format($today_transaction) }}</div>
+          <div class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ number_format($today_transaction) }}</div>
           <div class="text-xs font-bold text-base-content/40 uppercase tracking-widest">{{ __('Today') }}</div>
         </div>
       </div>
@@ -142,7 +142,7 @@
               <div class="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20">
                 <span class="material-symbols-outlined">history</span>
               </div>
-              <h2 class="text-2xl font-black tracking-tight">{{ __('Transaction History') }}</h2>
+              <h2 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Transaction History') }}</h2>
             </div>
           </div>
 
@@ -194,7 +194,7 @@
           @else
           <div class="flex flex-col items-center justify-center py-20 text-center">
             <div class="w-24 h-24 rounded-full bg-base-200 flex items-center justify-center mb-6">
-              <span class="material-symbols-outlined text-5xl text-base-content/20">inbox</span>
+              <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words md:text-5xl break-words text-base-content/20">inbox</span>
             </div>
             <h3 class="text-xl font-bold mb-2">{{ __('No Transactions Found') }}</h3>
             <p class="text-base-content/50 max-w-xs mx-auto">{{ __('Start sending bulk messages to see your history here.') }}</p>
@@ -218,7 +218,7 @@
               <div class="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20">
                 <span class="material-symbols-outlined">description</span>
               </div>
-              <h5 class="text-2xl font-black tracking-tight">{{ __('Send with Template') }}</h5>
+              <h5 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Send with Template') }}</h5>
             </div>
             <button type="button" class="btn btn-ghost btn-circle rounded-full" data-dismiss="modal">
               <span class="material-symbols-outlined">close</span>
@@ -271,7 +271,7 @@
       @else
       <div class="p-12 text-center">
         <div class="w-20 h-20 rounded-full bg-error/10 flex items-center justify-center mx-auto mb-6">
-          <span class="material-symbols-outlined text-4xl text-error">warning</span>
+          <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words text-error">warning</span>
         </div>
         <h3 class="text-xl font-bold mb-2">{{ __('Missing Requirements') }}</h3>
         <p class="text-base-content/50 mb-8">{{ __('You need at least one template and one contact group to use this feature.') }}</p>

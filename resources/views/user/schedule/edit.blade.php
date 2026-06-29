@@ -8,7 +8,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold">{{ __('Edit Schedule') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold">{{ __('Edit Schedule') }}</h1>
       <p class="text-base-content/60">{{ __('Update scheduled message') }}</p>
     </div>
     <a href="{{ route('user.schedule-message.index') }}" class="btn btn-outline gap-2 rounded-full">

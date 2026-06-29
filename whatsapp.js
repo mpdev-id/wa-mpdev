@@ -8,6 +8,7 @@ import { toDataURL } from 'qrcode';
 import dirname from './dirname.js';
 import sendResponse from './response.js';
 import axios from 'axios';
+import { getIo } from './socket.js';
 
 // Global error handlers to prevent bot crash
 process.on('unhandledRejection', (reason, promise) => {
@@ -115,45 +116,21 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
     if (isLegacy) store.chats.insertIfAbsent(...chats);
   });
 
-  // Request pairing code if phoneNumber provided
-  if (pairingCode) {
-    setTimeout(async () => {
-      if (!sock.authState.creds.registered) {
-        try {
-          const cleanPhone = pairingCode.replace(/[^0-9]/g, '');
-          logger.info('Requesting pairing code for: ' + cleanPhone);
-
-          // Request pairing code with proper phone number format
-          const code = await sock.requestPairingCode(cleanPhone);
-          const cleanCode = code.replace(/[^a-zA-Z0-9]/g, '');
-
-          logger.info({ code: cleanCode, phoneNumber: cleanPhone }, 'Pairing code generated successfully');
-
-          if (res && !res.headersSent) {
-            sendResponse(res, 200, true, 'Pairing code generated successfully', {
-              pairingCode: cleanCode,
-              phoneNumber: cleanPhone,
-              message: `Open WhatsApp > Linked Devices > Link a Device > Link with phone number instead > Enter: ${cleanCode}`
-            });
-          }
-        } catch (error) {
-          logger.error({ error: error.message, stack: error.stack }, 'Failed to generate pairing code');
-          if (res && !res.headersSent) {
-            sendResponse(res, 500, false, 'Failed to generate pairing code: ' + error.message);
-          }
-        }
-      } else {
-        logger.info('Device already registered, skipping pairing code');
-        if (res && !res.headersSent) {
-          sendResponse(res, 200, true, 'Device already registered and connected.', { connected: true });
-        }
-      }
-    }, 6000); // Wait 6 seconds before requesting pairing code (recommended by Baileys documentation)
-  }
+  // Pairing code request is now handled inside connection.update when WA server is ready
 
   sock.ev.on('messages.upsert', async (msg) => {
     try {
       const message = msg.messages[0];
+      
+      const io = getIo();
+      if (io) {
+          io.emit('new_message', {
+              sessionId: sessionId,
+              remoteJid: message.key.remoteJid,
+              message: message
+          });
+      }
+
       if (!message.key.fromMe && msg.type === 'notify') {
         const data = {};
         const jidParts = message.key.remoteJid.split('@');
@@ -304,23 +281,45 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
       }
     }
 
-    // Handle QR code (only if not using phone pairing)
-    if (qr && !pairingCode) {
-      logger.info('QR code generated (no phone pairing)');
-      logger.info(`QR Code String Length: ${qr.length}`);
-      if (res && !res.headersSent) {
+    // Handle QR code or Phone Pairing when WA is ready
+    if (qr) {
+      if (pairingCode && !sock.authState.creds.registered) {
+        logger.info('WA is ready. Requesting pairing code for phone number...');
         try {
-          const qrDataUrl = await toDataURL(qr);
-          sendResponse(res, 200, true, 'QR code received, please scan the QR code.', { qr: qrDataUrl });
-        } catch (err) {
-          logger.error('Failed to generate QR Data URL:', err);
-          sendResponse(res, 500, false, 'Unable to create QR code.');
+          const cleanPhone = pairingCode.replace(/[^0-9]/g, '');
+          
+          // Request pairing code with proper phone number format and empty string to force random code generation
+          const code = await sock.requestPairingCode(cleanPhone, "");
+          const cleanCode = code.replace(/[^a-zA-Z0-9]/g, '');
+
+          logger.info({ code: cleanCode, phoneNumber: cleanPhone }, 'Pairing code generated successfully');
+
+          if (res && !res.headersSent) {
+            sendResponse(res, 200, true, 'Pairing code generated successfully', {
+              pairingCode: cleanCode,
+              phoneNumber: cleanPhone,
+              message: `Open WhatsApp > Linked Devices > Link a Device > Link with phone number instead > Enter: ${cleanCode}`
+            });
+          }
+        } catch (error) {
+          logger.error({ error: error.message, stack: error.stack }, 'Failed to generate pairing code');
+          if (res && !res.headersSent) {
+            sendResponse(res, 500, false, 'Failed to generate pairing code: ' + error.message);
+          }
+        }
+      } else if (!pairingCode) {
+        logger.info('QR code generated (no phone pairing)');
+        logger.info(`QR Code String Length: ${qr.length}`);
+        if (res && !res.headersSent) {
+          try {
+            const qrDataUrl = await toDataURL(qr);
+            sendResponse(res, 200, true, 'QR code received, please scan the QR code.', { qr: qrDataUrl });
+          } catch (err) {
+            logger.error('Failed to generate QR Data URL:', err);
+            sendResponse(res, 500, false, 'Unable to create QR code.');
+          }
         }
       }
-    } else if (qr && pairingCode) {
-      logger.info('QR code ignored because phone pairing is being used');
-      // Don't send QR code when using phone pairing
-      // Pairing code will be sent via timeout in line 96-118
     }
   });
 };
@@ -455,7 +454,7 @@ const isExists = async (sock, number, legacy = false) => {
   }
 };
 
-const sendMessage = async (sock, jid, message, delayMs = 1000) => {
+const sendMessage = async (sock, jid, message, delayMs = 1000, options = {}) => {
   try {
     await delay(parseInt(delayMs));
 
@@ -579,7 +578,7 @@ const sendMessage = async (sock, jid, message, delayMs = 1000) => {
       return await sock.relayMessage(jid, msg.message, { messageId: msg.key.id });
     }
 
-    return await sock.sendMessage(jid, message);
+    return await sock.sendMessage(jid, message, options);
   } catch (error) {
     logger.error(`Send message error: ${error.message}`);
     return Promise.reject(null);

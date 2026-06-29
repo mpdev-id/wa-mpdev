@@ -149,7 +149,7 @@ class DeviceController extends Controller
 
             \Log::info('Sending to WA server', ['payload' => $payload]);
 
-            $response = Http::timeout(10)->post($waServerUrl.'/sessions/add', $payload);
+            $response = Http::timeout(15)->post($waServerUrl.'/sessions/add', $payload);
 
             \Log::info('WA server response', [
                 'status' => $response->status(),

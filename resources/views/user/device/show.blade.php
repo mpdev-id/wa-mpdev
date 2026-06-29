@@ -8,7 +8,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ $device->name }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ $device->name }}</h1>
       <p class="text-base-content/60">{{ __('Device information and details') }}</p>
     </div>
     <div class="flex gap-2">
@@ -115,7 +115,7 @@
           <div class="space-y-3">
             <div>
               <p class="text-xs text-gray-600">{{ __('Messages Sent') }}</p>
-              <p class="text-2xl font-bold">{{ number_format($device->messages_count ?? 0) }}</p>
+              <p class="text-xl md:text-2xl break-words font-bold">{{ number_format($device->messages_count ?? 0) }}</p>
             </div>
             <div>
               <p class="text-xs text-gray-600">{{ __('Last Active') }}</p>

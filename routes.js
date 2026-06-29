@@ -14,6 +14,7 @@ router.use('/groups', groupsRoute)
 router.use('/contacts', contactsRoute)
 
 router.all('*', (req, res) => {
+    console.log(`[404] Method: ${req.method} URL: ${req.originalUrl}`);
     response(res, 404, false, 'The requested url cannot be found.')
 })
 

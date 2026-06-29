@@ -23,7 +23,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Devices') }}</p>
           <div x-show="loading" class="skeleton h-8 w-20"></div>
-          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-gray-900" id="total-device">0</h3>
+          <h3 x-show="!loading" x-cloak class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900" id="total-device">0</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-blue-500 to-blue-600 group-hover:scale-110 transition-transform">
           <span class="material-icons">devices</span>
@@ -37,7 +37,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Messages') }}</p>
           <div x-show="loading" class="skeleton h-8 w-20"></div>
-          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-gray-900" id="total-messages">0</h3>
+          <h3 x-show="!loading" x-cloak class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900" id="total-messages">0</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-purple-500 to-purple-600 group-hover:scale-110 transition-transform">
           <span class="material-icons">chat</span>
@@ -51,7 +51,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Pending Schedules') }}</p>
           <div x-show="loading" class="skeleton h-8 w-20"></div>
-          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-gray-900" id="total-schedule">0</h3>
+          <h3 x-show="!loading" x-cloak class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900" id="total-schedule">0</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-orange-500 to-orange-600 group-hover:scale-110 transition-transform">
           <span class="material-icons">schedule_send</span>
@@ -65,7 +65,7 @@
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Contacts') }}</p>
           <div x-show="loading" class="skeleton h-8 w-20"></div>
-          <h3 x-show="!loading" x-cloak class="text-3xl font-bold text-gray-900" id="total-contacts">0</h3>
+          <h3 x-show="!loading" x-cloak class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900" id="total-contacts">0</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-green-500 to-green-600 group-hover:scale-110 transition-transform">
           <span class="material-icons">contacts</span>

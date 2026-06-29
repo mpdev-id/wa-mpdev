@@ -8,7 +8,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold">{{ __('Schedule Details') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold">{{ __('Schedule Details') }}</h1>
       <p class="text-base-content/60">{{ __('Scheduled message information') }}</p>
     </div>
     <div class="flex gap-2">

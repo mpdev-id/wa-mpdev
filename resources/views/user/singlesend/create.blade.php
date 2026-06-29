@@ -25,7 +25,7 @@
   
   <!-- Page Header -->
   <div class="mb-8 bg-base-200 border border-base-300 rounded-2xl p-6">
-    <h1 class="text-3xl font-bold text-base-content mb-2">{{ __('Send Custom Message') }}</h1>
+    <h1 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-base-content mb-2">{{ __('Send Custom Message') }}</h1>
     <p class="text-base-content/60 text-lg">{{ __('Send WhatsApp messages using different formats') }}</p>
   </div>
 
@@ -107,10 +107,10 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
-                  <span class="material-symbols-outlined text-3xl">text_fields</span>
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">text_fields</span>
                 </div>
                 <div>
-                  <h2 class="text-3xl font-black tracking-tight">{{ __('Plain Text Message') }}</h2>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Plain Text Message') }}</h2>
                   <p class="text-base-content/60 font-medium">{{ __('Send simple text message to any number') }}</p>
                 </div>
               </div>
@@ -183,10 +183,10 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
-                  <span class="material-symbols-outlined text-3xl">image</span>
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">image</span>
                 </div>
                 <div>
-                  <h2 class="text-3xl font-black tracking-tight">{{ __('Text With Media') }}</h2>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Text With Media') }}</h2>
                   <p class="text-base-content/60 font-medium">{{ __('Send image, video or document with caption') }}</p>
                 </div>
               </div>
@@ -223,7 +223,7 @@
                 <div class="flex items-center justify-center w-full">
                   <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-base-300 rounded-3xl cursor-pointer bg-base-100/80 hover:bg-base-100 hover:border-primary/50 transition-all group">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                      <span class="material-symbols-outlined text-4xl text-base-content/30 group-hover:text-primary transition-colors mb-3">cloud_upload</span>
+                      <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words text-base-content/30 group-hover:text-primary transition-colors mb-3">cloud_upload</span>
                       <p class="mb-2 text-sm text-base-content/60 font-semibold">{{ __('Click to upload or drag and drop') }}</p>
                       <p class="text-xs text-base-content/40 uppercase tracking-widest font-bold">{{ __('Images, Videos, PDF (Max 10MB)') }}</p>
                     </div>
@@ -254,10 +254,10 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
-                  <span class="material-symbols-outlined text-3xl">list</span>
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">list</span>
                 </div>
                 <div>
-                  <h2 class="text-3xl font-black tracking-tight">{{ __('List Message') }}</h2>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('List Message') }}</h2>
                   <p class="text-base-content/60 font-medium">{{ __('Send interactive list with multiple options') }}</p>
                 </div>
               </div>
@@ -381,10 +381,10 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
-                  <span class="material-symbols-outlined text-3xl">smart_button</span>
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">smart_button</span>
                 </div>
                 <div>
-                  <h2 class="text-3xl font-black tracking-tight">{{ __('Template Message') }}</h2>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Template Message') }}</h2>
                   <p class="text-base-content/60 font-medium">{{ __('Send message with interactive buttons') }}</p>
                 </div>
               </div>
@@ -487,10 +487,10 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
-                  <span class="material-symbols-outlined text-3xl">poll</span>
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">poll</span>
                 </div>
                 <div>
-                  <h2 class="text-3xl font-black tracking-tight">{{ __('Poll Message') }}</h2>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Poll Message') }}</h2>
                   <p class="text-base-content/60 font-medium">{{ __('Create interactive polls for your audience') }}</p>
                 </div>
               </div>
@@ -571,10 +571,10 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
               <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
-                  <span class="material-symbols-outlined text-3xl">location_on</span>
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">location_on</span>
                 </div>
                 <div>
-                  <h2 class="text-3xl font-black tracking-tight">{{ __('Send Location') }}</h2>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Send Location') }}</h2>
                   <p class="text-base-content/60 font-medium">{{ __('Send GPS coordinates location') }}</p>
                 </div>
               </div>

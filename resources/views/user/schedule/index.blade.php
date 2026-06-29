@@ -10,7 +10,7 @@
   <!-- Page Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Schedule Messages') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Schedule Messages') }}</h1>
       <p class="text-base-content/60">{{ __('Manage your scheduled WhatsApp messages') }}</p>
     </div>
     <a href="{{ route('user.schedule-message.create') }}" class="btn btn-primary gap-2 rounded-full">
@@ -26,7 +26,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Schedules') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($totalSchedule ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($totalSchedule ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
           <span class="material-icons">event</span>
@@ -39,7 +39,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Pending') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($pendingSchedule ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($pendingSchedule ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-warning to-warning/80">
           <span class="material-icons">pending</span>
@@ -52,7 +52,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Executed') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($deliveredSchedule ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($deliveredSchedule ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">check_circle</span>
@@ -65,7 +65,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Failed') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($failedSchedule ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($failedSchedule ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-error to-error/80">
           <span class="material-icons">error</span>

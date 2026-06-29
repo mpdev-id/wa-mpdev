@@ -27,7 +27,8 @@ const getGroupMetaData = async (req, res) => {
 const send = async (req, res) => {
     const session = getSession(res.locals.sessionId)
     const receiver = formatGroup(req.body.receiver)
-    const { message } = req.body
+    const message = req.body.message
+    const markAsAi = req.body.markAsAi
 
     try {
         const exists = await isExists(session, receiver, true)
@@ -36,7 +37,7 @@ const send = async (req, res) => {
             return response(res, 400, false, 'The group is not exists.')
         }
 
-        await sendMessage(session, receiver, message)
+        await sendMessage(session, receiver, message, 0, { markAsAi: markAsAi === true })
 
         response(res, 200, true, 'The message has been successfully sent.')
     } catch {

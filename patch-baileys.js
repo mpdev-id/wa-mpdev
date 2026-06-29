@@ -22,13 +22,12 @@ if (fs.existsSync(targetFile)) {
         content = content.replace(hardcodedBlockRegex, '');
     }
 
-    // Now inject the new conditional block based on options.markAsAi
-    // We will inject it right before `logger.debug({ msgId },`
-    
-    const injectionPoint = "logger.debug({ msgId }, `sending message to ${participants.length} devices`)";
-    
-    if (content.includes(injectionPoint) && !content.includes('if (additionalAttributes && additionalAttributes.markAsAi) {')) {
-        const customBlock = `
+    let patched = false;
+
+    // INJECTION 1: Inside relayMessage (adding biz_bot tag)
+    const injectionPoint1 = "logger.debug({ msgId }, `sending message to ${participants.length} devices`)";
+    if (content.includes(injectionPoint1) && !content.includes('if (additionalAttributes && additionalAttributes.markAsAi) {')) {
+        const customBlock1 = `
          if (additionalAttributes && additionalAttributes.markAsAi) {
             if (!stanza.content || !Array.isArray(stanza.content)) {
                stanza.content = []
@@ -42,11 +41,26 @@ if (fs.existsSync(targetFile)) {
          }
          
          `;
-        content = content.replace(injectionPoint, customBlock + injectionPoint);
+        content = content.replace(injectionPoint1, customBlock1 + injectionPoint1);
+        patched = true;
+    }
+
+    // INJECTION 2: Inside sendMessage (mapping options.markAsAi to additionalAttributes)
+    const injectionPoint2 = "const additionalAttributes = {}";
+    if (content.includes(injectionPoint2) && !content.includes('if (options && options.markAsAi) {')) {
+        const customBlock2 = `const additionalAttributes = {}
+            if (options && options.markAsAi) {
+               additionalAttributes.markAsAi = true;
+            }`;
+        content = content.replace(injectionPoint2, customBlock2);
+        patched = true;
+    }
+
+    if (patched) {
         fs.writeFileSync(targetFile, content);
-        console.log('Successfully patched baileys-pro to support markAsAi option!');
+        console.log('Successfully patched baileys-pro to support markAsAi option (relayMessage & sendMessage)!');
     } else {
-        console.log('Baileys already patched or injection point not found.');
+        console.log('Baileys already fully patched or injection points not found.');
     }
 } else {
     console.error('Baileys file not found: ' + targetFile);

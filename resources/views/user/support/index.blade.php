@@ -8,7 +8,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Support Tickets') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Support Tickets') }}</h1>
       <p class="text-base-content/60">{{ __('Get help from our support team') }}</p>
     </div>
     <a href="{{ route('user.support.create') }}" class="btn btn-primary gap-2 rounded-full">
@@ -23,7 +23,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Tickets') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($total ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($total ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
           <span class="material-icons">support_agent</span>
@@ -35,7 +35,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Open') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($open ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($open ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-warning to-warning/80">
           <span class="material-icons">pending</span>
@@ -47,7 +47,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Resolved') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($resolved ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($resolved ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">check_circle</span>

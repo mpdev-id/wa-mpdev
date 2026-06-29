@@ -21,7 +21,7 @@
   <!-- Page Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Create New Device') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Create New Device') }}</h1>
       <p class="text-base-content/60">{{ __('Connect a new WhatsApp device to send messages') }}</p>
     </div>
     <a href="{{ route('user.device.index') }}" class="btn btn-outline gap-2 rounded-full">

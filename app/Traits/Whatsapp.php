@@ -54,6 +54,12 @@ trait Whatsapp
         $body['receiver']=$reciver;
         $body['delay']=0;
         $body['message']=$formatedBody;
+        
+        $markAsAi = false;
+        if ($device->aiResponse && $device->aiResponse->use_ai_label) {
+            $markAsAi = true;
+        }
+        $body['markAsAi']=$markAsAi;
 
         //sending data to whatsapp server
         try {
@@ -218,6 +224,12 @@ trait Whatsapp
         $body['receiver']=$reciver;
         $body['delay']=0;
         $body['message']=$formatedBody;
+        
+        $markAsAi = false;
+        if ($device->aiResponse && $device->aiResponse->use_ai_label) {
+            $markAsAi = true;
+        }
+        $body['markAsAi']=$markAsAi;
 
         //sending data to whatsapp server
         try {

@@ -7,7 +7,7 @@
 <div class="max-w-7xl mx-auto">
   
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Group Chats') }}</h1>
+    <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Group Chats') }}</h1>
     <p class="text-base-content/60">{{ __('Manage group conversations') }}</p>
   </div>
 
@@ -17,7 +17,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Groups') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($total ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($total ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
           <span class="material-icons">groups</span>
@@ -29,7 +29,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Active') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($active ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($active ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">check_circle</span>
@@ -41,7 +41,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Members') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($members ?? 0) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($members ?? 0) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-info to-info/80">
           <span class="material-icons">people</span>

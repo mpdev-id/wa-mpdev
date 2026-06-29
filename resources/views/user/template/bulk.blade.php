@@ -8,7 +8,7 @@
   
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Bulk Import') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Bulk Import') }}</h1>
       <p class="text-base-content/60">{{ __('Import multiple templates at once') }}</p>
     </div>
     <a href="{{ route('user.template.index') }}" class="btn btn-outline gap-2 rounded-full">

@@ -46,7 +46,7 @@
   <!-- Page Header -->
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Automatic Replies') }}</h1>
+      <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Automatic Replies') }}</h1>
       <p class="text-base-content/60">{{ __('Set up chatbot auto-reply rules for incoming messages') }}</p>
     </div>
     <button @click="showCreateModal = true; createButtons = [{displaytext: '', type: 'quickReplyButton', action: ''}]" class="btn btn-primary gap-2 rounded-full">
@@ -62,7 +62,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Replies') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($total_replies) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($total_replies) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
           <span class="material-icons">smart_toy</span>
@@ -75,7 +75,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Template Replies') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($template_replies) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($template_replies) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-info to-info/80">
           <span class="material-icons">description</span>
@@ -88,7 +88,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Text Replies') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($text_replies) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($text_replies) }}</h3>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">
           <span class="material-icons">text_fields</span>

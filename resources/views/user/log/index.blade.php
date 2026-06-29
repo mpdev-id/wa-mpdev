@@ -9,7 +9,7 @@
   
   <!-- Page Header -->
   <div class="mb-6">
-    <h1 class="text-2xl font-bold text-base-content mb-2">{{ __('Message Logs') }}</h1>
+    <h1 class="text-xl md:text-2xl break-words font-bold text-base-content mb-2">{{ __('Message Logs') }}</h1>
     <p class="text-base-content/60">{{ __('Track all your WhatsApp message transactions') }}</p>
   </div>
 
@@ -20,7 +20,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Total Messages') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($total_messages) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($total_messages) }}</h3>
           <p class="text-xs text-gray-500 mt-1">{{ __('All time') }}</p>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-primary to-secondary">
@@ -34,7 +34,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __("Today's Messages") }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($today_messages) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($today_messages) }}</h3>
           <p class="text-xs text-gray-500 mt-1">{{ date('d M Y') }}</p>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-info to-info/80">
@@ -48,7 +48,7 @@
       <div class="flex items-center justify-between">
         <div class="flex-1">
           <p class="text-sm font-medium text-gray-600 mb-1">{{ __('Last 30 Days') }}</p>
-          <h3 class="text-3xl font-bold text-gray-900">{{ number_format($last30_messages) }}</h3>
+          <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-bold text-gray-900">{{ number_format($last30_messages) }}</h3>
           <p class="text-xs text-gray-500 mt-1">{{ __('Past month') }}</p>
         </div>
         <div class="stats-card-icon bg-gradient-to-br from-success to-success/80">

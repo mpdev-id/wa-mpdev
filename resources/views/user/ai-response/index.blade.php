@@ -11,10 +11,10 @@
     <div class="mb-8">
       <div class="flex items-center gap-4 mb-3">
         <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center shadow-lg">
-          <span class="material-icons text-white text-2xl">psychology</span>
+          <span class="material-icons text-white text-xl md:text-2xl break-words">psychology</span>
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-base-content">{{ __('AI Response') }}</h1>
+          <h1 class="text-xl md:text-2xl break-words font-bold text-base-content">{{ __('AI Response') }}</h1>
           <p class="text-sm text-base-content/60">{{ __('Intelligent auto-reply with Google Gemini') }}</p>
         </div>
       </div>
@@ -64,7 +64,7 @@
               <div class="flex items-center justify-between pb-6 border-b border-base-300">
                 <div class="flex items-center gap-4">
                   <div class="w-14 h-14 rounded-xl {{ $isActive ? 'bg-gradient-to-br from-violet-600 to-purple-600' : 'bg-base-300' }} flex items-center justify-center shadow">
-                    <span class="material-icons text-white text-2xl">{{ $isActive ? 'auto_awesome' : 'phonelink' }}</span>
+                    <span class="material-icons text-white text-xl md:text-2xl break-words">{{ $isActive ? 'auto_awesome' : 'phonelink' }}</span>
                   </div>
                   <div>
                     <h2 class="text-xl font-bold text-base-content">{{ $device->name }}</h2>

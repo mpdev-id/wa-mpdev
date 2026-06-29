@@ -5,6 +5,9 @@ import nodeCleanup from 'node-cleanup'
 import routes from './routes.js'
 import { init, cleanup, logger } from './whatsapp.js'
 import cors from 'cors'
+import { Server } from 'socket.io'
+import http from 'http'
+import { setIo } from './socket.js'
 
 const app = express()
 
@@ -23,12 +26,24 @@ const listenerCallback = () => {
     logger.info(`Server is listening on http://${host ? host : 'localhost'}:${port}`)
 }
 
+const server = http.createServer(app)
+const io = new Server(server, {
+    cors: {
+        origin: '*',
+    }
+})
+setIo(io)
+
 if (host) {
-    app.listen(port, host, listenerCallback)
+    server.listen(port, host, listenerCallback)
 } else {
-    app.listen(port, listenerCallback)
+    server.listen(port, listenerCallback)
 }
 
 nodeCleanup(cleanup)
 
 export default app
+// trigger restart
+// trigger restart 2
+// trigger restart 3
+// trigger restart 4

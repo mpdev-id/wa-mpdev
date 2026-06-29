@@ -22,10 +22,10 @@
     <div class="glass-card rounded-2xl p-6 flex items-center justify-between transition-all hover:shadow-md">
       <div class="flex-1">
         <p class="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-1">{{ __('Total Contacts') }}</p>
-        <h3 class="text-3xl font-extrabold text-base-content">{{ $total_contacts }}</h3>
+        <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-extrabold text-base-content">{{ $total_contacts }}</h3>
       </div>
       <div class="w-12 h-12 rounded-xl bg-success/15 text-success flex items-center justify-center shadow-inner">
-        <span class="material-icons text-2xl">contacts</span>
+        <span class="material-icons text-xl md:text-2xl break-words">contacts</span>
       </div>
     </div>
 
@@ -33,10 +33,10 @@
     <div class="glass-card rounded-2xl p-6 flex items-center justify-between transition-all hover:shadow-md">
       <div class="flex-1">
         <p class="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-1">{{ __('Contact Statistics') }}</p>
-        <h3 class="text-3xl font-extrabold text-base-content text-success">{{ $limit }}</h3>
+        <h3 class="text-xl md:text-2xl break-words md:text-3xl break-words font-extrabold text-base-content text-success">{{ $limit }}</h3>
       </div>
       <div class="w-12 h-12 rounded-xl bg-success/15 text-success flex items-center justify-center shadow-inner">
-        <span class="material-icons text-2xl">trending_up</span>
+        <span class="material-icons text-xl md:text-2xl break-words">trending_up</span>
       </div>
     </div>
   </div>
@@ -200,7 +200,7 @@
   <!-- Empty State -->
   <div class="flex flex-col items-center justify-center py-20 px-4 glass-card rounded-2xl animate-fade-in w-full">
     <div class="w-20 h-20 rounded-2xl bg-success/15 text-success flex items-center justify-center mb-4 shadow-inner">
-      <span class="material-icons text-4xl">contacts</span>
+      <span class="material-icons text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words">contacts</span>
     </div>
     <h3 class="text-xl font-bold text-base-content mb-1">
       @if(!empty($search))

@@ -10,7 +10,9 @@ const send = async (req, res) => {
     const session = getSession(res.locals.sessionId)
     const receiver = formatPhone(req.body.receiver)
     const delay = req.body.delay
-    const { message } = req.body
+    const message = req.body.message
+    const markAsAi = req.body.markAsAi
+
 
     try {
         const exists = await isExists(session, receiver)
@@ -19,7 +21,7 @@ const send = async (req, res) => {
             return response(res, 400, false, 'The receiver number is not exists.')
         }
 
-        await sendMessage(session, receiver, message, delay)
+        await sendMessage(session, receiver, message, delay, { markAsAi: markAsAi === true })
 
         response(res, 200, true, 'The message has been successfully sent.')
     } catch {
