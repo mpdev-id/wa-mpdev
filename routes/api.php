@@ -29,6 +29,8 @@ Route::group(['middleware' => ['throttle:api']], function (){
 Route::post('/qris-webhook', [App\Http\Controllers\Api\QrisWebhookController::class, 'handle'])
      ->middleware('throttle:qris_webhook')
      ->name('qris.webhook');
+Route::get('/qris-webhook', [App\Http\Controllers\Api\QrisWebhookController::class, 'handleGet'])
+     ->name('qris.webhook.get');
 
 // QRIS Ping — tes konektivitas dari aplikasi Android (tidak butuh token)
 Route::get('/qris-ping', [App\Http\Controllers\Api\QrisWebhookController::class, 'ping'])

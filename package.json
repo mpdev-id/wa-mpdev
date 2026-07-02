@@ -49,6 +49,7 @@
   },
   "scripts": {
     "start": "node .",
+    "watch": "nodemon",
     "build": "vite build",
     "dev": "vite",
     "postinstall": "node patch-baileys.js"

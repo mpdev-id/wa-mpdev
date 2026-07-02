@@ -24,10 +24,21 @@
       <h1 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black text-base-content tracking-tight">{{ __('Selesaikan Pembayaran') }}</h1>
       <p class="text-base-content/60 mt-1 text-sm md:text-base">{{ __('Pindai kode QRIS dan unggah bukti transfer Anda untuk mengaktifkan langganan') }}</p>
     </div>
-    <a href="{{ route('user.subscription.index') }}" class="btn btn-ghost border-base-300 hover:bg-base-200 gap-2 shadow-sm rounded-full">
-      <span class="material-icons text-sm">arrow_back</span>
-      <span>{{ __('Kembali') }}</span>
-    </a>
+    <div class="flex items-center gap-2">
+      @if(isset($order))
+        <form method="POST" action="{{ route('user.subscription.cancel', $order->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan tagihan ini?');" class="inline">
+          @csrf
+          <button type="submit" class="btn btn-error btn-outline gap-2 shadow-sm rounded-full btn-sm md:btn-md">
+            <span class="material-icons text-sm">cancel</span>
+            <span>{{ __('Batalkan Tagihan') }}</span>
+          </button>
+        </form>
+      @endif
+      <a href="{{ route('user.subscription.index') }}" class="btn btn-ghost border-base-300 hover:bg-base-200 gap-2 shadow-sm rounded-full btn-sm md:btn-md">
+        <span class="material-icons text-sm">arrow_back</span>
+        <span>{{ __('Kembali') }}</span>
+      </a>
+    </div>
   </div>
 
   @if(empty($gateways) || $gateways->count() == 0)
@@ -61,7 +72,7 @@
 
             <!-- QRIS Scan Area -->
             <div class="flex flex-col items-center justify-center p-6 bg-white border border-slate-150 rounded-3xl shadow-inner relative mb-6">
-              <div class="w-full max-w-[280px] aspect-square relative rounded-2xl overflow-hidden border-4 border-slate-100 shadow-lg">
+              <div class="w-full max-w-[280px] aspect-square relative rounded-2xl overflow-hidden border-4 border-slate-100 shadow-lg flex items-center justify-center bg-white p-2">
                 <!-- Outer glowing border corners -->
                 <div class="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg z-20"></div>
                 <div class="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg z-20"></div>
@@ -71,8 +82,12 @@
                 <!-- Laser line scanner -->
                 <div class="absolute left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_10px_#4f46e5] z-10 scanner-line"></div>
                 
-                <!-- QR Code Image -->
-                <img src="{{ asset($qrisGateway->logo) }}" alt="QRIS QR Code" class="w-full h-full object-cover z-0 p-2">
+                <!-- QR Code Container -->
+                <div id="qris-qrcode" class="z-0 w-full h-full flex items-center justify-center">
+                  @if(empty($dynamic_qris))
+                    <img src="{{ asset($qrisGateway->logo) }}" alt="QRIS QR Code" class="w-full h-full object-cover p-2">
+                  @endif
+                </div>
               </div>
 
               <!-- Brand Label inside the QR Card -->
@@ -163,95 +178,28 @@
             </div>
           </div>
         </div>
-
-        <!-- Submit Proof Form -->
-        <div class="card bg-white border border-slate-100 shadow-xl rounded-[2rem]">
-          <div class="card-body p-6 md:p-8">
-            <h3 class="card-title text-lg font-bold text-gray-900 mb-4">{{ __('Konfirmasi Pembayaran') }}</h3>
+        
+        <!-- Status Box (Automatic Verification) -->
+        <div id="payment-status-box" class="card bg-white border border-slate-100 shadow-xl rounded-[2rem]">
+          <div class="card-body p-6 md:p-8 text-center space-y-4">
+            <div class="flex justify-center">
+              <div class="relative flex items-center justify-center">
+                <span class="animate-ping absolute inline-flex h-12 w-12 rounded-full bg-success/20 opacity-75"></span>
+                <div class="relative rounded-full p-4 bg-success/10 text-success">
+                  <span class="material-icons text-3xl animate-spin" style="animation-duration: 3s;">sync</span>
+                </div>
+              </div>
+            </div>
             
-            @if(session()->has('min-max'))
-              <div class="alert alert-warning rounded-2xl mb-4 text-xs font-semibold">
-                <span>{{ session()->get('min-max') }}</span>
-              </div>
-            @endif
+            <h4 class="font-extrabold text-gray-900 text-lg">{{ __('Menunggu Pembayaran...') }}</h4>
+            <p class="text-xs text-gray-500 leading-relaxed max-w-sm mx-auto">
+              Silakan lakukan transfer menggunakan QR Code atau nomor rekening di sebelah kiri. Sistem kami sedang memantau pembayaran Anda secara otomatis. Halaman ini akan mendeteksi pembayaran secara real-time.
+            </p>
 
-            <form method="POST" action="{{ route('user.make-payment', [$qrisGateway->id, $plan->id]) }}" enctype="multipart/form-data" class="space-y-4">
-              @csrf
-
-              <!-- Info Status Otomatis -->
-              <div class="bg-success/10 border border-success/20 text-success p-4 rounded-2xl text-xs leading-relaxed flex gap-2.5 items-start">
-                <span class="material-icons text-success text-sm mt-0.5 animate-pulse">check_circle</span>
-                <div>
-                  <strong class="text-primary font-bold block mb-0.5">⚡ Konfirmasi Otomatis Instan</strong>
-                  Setelah Anda melakukan transfer dengan nominal yang tepat, sistem kami akan memprosesnya dalam hitungan detik. Cukup tekan tombol konfirmasi di bawah.
-                </div>
-              </div>
-
-              <!-- Main Submit Button (Automatic Confirmation) -->
-              <button type="submit" class="btn btn-success text-white w-full gap-2 py-3 font-bold shadow-lg shadow-success/20 hover:shadow-success/30 hover:scale-[1.01] active:scale-[0.99] transition-all rounded-full" id="submit-btn">
-                <span class="material-icons text-sm">bolt</span>
-                <span>{{ __('Saya Sudah Transfer (Konfirmasi Otomatis)') }}</span>
-              </button>
-
-              <!-- Optional Manual Upload (Accordion / Collapse) -->
-              <div class="collapse collapse-arrow bg-slate-50 border border-slate-200/60 rounded-2xl mt-4">
-                <input type="checkbox" id="toggle-manual" class="peer" /> 
-                <div class="collapse-title text-xs font-bold text-gray-500 py-3.5 px-4 flex items-center gap-1.5 peer-checked:text-primary transition-colors">
-                  <span class="material-icons text-sm">upload_file</span>
-                  {{ __('Ada kendala? Unggah bukti manual (Opsional)') }}
-                </div>
-                
-                <div class="collapse-content px-4 pb-4 space-y-4 pt-2 border-t border-slate-100">
-                  <p class="text-slate-450 text-[11px] leading-relaxed">
-                    {{ __('Gunakan form ini hanya jika paket Anda tidak aktif secara otomatis dalam waktu 5 menit setelah pembayaran.') }}
-                  </p>
-
-                  <!-- Screenshot Upload -->
-                  <div class="form-control w-full">
-                    <label class="label pt-0">
-                      <span class="label-text font-bold text-gray-700 text-xs">{{ __('Bukti Pembayaran (Screenshot)') }}</span>
-                    </label>
-                    
-                    <div class="relative flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl p-4 bg-white hover:bg-slate-100/50 transition-colors cursor-pointer group" id="upload-box">
-                      <input type="file" name="image" id="payment-screenshot" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept="image/*">
-                      
-                      <div class="flex flex-col items-center text-center space-y-2 py-3" id="upload-placeholder">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                          <span class="material-icons text-base">cloud_upload</span>
-                        </div>
-                        <div>
-                          <p class="text-xs font-semibold text-gray-700">{{ __('Pilih berkas bukti transfer') }}</p>
-                          <p class="text-[10px] text-gray-400 mt-0.5">{{ __('Mendukung JPG, PNG, JPEG (Maks. 2MB)') }}</p>
-                        </div>
-                      </div>
-
-                      <!-- Image Preview Container -->
-                      <div class="hidden w-full max-w-[150px] aspect-[3/4] relative rounded-lg overflow-hidden border border-slate-200 shadow-md z-0" id="preview-container">
-                        <img id="preview-image" src="#" alt="Screenshot Bukti Transfer" class="w-full h-full object-cover">
-                        <button type="button" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-650 transition-colors z-20" id="remove-preview-btn">
-                          <span class="material-icons text-[10px]">close</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    @error('image')
-                      <p class="text-xs text-error font-medium mt-1.5">{{ $message }}</p>
-                    @enderror
-                  </div>
-
-                  <!-- Comment Area -->
-                  <div class="form-control w-full">
-                    <label class="label">
-                      <span class="label-text font-bold text-gray-700 text-xs">{{ __('Catatan Pembayaran') }}</span>
-                    </label>
-                    <textarea name="comment" class="textarea textarea-bordered h-20 rounded-2xl text-xs bg-white" placeholder="Contoh: Transfer via GoPay atas nama Budi">{{ old('comment') }}</textarea>
-                    @error('comment')
-                      <p class="text-xs text-error font-medium mt-1.5">{{ $message }}</p>
-                    @enderror
-                  </div>
-                </div>
-              </div>
-            </form>
+            <div class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[10px] text-gray-500 font-bold">
+              <span class="inline-block w-2 h-2 rounded-full bg-success animate-pulse"></span>
+              {{ __('MONITORING AKTIF') }}
+            </div>
           </div>
         </div>
       </div>
@@ -261,53 +209,58 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('payment-screenshot');
-    const uploadBox = document.getElementById('upload-box');
-    const placeholder = document.getElementById('upload-placeholder');
-    const previewContainer = document.getElementById('preview-container');
-    const previewImage = document.getElementById('preview-image');
-    const removeBtn = document.getElementById('remove-preview-btn');
-    const form = document.querySelector('form');
-    const submitBtn = document.getElementById('submit-btn');
-
-    fileInput.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        // Validate file size (2MB)
-        if (file.size > 2 * 1024 * 1024) {
-          alert('Ukuran file melebihi batas maksimum 2MB.');
-          fileInput.value = '';
-          return;
+    @if(isset($order) && $order->status == 2)
+      const checkStatusUrl = "{{ route('user.subscription.check-status', $order->id) }}";
+      
+      const interval = setInterval(async () => {
+        try {
+          const res = await fetch(checkStatusUrl);
+          const data = await res.json();
+          if (data.status == 1) {
+            clearInterval(interval);
+            const statusBox = document.getElementById('payment-status-box');
+            if (statusBox) {
+              statusBox.innerHTML = `
+                <div class="card bg-white border border-slate-100 shadow-xl rounded-[2rem] overflow-hidden">
+                  <div class="card-body p-6 md:p-8 text-center space-y-4">
+                    <div class="flex justify-center">
+                      <div class="rounded-full p-4 bg-success/10 text-success">
+                        <span class="material-icons text-4xl animate-bounce">check_circle</span>
+                      </div>
+                    </div>
+                    <h4 class="font-extrabold text-gray-900 text-lg">Pembayaran Sukses!</h4>
+                    <p class="text-xs text-gray-555 leading-relaxed max-w-sm mx-auto">
+                      Sistem telah berhasil memverifikasi pembayaran Anda secara otomatis. Akun Anda telah diaktifkan. Mengalihkan ke dashboard...
+                    </p>
+                  </div>
+                </div>
+              `;
+            }
+            setTimeout(() => {
+              window.location.href = "{{ url('/user/dashboard') }}";
+            }, 2500);
+          }
+        } catch (e) {
+          console.error("Gagal memeriksa status pembayaran", e);
         }
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImage.src = e.target.result;
-          placeholder.classList.add('hidden');
-          previewContainer.classList.remove('hidden');
-        }
-        reader.readAsDataURL(file);
-      }
-    });
-
-    removeBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      fileInput.value = '';
-      previewImage.src = '#';
-      previewContainer.classList.add('hidden');
-      placeholder.classList.remove('hidden');
-    });
-
-    if (form && submitBtn) {
-      form.addEventListener('submit', function() {
-        submitBtn.disabled = true;
-        const hasFile = fileInput.files && fileInput.files.length > 0;
-        submitBtn.innerHTML = hasFile 
-          ? '<span class="loading loading-spinner loading-xs"></span> Mengirim Bukti Manual...' 
-          : '<span class="loading loading-spinner loading-xs"></span> Memproses Konfirmasi...';
-      });
-    }
+      }, 3000);
+    @endif
   });
 </script>
+
+@if(!empty($dynamic_qris))
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    new QRCode(document.getElementById("qris-qrcode"), {
+      text: "{{ $dynamic_qris }}",
+      width: 250,
+      height: 250,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.M
+    });
+  });
+</script>
+@endif
 @endsection

@@ -200,17 +200,17 @@
                   <label class="label">
                     <span class="label-text font-semibold text-lg">{{ __('Your WhatsApp Number') }}</span>
                   </label>
-                  <div class="flex gap-3">
+                  <div class="flex flex-col sm:flex-row gap-3">
                     <input type="tel" 
                            x-model="phoneNumber" 
                            @keyup.enter="requestPairing()"
                            @input="formatPhoneNumber()"
-                           class="input input-bordered input-lg flex-1" 
+                           class="input input-bordered input-lg w-full flex-1 py-5" 
                            placeholder="08123456789 atau +628123456789" 
                            maxlength="20" />
                     <button @click="requestPairing()" 
                             :disabled="!phoneNumber || phoneNumber.length < 10 || loading"
-                            class="btn btn-primary btn-lg gap-2 min-w-[150px] rounded-full">
+                            class="btn btn-primary btn-lg w-full sm:w-auto gap-2 min-w-[150px] rounded-full">
                       <span x-show="!loading" class="material-icons">phone</span>
                       <span x-show="loading" class="loading loading-spinner"></span>
                       <span x-text="loading ? '{{ __('Getting...') }}' : '{{ __('Get Code') }}'"></span>

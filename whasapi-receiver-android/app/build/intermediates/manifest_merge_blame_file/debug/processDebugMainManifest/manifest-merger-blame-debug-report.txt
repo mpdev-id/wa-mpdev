@@ -1,0 +1,137 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.whasapi.receiver"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+7-->INJECTED
+8        android:minSdkVersion="24"
+8-->INJECTED
+9        android:targetSdkVersion="34" />
+9-->INJECTED
+10
+11    <!-- Permissions -->
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:5:5-67
+12-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:5:22-64
+13    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+13-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:6:5-81
+13-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:6:22-78
+14    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+14-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:7:5-77
+14-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:7:22-74
+15
+16    <permission
+16-->[androidx.core:core:1.9.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\fa26885598608f64079b0be7fbb60b60\transformed\core-1.9.0\AndroidManifest.xml:22:5-24:47
+17        android:name="com.whasapi.receiver.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+17-->[androidx.core:core:1.9.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\fa26885598608f64079b0be7fbb60b60\transformed\core-1.9.0\AndroidManifest.xml:23:9-81
+18        android:protectionLevel="signature" />
+18-->[androidx.core:core:1.9.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\fa26885598608f64079b0be7fbb60b60\transformed\core-1.9.0\AndroidManifest.xml:24:9-44
+19
+20    <uses-permission android:name="com.whasapi.receiver.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+20-->[androidx.core:core:1.9.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\fa26885598608f64079b0be7fbb60b60\transformed\core-1.9.0\AndroidManifest.xml:26:5-97
+20-->[androidx.core:core:1.9.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\fa26885598608f64079b0be7fbb60b60\transformed\core-1.9.0\AndroidManifest.xml:26:22-94
+21
+22    <application
+22-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:9:5-49:19
+23        android:allowBackup="true"
+23-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:10:9-35
+24        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+24-->[androidx.core:core:1.9.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\fa26885598608f64079b0be7fbb60b60\transformed\core-1.9.0\AndroidManifest.xml:28:18-86
+25        android:dataExtractionRules="@xml/backup_rules"
+25-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:11:9-56
+26        android:debuggable="true"
+27        android:extractNativeLibs="false"
+27-->INJECTED
+28        android:fullBackupContent="@xml/backup_rules"
+28-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:12:9-54
+29        android:icon="@android:drawable/sym_def_app_icon"
+29-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:13:9-58
+30        android:label="@string/app_name"
+30-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:14:9-41
+31        android:supportsRtl="true"
+31-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:15:9-35
+32        android:theme="@style/Theme.WHASAPIReceiver" >
+32-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:16:9-53
+33        <activity
+33-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:18:9-25:20
+34            android:name="com.whasapi.receiver.MainActivity"
+34-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:19:13-41
+35            android:exported="true" >
+35-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:20:13-36
+36            <intent-filter>
+36-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:21:13-24:29
+37                <action android:name="android.intent.action.MAIN" />
+37-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:22:17-69
+37-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:22:25-66
+38
+39                <category android:name="android.intent.category.LAUNCHER" />
+39-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:23:17-77
+39-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:23:27-74
+40            </intent-filter>
+41        </activity>
+42
+43        <!-- Notification Listener Service -->
+44        <service
+44-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:28:9-36:19
+45            android:name="com.whasapi.receiver.NotificationService"
+45-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:29:13-48
+46            android:exported="true"
+46-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:32:13-36
+47            android:label="@string/app_name"
+47-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:30:13-45
+48            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
+48-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:31:13-87
+49            <intent-filter>
+49-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:33:13-35:29
+50                <action android:name="android.service.notification.NotificationListenerService" />
+50-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:34:17-99
+50-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:34:25-96
+51            </intent-filter>
+52        </service>
+53
+54        <!-- Boot Completed Receiver -->
+55        <receiver
+55-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:39:9-47:20
+56            android:name="com.whasapi.receiver.BootReceiver"
+56-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:40:13-41
+57            android:enabled="true"
+57-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:41:13-35
+58            android:exported="true" >
+58-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:42:13-36
+59            <intent-filter>
+59-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:43:13-46:29
+60                <action android:name="android.intent.action.BOOT_COMPLETED" />
+60-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:44:17-79
+60-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:44:25-76
+61                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+61-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:45:17-82
+61-->D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\src\main\AndroidManifest.xml:45:25-79
+62            </intent-filter>
+63        </receiver>
+64
+65        <provider
+65-->[androidx.emoji2:emoji2:1.2.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\564bdbc1da6713de302e1feb1657365d\transformed\emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+66            android:name="androidx.startup.InitializationProvider"
+66-->[androidx.emoji2:emoji2:1.2.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\564bdbc1da6713de302e1feb1657365d\transformed\emoji2-1.2.0\AndroidManifest.xml:25:13-67
+67            android:authorities="com.whasapi.receiver.androidx-startup"
+67-->[androidx.emoji2:emoji2:1.2.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\564bdbc1da6713de302e1feb1657365d\transformed\emoji2-1.2.0\AndroidManifest.xml:26:13-68
+68            android:exported="false" >
+68-->[androidx.emoji2:emoji2:1.2.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\564bdbc1da6713de302e1feb1657365d\transformed\emoji2-1.2.0\AndroidManifest.xml:27:13-37
+69            <meta-data
+69-->[androidx.emoji2:emoji2:1.2.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\564bdbc1da6713de302e1feb1657365d\transformed\emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+70                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+70-->[androidx.emoji2:emoji2:1.2.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\564bdbc1da6713de302e1feb1657365d\transformed\emoji2-1.2.0\AndroidManifest.xml:30:17-75
+71                android:value="androidx.startup" />
+71-->[androidx.emoji2:emoji2:1.2.0] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\564bdbc1da6713de302e1feb1657365d\transformed\emoji2-1.2.0\AndroidManifest.xml:31:17-49
+72            <meta-data
+72-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\122c7992c00fbcdd62c823f014b165b3\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+73                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+73-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\122c7992c00fbcdd62c823f014b165b3\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+74                android:value="androidx.startup" />
+74-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\PDX-USER\.gradle\caches\9.6.0\transforms\122c7992c00fbcdd62c823f014b165b3\transformed\lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+75        </provider>
+76    </application>
+77
+78</manifest>

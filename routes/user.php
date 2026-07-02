@@ -80,7 +80,10 @@ Route::group(['prefix' => 'user', 'as' => 'user.', 'middleware' => ['auth','user
    Route::resource('support',                            USER\SupportController::class);
    //subscription / plan route
    Route::resource('subscription',                       USER\SubscriptionController::class);
+   Route::get('/subscription/invoice/{id}',              [USER\SubscriptionController::class,'invoice'])->name('subscription.invoice');
+   Route::get('/subscription/check-status/{id}',         [USER\SubscriptionController::class,'checkStatus'])->name('subscription.check-status');
    Route::post('make-subscribe/{gateway_id}/{plan_id}',  [USER\SubscriptionController::class,'subscribe'])->name('make-payment');
+   Route::post('/subscription/cancel/{id}',              [USER\SubscriptionController::class,'cancel'])->name('subscription.cancel');
    Route::get('/subscription/plan/{status}',             [USER\SubscriptionController::class,'status']);
    Route::get('/subscriptions/log',                      [USER\SubscriptionController::class,'log'])->name('subscription.log');
    Route::get('/subscription-history',                   [USER\SubscriptionController::class,'log']);

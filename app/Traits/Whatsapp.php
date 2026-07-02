@@ -288,11 +288,18 @@ trait Whatsapp
                 'docx'=>'document',
                 'xlsx'=>'document',
                 'csv'=>'document',
-                'txt'=>'document'
+                'txt'=>'document',
+                'mp3'=>'audio',
+                'wav'=>'audio',
+                'ogg'=>'audio',
+                'm4a'=>'audio'
             ];
 
             $media_type = $extentions[$file_type] ?? 'document';
             $content[$media_type]=['url' => asset($data['attachment'])];
+            if ($media_type === 'audio') {
+                $content['ptt'] = true; // Send as Voice Note
+            }
 
         }
         elseif ($type == 'text-with-button') {
@@ -433,10 +440,66 @@ trait Whatsapp
                "buttonText" =>$data['button_text'],
                "sections" => $templateButtons
             ];
-
-
+        }
+        elseif ($type == 'text-with-reaction') {
+            $receiver = preg_replace('/\D+/', '', $data['phone'] ?? '');
+            if (substr($receiver, 0, 1) === '0') {
+                $receiver = '62' . substr($receiver, 1);
+            }
+            $remoteJid = $receiver . '@s.whatsapp.net';
+            
+            $content = [
+                'react' => [
+                    'text' => $data['reaction_emoji'] ?? '',
+                    'key' => [
+                        'id' => $data['target_message_id'] ?? '',
+                        'remoteJid' => $remoteJid,
+                        'fromMe' => isset($data['from_me']) && $data['from_me'] ? true : false
+                    ]
+                ]
+            ];
         }
 
+        // --- Global Toggles for Messages (Mentions, Quote, ViewOnce) ---
+
+        // Extract Mentions
+        if (isset($data['extract_mentions']) && $data['extract_mentions'] && isset($content['text'])) {
+            preg_match_all('/@(\d+)/', $content['text'], $matches);
+            if (!empty($matches[1])) {
+                $mentions = [];
+                foreach ($matches[1] as $number) {
+                    $mentions[] = $number . '@s.whatsapp.net';
+                }
+                $content['mentions'] = $mentions;
+            }
+        }
+
+        // Quote Message (ContextInfo)
+        if (!empty($data['quote_message_id'])) {
+            $content['contextInfo'] = [
+                'stanzaId' => $data['quote_message_id'],
+                // participant is required by Baileys, we can default to the receiver
+                'participant' => isset($remoteJid) ? $remoteJid : (preg_replace('/\D+/', '', $data['phone'] ?? '') . '@s.whatsapp.net')
+            ];
+        }
+
+        // View Once
+        if (isset($data['is_view_once']) && $data['is_view_once']) {
+            $content['viewOnce'] = true;
+        }
+
+        // GIF Playback
+        if (isset($data['is_gif']) && $data['is_gif']) {
+            $content['gifPlayback'] = true;
+        }
+
+        // Link Preview (Only applies to plain-text mostly, handled automatically by Baileys, but can be disabled)
+        if (isset($content['text']) && (!isset($data['enable_link_preview']) || !$data['enable_link_preview'])) {
+            // By default Baileys enables it. We can disable it if toggle is off.
+            // But wait, the user wants a toggle to ENABLE it. 
+            // So if it's NOT checked, we disable it:
+            $content['linkPreview'] = false;
+        }
 
         return $content;
     }

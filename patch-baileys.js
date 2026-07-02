@@ -2,66 +2,51 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const targetFile = path.join(__dirname, 'node_modules', '@fizzxydev', 'baileys-pro', 'lib', 'Socket', 'messages-recv.js');
 
-const targetFile = path.join(__dirname, 'node_modules', '@fizzxydev', 'baileys-pro', 'lib', 'Socket', 'messages-send.js');
-
-if (fs.existsSync(targetFile)) {
-    let content = fs.readFileSync(targetFile, 'utf8');
-
-    // Remove the previous hardcoded bot biz_bot block if it exists
-    const hardcodedBlockRegex = /if\s*\(\s*isPrivate\s*\)\s*\{\s*if\s*\(\!stanza\.content\s*\|\|\s*\!Array\.isArray\(stanza\.content\)\)\s*\{\s*stanza\.content\s*=\s*\[\]\s*\}\s*stanza\.content\.push\(\{\s*tag:\s*'bot',\s*attrs:\s*\{\s*biz_bot:\s*'1'\s*\}\s*\}\)\s*\}/;
-    
-    // Check if the original block is commented out (from my previous manual edit)
-    const manualPatchRegex = /\/\*\s*if\s*\(\s*isPrivate\s*\)[\s\S]*?biz_bot:\s*'1'[\s\S]*?\}\s*\*\//;
-    
-    if (manualPatchRegex.test(content)) {
-        content = content.replace(manualPatchRegex, '');
-    } else if (hardcodedBlockRegex.test(content)) {
-        content = content.replace(hardcodedBlockRegex, '');
-    }
-
-    let patched = false;
-
-    // INJECTION 1: Inside relayMessage (adding biz_bot tag)
-    const injectionPoint1 = "logger.debug({ msgId }, `sending message to ${participants.length} devices`)";
-    if (content.includes(injectionPoint1) && !content.includes('if (additionalAttributes && additionalAttributes.markAsAi) {')) {
-        const customBlock1 = `
-         if (additionalAttributes && additionalAttributes.markAsAi) {
-            if (!stanza.content || !Array.isArray(stanza.content)) {
-               stanza.content = []
-            }
-            stanza.content.push({
-               tag: 'bot',
-               attrs: {
-                  biz_bot: '1'
-               }
-            })
-         }
-         
-         `;
-        content = content.replace(injectionPoint1, customBlock1 + injectionPoint1);
-        patched = true;
-    }
-
-    // INJECTION 2: Inside sendMessage (mapping options.markAsAi to additionalAttributes)
-    const injectionPoint2 = "const additionalAttributes = {}";
-    if (content.includes(injectionPoint2) && !content.includes('if (options && options.markAsAi) {')) {
-        const customBlock2 = `const additionalAttributes = {}
-            if (options && options.markAsAi) {
-               additionalAttributes.markAsAi = true;
-            }`;
-        content = content.replace(injectionPoint2, customBlock2);
-        patched = true;
-    }
-
-    if (patched) {
-        fs.writeFileSync(targetFile, content);
-        console.log('Successfully patched baileys-pro to support markAsAi option (relayMessage & sendMessage)!');
-    } else {
-        console.log('Baileys already fully patched or injection points not found.');
-    }
-} else {
-    console.error('Baileys file not found: ' + targetFile);
+if (!fs.existsSync(targetFile)) {
+    console.error('Error: Target file messages-recv.js not found at: ' + targetFile);
+    process.exit(1);
 }
+
+let content = fs.readFileSync(targetFile, 'utf8');
+
+const targetStr = `            case 'link_code_companion_reg':
+                const linkCodeCompanionReg = WABinary_1.getBinaryNodeChild(node, 'link_code_companion_reg')
+                const ref = toRequiredBuffer(WABinary_1.getBinaryNodeChildBuffer(linkCodeCompanionReg, 'link_code_pairing_ref'))
+                const primaryIdentityPublicKey = toRequiredBuffer(WABinary_1.getBinaryNodeChildBuffer(linkCodeCompanionReg, 'primary_identity_pub'))
+                const primaryEphemeralPublicKeyWrapped = toRequiredBuffer(WABinary_1.getBinaryNodeChildBuffer(linkCodeCompanionReg, 'link_code_pairing_wrapped_primary_ephemeral_pub'))`;
+
+const replacementStr = `            case 'link_code_companion_reg':
+                const linkCodeCompanionReg = WABinary_1.getBinaryNodeChild(node, 'link_code_companion_reg')
+                const primaryIdentityPubNode = WABinary_1.getBinaryNodeChildBuffer(linkCodeCompanionReg, 'primary_identity_pub')
+                const primaryEphemeralPubNode = WABinary_1.getBinaryNodeChildBuffer(linkCodeCompanionReg, 'link_code_pairing_wrapped_primary_ephemeral_pub')
+                const refNode = WABinary_1.getBinaryNodeChildBuffer(linkCodeCompanionReg, 'link_code_pairing_ref')
+                if (!primaryIdentityPubNode || !primaryEphemeralPubNode || !refNode) {
+                    logger.info('link_code_companion_reg node incomplete, skipping...');
+                    break
+                }
+                const ref = toRequiredBuffer(refNode)
+                const primaryIdentityPublicKey = toRequiredBuffer(primaryIdentityPubNode)
+                const primaryEphemeralPublicKeyWrapped = toRequiredBuffer(primaryEphemeralPubNode)`;
+
+// Support both LF and CRLF line endings in the source file
+const normalizedContent = content.replace(/\r\n/g, '\n');
+const normalizedTarget = targetStr.replace(/\r\n/g, '\n');
+const normalizedReplacement = replacementStr.replace(/\r\n/g, '\n');
+
+if (!normalizedContent.includes(normalizedTarget)) {
+    // Check if it's already patched
+    if (normalizedContent.includes("link_code_companion_reg node incomplete, skipping...")) {
+        console.log('Success: Baileys-pro is already patched!');
+        process.exit(0);
+    }
+    console.error('Error: Could not find target code block to patch in messages-recv.js.');
+    process.exit(1);
+}
+
+const patchedContent = normalizedContent.replace(normalizedTarget, normalizedReplacement);
+fs.writeFileSync(targetFile, patchedContent, 'utf8');
+
+console.log('Success: Baileys-pro pairing code crash bug patched successfully!');

@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    tools:context=".MainActivity">
+
+    <!-- ScrollContainer -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- HEADER -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="WHASAPI"
+                        android:textColor="@color/primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Notification Receiver (QRIS)"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!-- Status Badge -->
+                <TextView
+                    android:id="@+id/tvServiceStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_badge_red"
+                    android:text="LAYANAN MATI"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp" />
+            </LinearLayout>
+
+            <!-- WEBHOOK CONFIG CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Konfigurasi Webhook"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Webhook URL"
+                        android:textColor="@color/text_muted"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp" />
+
+                    <EditText
+                        android:id="@+id/etWebhookUrl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_input"
+                        android:hint="http://ip-server:8000/api/qris-webhook"
+                        android:textColorHint="@color/text_muted"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:padding="12dp"
+                        android:inputType="textUri"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="X-Auth-Token"
+                        android:textColor="@color/text_muted"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp" />
+
+                    <EditText
+                        android:id="@+id/etAuthToken"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_input"
+                        android:hint="Masukkan Token Autentikasi Admin"
+                        android:textColorHint="@color/text_muted"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:padding="12dp"
+                        android:inputType="text"
+                        android:layout_marginBottom="16dp" />
+
+                    <Button
+                        android:id="@+id/btnSaveConfig"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Simpan Konfigurasi"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/primary"
+                        app:cornerRadius="8dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- PERMISSION CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Izin Akses Notifikasi"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Aplikasi memerlukan izin khusus Notification Listener agar dapat mendeteksi adanya mutasi e-wallet dari panel notifikasi Android Anda."
+                        android:textColor="@color/text_muted"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="16dp" />
+
+                    <Button
+                        android:id="@+id/btnGrantPermission"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Aktifkan Akses Notifikasi"
+                        android:textColor="@color/black"
+                        android:backgroundTint="@color/accent"
+                        app:cornerRadius="8dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- FILTER APLIKASI CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Filter Aplikasi Pembayaran"
+                        android:textColor="@color/text_main"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pilih aplikasi yang ingin dipantau transaksinya:"
+                        android:textColor="@color/text_muted"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- GoBiz / GoPay -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swGoBiz"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="GoBiz / GoPay Merchant"
+                        android:textColor="@color/text_main"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- OVO -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swOvo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="OVO Merchant / OVO App"
+                        android:textColor="@color/text_main"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- DANA -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swDana"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="DANA / DANA Bisnis"
+                        android:textColor="@color/text_main"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- ShopeePay -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swShopee"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="ShopeePay / Shopee Partner"
+                        android:textColor="@color/text_main"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- BCA Mobile -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swBca"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="BCA Mobile (m-BCA)"
+                        android:textColor="@color/text_main"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- Livin Mandiri -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swMandiri"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Livin' by Mandiri"
+                        android:textColor="@color/text_main"
+                        android:layout_marginBottom="10dp" />
+
+                    <!-- SMS -->
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/swSms"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Notifikasi SMS Transaksi"
+                        android:textColor="@color/text_main" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- TEST & LOG CARD -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@color/bg_card"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Uji Coba &amp; Log Webhook"
+                            android:textColor="@color/text_main"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/btnTestWebhook"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kirim Test"
+                            android:textSize="12sp"
+                            android:textColor="@color/white"
+                            android:backgroundTint="@color/primary"
+                            app:cornerRadius="6dp"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp" />
+                    </LinearLayout>
+
+                    <!-- Logs Console Terminal style -->
+                    <TextView
+                        android:id="@+id/tvLogsConsole"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:background="#05070a"
+                        android:textColor="#38bdf8"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:padding="8dp"
+                        android:scrollbars="vertical"
+                        android:text="[SYSTEM] Menunggu konfigurasi..." />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

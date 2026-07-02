@@ -1,0 +1,6 @@
+com.whasapi.receiver.test.app-androidTest-0 D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\build\generated\res\resValues\androidTest\debug
+com.whasapi.receiver.test.app-updated_navigation_xml-1 D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\build\generated\updated_navigation_xml\debugAndroidTest
+com.whasapi.receiver.test.app-mergeDebugAndroidTestResources-2 D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.whasapi.receiver.test.app-mergeDebugAndroidTestResources-3 D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.whasapi.receiver.test.app-debugAndroidTest-4 D:\MP\dev\www\wa-mpdev\whasapi-receiver-android\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
+gradleHome-0 C:\Users\PDX-USER\.gradle

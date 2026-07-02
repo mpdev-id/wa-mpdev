@@ -73,6 +73,17 @@
 					 @endforeach
 					@endif
 
+					@if($gateway->namespace == 'App\Gateway\CustomGateway')
+					@php 
+					   $data = json_decode($gateway->data ?? '', true)
+					@endphp
+					<div class="form-group mb-4">
+						<label class="col-form-label text-md-right required" for="qris_string">{{ __('QRIS String (Dari Dana Bisnis / ShopeePay / Gopay Merchant)') }}</label>
+						<input type="text" class="form-control" name="data[qris_string]" id="qris_string" value="{{ $data['qris_string'] ?? '' }}" placeholder="00020101021126570011ID.DANA.WWW...">
+						<small class="form-text text-muted">Scan QRIS Dana Bisnis Anda menggunakan QR Scanner online, lalu copy string-nya ke sini untuk mengaktifkan nominal dinamis otomatis.</small>
+					</div>
+					@endif
+
 					<div class="form-group mb-4">
 						<label class="col-form-label text-md-right required" for="status">{{ __('Payment Instruction') }}</label>
 						<textarea class="form-control" maxlength="1000" name="comment">{{ $gateway->comment }}</textarea>

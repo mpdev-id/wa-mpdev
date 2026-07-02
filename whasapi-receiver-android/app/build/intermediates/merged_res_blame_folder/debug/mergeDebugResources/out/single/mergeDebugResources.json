@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "com.whasapi.receiver.app-debug-28:/drawable_bg_badge_red.xml.flat",
+        "source": "com.whasapi.receiver.app-main-30:/drawable/bg_badge_red.xml"
+    },
+    {
+        "merged": "com.whasapi.receiver.app-debug-28:/drawable_bg_input.xml.flat",
+        "source": "com.whasapi.receiver.app-main-30:/drawable/bg_input.xml"
+    },
+    {
+        "merged": "com.whasapi.receiver.app-debug-28:/drawable_bg_badge_green.xml.flat",
+        "source": "com.whasapi.receiver.app-main-30:/drawable/bg_badge_green.xml"
+    },
+    {
+        "merged": "com.whasapi.receiver.app-debug-28:/xml_backup_rules.xml.flat",
+        "source": "com.whasapi.receiver.app-main-30:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.whasapi.receiver.app-debug-28:/layout_activity_main.xml.flat",
+        "source": "com.whasapi.receiver.app-main-30:/layout/activity_main.xml"
+    }
+]

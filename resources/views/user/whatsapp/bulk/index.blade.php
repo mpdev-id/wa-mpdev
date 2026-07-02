@@ -30,15 +30,15 @@
   <!-- Page Header -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 p-6 rounded-2xl bg-base-200 border border-base-300">
     <div>
-      <h1 class="text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words font-black text-base-content tracking-tight mb-2">{{ __('Bulk Messages') }}</h1>
-      <p class="text-base-content/60 text-lg font-medium">{{ __('Manage and track your bulk message campaigns') }}</p>
+      <h1 class="text-2xl md:text-4xl font-black text-base-content tracking-tight mb-2">{{ __('Bulk Messages') }}</h1>
+      <p class="text-base-content/60 text-sm md:text-lg font-medium">{{ __('Manage and track your bulk message campaigns') }}</p>
     </div>
-    <div class="flex flex-wrap gap-3">
-      <a href="{{ route('user.bulk-message.create') }}" class="btn btn-primary btn-lg shadow-xl shadow-primary/20 gap-2 px-8 rounded-full">
+    <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto mt-4 md:mt-0">
+      <a href="{{ route('user.bulk-message.create') }}" class="btn btn-primary btn-lg shadow-xl shadow-primary/20 gap-2 px-8 rounded-full w-full sm:w-auto">
         <span class="material-symbols-outlined">add_circle</span>
         <span class="font-bold">{{ __('New Campaign') }}</span>
       </a>
-      <button data-toggle="modal" data-target="#send-template-bulk" class="btn btn-outline btn-lg gap-2 px-8 border-2 rounded-full">
+      <button data-toggle="modal" data-target="#send-template-bulk" class="btn btn-outline btn-lg gap-2 px-8 border-2 rounded-full w-full sm:w-auto">
         <span class="material-symbols-outlined">description</span>
         <span class="font-bold">{{ __('Use Template') }}</span>
       </button>
@@ -136,13 +136,13 @@
 
     <!-- Main Content -->
     <div class="lg:col-span-9">
-      <div class="glass-card rounded-3xl overflow-hidden p-8 md:p-10">
-          <div class="flex items-center justify-between mb-10 ">
+      <div class="glass-card rounded-3xl overflow-hidden p-4 md:p-10">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 md:mb-10 gap-4">
             <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20">
+              <div class="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
                 <span class="material-symbols-outlined">history</span>
               </div>
-              <h2 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Transaction History') }}</h2>
+              <h2 class="text-xl md:text-2xl font-black tracking-tight">{{ __('Transaction History') }}</h2>
             </div>
           </div>
 
@@ -212,13 +212,13 @@
       @if(count($templates) > 0 && count($groups) > 0)
       <form method="POST" action="{{ route('user.contact.send-template-bulk') }}" class="ajaxform_instant_reload">
         @csrf
-        <div class="p-8">
+        <div class="p-6 md:p-8">
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20">
+              <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl gradient-bg flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
                 <span class="material-symbols-outlined">description</span>
               </div>
-              <h5 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Send with Template') }}</h5>
+              <h5 class="text-xl md:text-2xl font-black tracking-tight">{{ __('Send with Template') }}</h5>
             </div>
             <button type="button" class="btn btn-ghost btn-circle rounded-full" data-dismiss="modal">
               <span class="material-symbols-outlined">close</span>

@@ -34,12 +34,20 @@ class GatewayController extends Controller
         $request->validate([
             'name'       => 'required|unique:gateways,name',
             'comment'    => 'max:1000',
-            'logo'       => 'nullable|image|max:1024',
+            'logo'       => 'nullable|image|max:2048',
             'charge'     => 'required',
             'currency'   => 'required',
             'min_amount' => ['required', 'numeric', 'min:0'],
-            'max_amount' => ['required', 'numeric', 'min:0', 'gte:min_amount'],
+            'max_amount' => ['required', 'numeric'],
         ]);
+
+        if ($request->max_amount != -1 && $request->max_amount < $request->min_amount) {
+            return response()->json([
+                'errors' => [
+                    'max_amount' => [__('The maximum amount must be greater than or equal to minimum amount.')]
+                ]
+            ], 422);
+        }
 
         $gateway = new Gateway();
 
@@ -80,13 +88,21 @@ class GatewayController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:gateways,name,' . $id,
-            'logo' => 'nullable|image|max:100',
+            'logo' => 'nullable|image|max:2048',
             'charge' => 'required',
             'namespace' => 'nullable',
             'currency' => 'required',
             'min_amount' => ['required', 'numeric', 'min:0'],
-            'max_amount' => ['required', 'numeric', 'min:0', 'gte:min_amount'],
+            'max_amount' => ['required', 'numeric'],
         ]);
+
+        if ($request->max_amount != -1 && $request->max_amount < $request->min_amount) {
+            return response()->json([
+                'errors' => [
+                    'max_amount' => [__('The maximum amount must be greater than or equal to minimum amount.')]
+                ]
+            ], 422);
+        }
 
         $gateway = Gateway::findOrFail($id);
 
@@ -94,6 +110,7 @@ class GatewayController extends Controller
             $request->validate([
                 'comment' => 'required',
             ]);
+            $gateway->data = $request->data ? json_encode($request->data) : null;
         } else {
             $gateway->data = $request->data ? json_encode($request->data) : '';
         }

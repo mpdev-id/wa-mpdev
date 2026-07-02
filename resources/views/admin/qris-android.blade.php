@@ -161,7 +161,7 @@
             <span class="badge rounded-3 p-2" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
               <i class="fi fi-rs-book-alt text-white"></i>
             </span>
-            Panduan Setup Automate
+            Panduan Setup Penerima Notifikasi
           </h5>
           <p class="text-muted small mt-1 mb-0">Ikuti langkah berikut untuk menghubungkan HP Android ke sistem QRIS.</p>
         </div>
@@ -170,19 +170,81 @@
 
           {{-- Method tabs --}}
           <div class="method-tab mb-4" id="methodTabs">
-            <button class="active" onclick="showMethod('automate', this)">
-              <i class="fi fi-rs-smartphone me-1"></i> Automate (Gratis)
+            <button class="active" onclick="showMethod('wasapi', this)">
+              <i class="fi fi-rs-smartphone me-1"></i> Aplikasi WASAPI (Rekomendasi)
+            </button>
+            <button onclick="showMethod('automate', this)">
+              <i class="fi fi-rs-settings me-1"></i> Automate (Gratis)
             </button>
             <button onclick="showMethod('curl', this)">
               <i class="fi fi-rs-terminal me-1"></i> cURL / API Manual
             </button>
-            <button onclick="showMethod('tasker', this)">
-              <i class="fi fi-rs-settings me-1"></i> Tasker
-            </button>
+          </div>
+
+          {{-- === WASAPI NATIVE APP GUIDE === --}}
+          <div id="method-wasapi" class="method-content">
+            <div class="d-flex flex-column gap-4">
+
+              <div class="d-flex gap-3">
+                <div class="step-num">1</div>
+                <div class="w-100">
+                  <div class="fw-semibold small mb-1">Download & Install Aplikasi WASAPI Receiver</div>
+                  <p class="small text-muted mb-2">
+                    Unduh dan pasang aplikasi Android kustom <strong>WASAPI Receiver</strong> di HP Anda.
+                  </p>
+                  @if(file_exists(public_path('uploads/wasapi-receiver.apk')))
+                    <a href="{{ asset('uploads/wasapi-receiver.apk') }}"
+                       class="btn btn-sm btn-primary rounded-pill px-3" download>
+                      <i class="fi fi-rs-download me-1"></i> Download APK Sekarang
+                    </a>
+                  @else
+                    <div class="alert border-0 rounded-3 small py-2 px-3 mb-0"
+                         style="background:#fffbeb; color:#92400e; border-left:3px solid #f59e0b !important;">
+                      <i class="fi fi-rs-info me-1"></i>
+                      <strong>Petunjuk Server:</strong> Upload file <code>app-debug.apk</code> yang baru dicompile ke direktori server Anda di: <code>public/uploads/wasapi-receiver.apk</code> agar tombol download aktif di halaman ini.
+                    </div>
+                  @endif
+                </div>
+              </div>
+
+              <div class="d-flex gap-3">
+                <div class="step-num">2</div>
+                <div>
+                  <div class="fw-semibold small mb-1">Aktifkan Izin Notifikasi</div>
+                  <p class="small text-muted mb-0">
+                    Buka aplikasi di HP, ketuk tombol <strong>"GRANT PERMISSION"</strong> (atau Izin Notifikasi), lalu pilih <strong>WHASAPI Receiver</strong> dan berikan izin akses pembacaan notifikasi.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex gap-3">
+                <div class="step-num">3</div>
+                <div>
+                  <div class="fw-semibold small mb-1">Konfigurasi Webhook & Token</div>
+                  <p class="small text-muted mb-2">
+                    Salin <strong>Webhook URL</strong> dan <strong>Token Autentikasi</strong> dari panel kanan, lalu masukkan ke dalam kolom input di aplikasi HP.
+                  </p>
+                  <p class="small text-muted mb-0">
+                    Aktifkan switch <strong>DANA</strong> (atau e-wallet lain yang ingin Anda terima otomatis), lalu klik tombol <strong>"SAVE CONFIG"</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex gap-3">
+                <div class="step-num done">4</div>
+                <div>
+                  <div class="fw-semibold small mb-1">✅ Tes Konektivitas</div>
+                  <p class="small text-muted mb-0">
+                    Ketuk tombol <strong>"TEST WEBHOOK"</strong> di HP Anda. Jika respon log di HP menampilkan sukses, selamat! HP Anda sudah terhubung ke sistem.
+                  </p>
+                </div>
+              </div>
+
+            </div>
           </div>
 
           {{-- === AUTOMATE GUIDE === --}}
-          <div id="method-automate" class="method-content">
+          <div id="method-automate" class="method-content d-none">
             <div class="d-flex flex-column gap-4">
 
               <div class="d-flex gap-3">
@@ -261,19 +323,7 @@
                        style="background:#fffbeb; color:#92400e; border-left:3px solid #f59e0b !important;">
                     <i class="fi fi-rs-info me-1"></i>
                     <strong>Tip Automate:</strong> Gunakan variable <code>@{{noti_text}}</code> untuk menangkap isi notifikasi otomatis.
-                    Atau parse nominal dari teks notifikasi menggunakan block <strong>Text decode</strong> + regex.
                   </div>
-                </div>
-              </div>
-
-              <div class="d-flex gap-3">
-                <div class="step-num done">4</div>
-                <div>
-                  <div class="fw-semibold small mb-1">✅ Selesai — Aktifkan Flow</div>
-                  <p class="small text-muted mb-0">
-                    Aktifkan flow, lalu gunakan tombol <strong>Tes Koneksi</strong> di atas dan <strong>Simulasi Webhook</strong>
-                    di bawah untuk memverifikasi bahwa sistem bekerja sebelum transaksi riil masuk.
-                  </p>
                 </div>
               </div>
 
@@ -307,29 +357,6 @@
                  style="background:#f0f9ff; color:#0c4a6e; border-left:3px solid #38bdf8 !important;">
               <i class="fi fi-rs-shield-check me-1"></i>
               Token diterima via: <code>X-Auth-Token</code> header, <code>Authorization: Bearer</code>, atau field <code>token</code> di body JSON.
-            </div>
-          </div>
-
-          {{-- === TASKER GUIDE === --}}
-          <div id="method-tasker" class="method-content d-none">
-            <p class="small text-muted mb-3">Konfigurasi Tasker untuk mengirim webhook saat notifikasi masuk:</p>
-            <div class="d-flex flex-column gap-3">
-              <div class="rounded-3 p-3" style="background:#f8fafc; border:1px solid #e2e8f0;">
-                <div class="fw-semibold small mb-2">Profile → Event → UI → Notification</div>
-                <div class="small text-muted">
-                  Set <strong>App</strong> ke aplikasi e-wallet target (GoPay, OVO, dll).
-                  Filter <strong>Title/Text</strong> berisi kata <code>masuk</code> atau <code>Rp</code>.
-                </div>
-              </div>
-              <div class="rounded-3 p-3" style="background:#f8fafc; border:1px solid #e2e8f0;">
-                <div class="fw-semibold small mb-2">Task → HTTP Request (plugin atau built-in)</div>
-                <div class="code-block mt-2">
-<span class="key">Method</span> : <span class="val">POST</span>
-<span class="key">URL</span>    : <span class="url">{{ $webhookUrl }}</span>
-<span class="key">Header</span> : <span class="str">X-Auth-Token: {{ $authToken ?: 'TOKEN_ANDA' }}</span>
-<span class="key">Body</span>   : <span class="str">{"amount":"%evtprm3","description":"%evtprm2","source":"tasker"}</span>
-                </div>
-              </div>
             </div>
           </div>
 

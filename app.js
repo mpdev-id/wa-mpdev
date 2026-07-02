@@ -1,4 +1,10 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err.message);
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection:', reason);
+});
 import 'dotenv/config'
 import express from 'express'
 import nodeCleanup from 'node-cleanup'

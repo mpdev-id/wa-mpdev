@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="hacker">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="mptheme">
 
 <head>
   <meta charset="utf-8">
@@ -12,9 +12,10 @@
 
   <title>{{ env('APP_NAME') }}</title>
   
-  <script>
+    <script>
     (function() {
-      var theme = localStorage.getItem('app-theme') || 'hacker';
+      var defaultTheme = "{{ Request::is('user/*') || Request::is('admin/*') ? 'mptheme' : 'hacker' }}";
+      var theme = localStorage.getItem('app-theme') || defaultTheme;
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
@@ -285,9 +286,183 @@
       background-image: none !important;
     }
   </style>
+
+  
+
+
+  <!-- MPTheme Styles -->
+  @if(Request::is('user/*') || Request::is('admin/*'))
+  <style>
+    /* Light Theme - Softer Game HUD */
+    html[data-theme="mptheme"] {
+        --bg-main: #E0F2FE;
+        --bg-card: rgba(255, 255, 255, 0.72);
+        --bg-card-hover: rgba(255, 255, 255, 0.88);
+        --bg-inner: rgba(240, 249, 255, 0.75);
+        
+        --text-main: #0369A1;
+        --text-body: #0369A1;
+        --text-secondary: #0284C7;
+        
+        --border-color: rgba(14, 165, 233, 0.24);
+        
+        --color-primary: #0284C7;
+        --color-accent: #0369A1;
+        
+        --particle-color: rgba(3, 105, 161, 0.14);
+        --hud-glow: 0 0 10px rgba(2, 132, 199, 0.06);
+        --hud-glow-hover: 0 0 16px rgba(2, 132, 199, 0.18);
+    }
+    
+    /* Dark Theme - Softer Space HUD */
+    html[data-theme="mptheme-dark"] {
+        --bg-main: #1E293B;
+        --bg-card: rgba(15, 23, 42, 0.45);
+        --bg-card-hover: rgba(30, 41, 59, 0.65);
+        --bg-inner: rgba(15, 23, 42, 0.7);
+        
+        --text-main: #F8FAFC;
+        --text-body: #F8FAFC;
+        --text-secondary: #94A3B8;
+        
+        --border-color: rgba(255, 255, 255, 0.12);
+        
+        --color-primary: #3B82F6;
+        --color-accent: #F59E0B;
+        
+        --particle-color: rgba(255, 255, 255, 0.08);
+        --hud-glow: 0 0 10px rgba(59, 130, 246, 0.08);
+        --hud-glow-hover: 0 0 18px rgba(59, 130, 246, 0.22);
+    }
+    
+    html[data-theme^="mptheme"] {
+        background-color: var(--bg-main) !important;
+    }
+
+    html[data-theme^="mptheme"] body {
+        background-color: transparent !important;
+        color: var(--text-main) !important;
+    }
+
+    html[data-theme^="mptheme"] .gaming-grid {
+        position: fixed;
+        inset: 0;
+        background-image: 
+            linear-gradient(var(--border-color) 1.5px, transparent 1.5px),
+            linear-gradient(90deg, var(--border-color) 1.5px, transparent 1.5px);
+        background-size: 40px 40px;
+        opacity: 0.26;
+        pointer-events: none;
+        z-index: -3;
+    }
+
+    html[data-theme^="mptheme"] .scanner-line {
+        position: fixed;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+        opacity: 0.28;
+        pointer-events: none;
+        z-index: -2;
+        animation: scan-vertical 14s infinite linear;
+    }
+
+    html[data-theme^="mptheme"] #particles-container {
+        z-index: -1 !important;
+    }
+
+    @keyframes scan-vertical {
+        0% { top: -20px; }
+        100% { top: 110%; }
+    }
+
+    @keyframes float-particle-1 { 0% { transform: translateY(0) rotate(0deg) translateX(0); } 33% { transform: translateY(-40px) rotate(120deg) translateX(20px); } 66% { transform: translateY(25px) rotate(240deg) translateX(-20px); } 100% { transform: translateY(0) rotate(360deg) translateX(0); } }
+    @keyframes float-particle-2 { 0% { transform: translateY(0) rotate(0deg) translateX(0); } 50% { transform: translateY(60px) rotate(-180deg) translateX(-30px); } 100% { transform: translateY(0) rotate(-360deg) translateX(0); } }
+    @keyframes float-particle-3 { 0% { transform: translateY(0) rotate(0deg) translateX(0); } 33% { transform: translateY(-30px) rotate(90deg) translateX(-15px); } 66% { transform: translateY(-60px) rotate(270deg) translateX(15px); } 100% { transform: translateY(0) rotate(360deg) translateX(0); } }
+    @keyframes float-particle-4 { 0% { transform: translateY(0) rotate(0deg) translateX(0); } 50% { transform: translateY(-55px) rotate(180deg) translateX(40px); } 100% { transform: translateY(0) rotate(360deg) translateX(0); } }
+
+    /* Override UI Elements for mptheme */
+    html[data-theme^="mptheme"] .bg-base-100 { background-color: transparent !important; }
+    html[data-theme^="mptheme"] .card, 
+    html[data-theme^="mptheme"] .bg-white,
+    html[data-theme^="mptheme"] aside .bg-base-100 {
+        background-color: var(--bg-card) !important;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--hud-glow);
+        color: var(--text-main);
+    }
+    html[data-theme^="mptheme"] .card:hover {
+        box-shadow: var(--hud-glow-hover);
+        background-color: var(--bg-card-hover) !important;
+    }
+  </style>
+  @endif
+
 </head>
 
 <body class="font-sans antialiased bg-base-100 text-base-content" x-data="{ sidebarOpen: false, mobileMenuOpen: false }">
+
+  @if(Request::is('user/*') || Request::is('admin/*'))
+  <div class="gaming-grid" x-show="document.documentElement.getAttribute('data-theme').startsWith('mptheme')"></div>
+  <div class="scanner-line" x-show="document.documentElement.getAttribute('data-theme').startsWith('mptheme')"></div>
+  <div class="particles fixed inset-0 overflow-hidden pointer-events-none z-0" id="particles-container" x-show="document.documentElement.getAttribute('data-theme').startsWith('mptheme')"></div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!document.documentElement.getAttribute('data-theme').startsWith('mptheme')) return;
+        
+        const container = document.getElementById('particles-container');
+        if(!container) return;
+        
+        const svgs = [
+            `<svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="9" stroke="var(--particle-color)" fill="none" stroke-width="2"/><circle cx="15" cy="15" r="2" fill="var(--particle-color)"/><path d="M15,2 L15,7 M15,23 L15,28 M2,15 L7,15 M23,15 L28,15" stroke="var(--particle-color)" stroke-width="2" stroke-linecap="round"/></svg>`,
+            `<svg viewBox="0 0 30 30"><polygon points="15,2 28,15 15,28 2,15" stroke="var(--particle-color)" fill="none" stroke-width="2"/><polygon points="15,8 22,15 15,22 8,15" stroke="var(--particle-color)" fill="none" stroke-width="1" stroke-dasharray="2,2"/></svg>`,
+            `<svg viewBox="0 0 24 24"><path d="M4,4 h2 v2 h-2 z M18,4 h2 v2 h-2 z M6,6 h12 v2 h-12 z M8,8 h8 v2 h-8 z M4,10 h16 v2 h-16 z M2,12 h20 v2 h-20 z M2,14 h2 v2 h-2 z M6,14 h12 v2 h-12 z M20,14 h2 v2 h-2 z M4,16 h2 v2 h-2 z M18,16 h2 v2 h-2 z" fill="var(--particle-color)"/></svg>`,
+            `<svg viewBox="0 0 30 30"><path d="M15,2 L18,9 L25,9 L20,14 L22,21 L15,17 L8,21 L10,14 L5,9 L12,9 Z" stroke="var(--particle-color)" fill="none" stroke-width="2"/></svg>`,
+            `<svg viewBox="0 0 30 30"><rect x="3" y="3" width="24" height="24" rx="2" stroke="var(--particle-color)" fill="none" stroke-width="2"/><path d="M15,3 L15,27 M3,15 L27,15" stroke="var(--particle-color)" stroke-width="1.5" stroke-dasharray="2,2"/></svg>`,
+            `<svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="11" stroke="var(--particle-color)" fill="none" stroke-width="2"/></svg>`,
+            `<svg viewBox="0 0 24 24"><path d="M4,4 h2 v2 h-2 z M18,4 h2 v2 h-2 z M6,6 h12 v2 h-12 z M8,8 h8 v2 h-8 z M4,10 h16 v2 h-16 z M2,12 h20 v2 h-20 z" fill="var(--particle-color)"/></svg>`,
+            `<svg viewBox="0 0 30 30"><path d="M6,6 L24,24 M6,24 L24,6" stroke="var(--particle-color)" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+            `<svg viewBox="0 0 30 30"><polygon points="15,4 27,25 3,25" stroke="var(--particle-color)" fill="none" stroke-width="2"/></svg>`
+        ];
+
+        const numParticles = 65; // FULL implementation
+        for(let i = 0; i < numParticles; i++) {
+            const el = document.createElement('div');
+            el.classList.add('particle');
+            el.style.position = 'absolute';
+            el.style.zIndex = '0';
+            
+            el.innerHTML = svgs[Math.floor(Math.random() * svgs.length)];
+            const svgEl = el.querySelector('svg');
+            
+            const size = Math.floor(Math.random() * 50) + 15; 
+            svgEl.setAttribute('width', size);
+            svgEl.setAttribute('height', size);
+            
+            el.style.top = Math.floor(Math.random() * 100) + '%';
+            el.style.left = Math.floor(Math.random() * 100) + '%';
+            
+            const duration = Math.floor(Math.random() * 30) + 20; 
+            const delay = Math.floor(Math.random() * -50); 
+            const animType = Math.floor(Math.random() * 4) + 1; 
+            
+            el.style.animation = `float-particle-${animType} ${duration}s infinite linear`;
+            el.style.animationDelay = `${delay}s`;
+            
+            el.style.opacity = Math.random() * 0.7 + 0.3; 
+
+            container.appendChild(el);
+        }
+    });
+  </script>
+  @endif
+
+
+  
 
   <!-- ═══ HACKER PRELOADER ═══ -->
   <div id="hacker-preloader">
@@ -450,20 +625,68 @@
     0%   { transform: translateY(0) scale(1); }
     100% { transform: translateY(-6px) scale(1.15); }
   }
-  </style>
-
-  <script>
-  (function() {
-    if (localStorage.getItem('app-theme') === 'profesional') {
+  
+    /* MPTheme overrides */
+    #hacker-preloader.theme-mptheme {
+      background: var(--bg-main, #f0fdf4);
+    }
+    #hacker-preloader.theme-mptheme #preloader-scanline {
+      background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(16, 185, 129, 0.03) 3px, rgba(16, 185, 129, 0.03) 4px);
+    }
+    #hacker-preloader.theme-mptheme #preloader-brackets {
+      color: var(--primary, #10b981);
+    }
+    #hacker-preloader.theme-mptheme #preloader-brackets span:first-child,
+    #hacker-preloader.theme-mptheme #preloader-brackets span:last-child {
+      color: var(--text-primary, #1e293b);
+    }
+    #hacker-preloader.theme-mptheme #preloader-brand {
+      color: var(--text-muted, #64748b);
+    }
+    #hacker-preloader.theme-mptheme #preloader-terminal {
+      background: var(--bg-card, rgba(255, 255, 255, 0.7));
+      border-color: var(--border-color, rgba(16, 185, 129, 0.2));
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.1);
+    }
+    #hacker-preloader.theme-mptheme .term-line {
+      color: var(--text-primary, #1e293b);
+    }
+    #hacker-preloader.theme-mptheme .term-line.visible {
+      color: var(--text-primary, #1e293b);
+    }
+    #hacker-preloader.theme-mptheme .term-line:last-child.visible {
+      color: var(--primary, #10b981);
+    }
+    #hacker-preloader.theme-mptheme #preloader-bar-wrap {
+      background: rgba(16, 185, 129, 0.1);
+    }
+    #hacker-preloader.theme-mptheme #preloader-bar {
+      background: var(--primary, #10b981);
+      box-shadow: 0 0 12px var(--primary, #10b981);
+    }
+    </style>
+    <script>
+    (function() {
+      var isUserAdmin = {{ Request::is('user/*') || Request::is('admin/*') ? 'true' : 'false' }};
+      var currentTheme = localStorage.getItem('app-theme') || (isUserAdmin ? 'mptheme' : 'hacker');
+      
+      if (currentTheme === 'profesional') {
       var loader = document.getElementById('hacker-preloader');
       if (loader) loader.remove();
       return;
     }
 
     // ── Random emoji icon ──
-    const emojis = ['🤪','😵‍💫','🥴','😵','😱','🥸','🥹','🥺','🤠','🤥','🤓','🫣','👻','🤖','👾','🙊','🙈'];
-    const icon = document.getElementById('preloader-icon');
-    icon.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          var loader = document.getElementById('hacker-preloader');
+      if (loader && currentTheme.startsWith('mptheme')) {
+          loader.classList.add('theme-mptheme');
+      }
+
+      // Random emoji icon
+      const emojis = ['👾','🤖','⚡','🚀','💻','🕹️','🔋','⚙️','🔧','🛡️','🔒','📡','🔌','🔮','🧿','🌀','💠'];
+      const icon = document.getElementById('preloader-icon');
+      icon.textContent = emojis[Math.floor(Math.random() * emojis.length)];
 
     // ── Matrix rain ──
     const canvas = document.getElementById('matrix-canvas');
@@ -578,7 +801,6 @@
       </nav>
     </div>
   </aside>
-
 
   <!-- Main Content -->
   <div class="md:pl-64 flex flex-col min-h-screen">

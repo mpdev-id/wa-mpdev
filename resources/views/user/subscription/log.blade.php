@@ -86,8 +86,17 @@
                   <span class="badge badge-error">{{ __('Failed') }}</span>
                 @endif
               </td>
-              <td class="text-right">
-                <a href="{{ route('user.subscription.show', $tx->id) }}" class="btn btn-ghost btn-sm gap-1">
+              <td class="text-right flex items-center justify-end gap-2">
+                @if($tx->status == 2)
+                  <form method="POST" action="{{ route('user.subscription.cancel', $tx->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan tagihan ini?');" class="inline">
+                    @csrf
+                    <button type="submit" class="btn btn-error btn-outline btn-xs gap-1">
+                      <span class="material-icons text-[10px]">cancel</span>
+                      {{ __('Batalkan') }}
+                    </button>
+                  </form>
+                @endif
+                <a href="{{ route('user.subscription.invoice', $tx->id) }}" class="btn btn-ghost btn-sm gap-1">
                   <span class="material-icons text-xs">visibility</span>
                   {{ __('Invoice') }}
                 </a>

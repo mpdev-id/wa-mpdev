@@ -3,17 +3,17 @@ plugins {
 }
 
 android {
-    namespace 'com.whasapi.receiver'
-    compileSdk 34
+    namespace = 'com.whasapi.receiver'
+    compileSdk = 34
 
     defaultConfig {
-        applicationId "com.whasapi.receiver"
-        minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "1.0.0"
+        applicationId = "com.whasapi.receiver"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {

@@ -34,6 +34,18 @@ class QrisWebhookController extends Controller
     }
 
     /**
+     * Warning endpoint for unsupported GET request to webhook URL.
+     * Helpful for debugging redirect issues (HTTP->HTTPS or trailing slash).
+     */
+    public function handleGet(Request $request)
+    {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Method GET tidak didukung untuk webhook QRIS. Jika Anda mendapatkan error ini setelah mengirim request POST dari HP, mohon periksa konfigurasi Webhook URL Anda di aplikasi HP: (1) Pastikan protokolnya tepat (misal ganti http:// dengan https:// jika website Anda mewajibkan https), dan (2) Pastikan TIDAK menggunakan tanda garis miring (/) di akhir URL karena akan menyebabkan server meredireksi request POST menjadi GET.'
+        ], 405);
+    }
+
+    /**
      * Handle incoming QRIS payment notification from Android device.
      *
      * Token diterima dari:
@@ -210,11 +222,31 @@ class QrisWebhookController extends Controller
     {
         $cleaned = preg_replace('/,00\b/', '', $text);
 
-        // Match Rp/IDR diikuti angka dengan separator titik/koma
-        if (preg_match('/(?:Rp\.?\s*|IDR\s*)?([\d]{1,3}(?:[.,]\d{3})+|\d{4,})/i', $cleaned, $matches)) {
+        // Step 1: Coba cari angka yang didahului simbol mata uang (Rp atau IDR)
+        if (preg_match('/(?:Rp\.?\s*|IDR\s*)+([\d]{1,3}(?:[.,]\d{3})+|\d{1,})/i', $cleaned, $matches)) {
             $numeric = preg_replace('/[.,]/', '', $matches[1]);
             $value   = (float) $numeric;
-            return $value >= 100 ? $value : null;
+            if ($value >= 1) {
+                return $value;
+            }
+        }
+
+        // Step 2: Coba cari kata kunci "sebesar" / "nominal" / "sejumlah" diikuti angka
+        if (preg_match('/(?:sebesar|nominal|sejumlah)\s*(?:Rp\.?\s*|IDR\s*)?([\d]{1,3}(?:[.,]\d{3})+|\d{1,})/i', $cleaned, $matches)) {
+            $numeric = preg_replace('/[.,]/', '', $matches[1]);
+            $value   = (float) $numeric;
+            if ($value >= 1) {
+                return $value;
+            }
+        }
+
+        // Step 3: Fallback ke pencocokan angka umum (jika tidak ada Rp/IDR atau kata kunci)
+        if (preg_match('/([\d]{1,3}(?:[.,]\d{3})+|\d{1,})/', $cleaned, $matches)) {
+            $numeric = preg_replace('/[.,]/', '', $matches[1]);
+            $value   = (float) $numeric;
+            if ($value >= 1 && $value <= 99999999) { // batasi fallback agar tidak mencocokkan norek panjang
+                return $value;
+            }
         }
 
         return null;

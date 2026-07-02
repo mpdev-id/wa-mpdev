@@ -37,7 +37,9 @@
       { id: 'button', icon: 'smart_button', label: '{{ __('With Button') }}' },
       { id: 'list', icon: 'list', label: '{{ __('List Message') }}' },
       { id: 'poll', icon: 'poll', label: '{{ __('Poll Message') }}' },
-      { id: 'location', icon: 'location_on', label: '{{ __('Location') }}' }
+      { id: 'location', icon: 'location_on', label: '{{ __('Location') }}' },
+      { id: 'contact', icon: 'contacts', label: '{{ __('Contact (vCard)') }}' },
+      { id: 'reaction', icon: 'add_reaction', label: '{{ __('Reaction') }}' }
     ]
   }">
     
@@ -167,6 +169,34 @@
                     {{ __('WhatsApp Standard') }}
                   </div>
                 </div>
+
+                <!-- Advanced Options -->
+                <div class="p-6 bg-base-200/50 rounded-3xl border border-base-300 space-y-4 mt-6">
+                  <div class="flex items-center gap-3 mb-2 text-primary font-bold">
+                    <span class="material-symbols-outlined">tune</span>
+                    {{ __('Advanced Options') }}
+                  </div>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="cursor-pointer label justify-start gap-4">
+                      <input type="checkbox" name="extract_mentions" value="1" class="checkbox checkbox-primary checkbox-sm" />
+                      <span class="label-text font-medium">{{ __('Auto-extract Mentions (@628...)') }}</span>
+                    </label>
+                    
+                    <label class="cursor-pointer label justify-start gap-4">
+                      <input type="checkbox" name="enable_link_preview" value="1" class="checkbox checkbox-primary checkbox-sm" checked />
+                      <span class="label-text font-medium">{{ __('Enable Link Preview') }}</span>
+                    </label>
+                  </div>
+
+                  <div class="form-control mt-4">
+                    <label class="label px-1">
+                      <span class="label-text font-bold text-base-content/80">{{ __('Quote Message ID (Optional)') }}</span>
+                      <span class="label-text-alt text-base-content/60">{{ __('Reply to a specific message') }}</span>
+                    </label>
+                    <input type="text" name="quote_message_id" class="input input-bordered input-sm w-full rounded-xl" placeholder="Message ID (e.g., 3EB0...)" />
+                  </div>
+                </div>
               </div>
 
               <div class="pt-4">
@@ -187,7 +217,7 @@
                 </div>
                 <div>
                   <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Text With Media') }}</h2>
-                  <p class="text-base-content/60 font-medium">{{ __('Send image, video or document with caption') }}</p>
+                  <p class="text-base-content/60 font-medium">{{ __('Send image, video, document, or audio') }}</p>
                 </div>
               </div>
             </div>
@@ -225,22 +255,37 @@
                     <div class="flex flex-col items-center justify-center pt-5 pb-6">
                       <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words text-base-content/30 group-hover:text-primary transition-colors mb-3">cloud_upload</span>
                       <p class="mb-2 text-sm text-base-content/60 font-semibold">{{ __('Click to upload or drag and drop') }}</p>
-                      <p class="text-xs text-base-content/40 uppercase tracking-widest font-bold">{{ __('Images, Videos, PDF (Max 10MB)') }}</p>
+                      <p class="text-xs text-base-content/40 uppercase tracking-widest font-bold">{{ __('Images, Videos, Audio, PDF (Max 10MB)') }}</p>
                     </div>
-                    <input type="file" name="file" class="hidden" accept="image/*,video/*,.pdf" required />
+                    <input type="file" name="file" class="hidden" accept="image/*,video/*,.pdf,.mp3,.wav,.ogg,.m4a,audio/*" required />
                   </label>
                 </div>
               </div>
 
               <div class="form-control">
-                <label class="label px-1">
-                  <span class="label-text font-bold text-base-content/80">{{ __('Caption (Optional)') }}</span>
-                </label>
-                <textarea name="message" class="textarea textarea-bordered textarea-lg h-32 w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('Type your caption here...') }}"></textarea>
-              </div>
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Caption (Optional)') }}</span>
+                  </label>
+                  <textarea name="message" class="textarea textarea-bordered textarea-lg h-32 w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="{{ __('Type your caption here...') }}"></textarea>
+                </div>
 
-              <div class="pt-4">
-                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div class="form-control">
+                    <label class="cursor-pointer label justify-start gap-4 p-4 bg-base-200/50 rounded-2xl border border-base-300">
+                      <input type="checkbox" name="is_view_once" value="1" class="checkbox checkbox-primary rounded-lg" />
+                      <span class="label-text font-bold text-base-content/70">{{ __('Send as View Once') }}</span>
+                    </label>
+                  </div>
+                  <div class="form-control">
+                    <label class="cursor-pointer label justify-start gap-4 p-4 bg-base-200/50 rounded-2xl border border-base-300">
+                      <input type="checkbox" name="is_gif" value="1" class="checkbox checkbox-primary rounded-lg" />
+                      <span class="label-text font-bold text-base-content/70">{{ __('Send as GIF (Video Only)') }}</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="pt-4">
+                  <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send Media') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
@@ -631,6 +676,160 @@
               <div class="pt-8">
                 <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
                   <span class="font-bold text-lg">{{ __('Send Location') }}</span>
+                  <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Contact (vCard) Tab -->
+          <div x-show="activeTab === 'contact'" x-cloak class="form-section">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+              <div class="flex items-center gap-5">
+                <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">contacts</span>
+                </div>
+                <div>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Send Contact') }}</h2>
+                  <p class="text-base-content/60 font-medium">{{ __('Send an interactive vCard contact') }}</p>
+                </div>
+              </div>
+            </div>
+
+            <form method="POST" action="{{ url('/user/sent-whatsapp-custom-text/text-with-vcard') }}" class="message-send-form space-y-8">
+              @csrf
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="form-control w-full">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
+                  </label>
+                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
+                    <option value="">{{ __('Choose device...') }}</option>
+                    @foreach($devices ?? [] as $device)
+                      <option value="{{ $device->id }}">{{ $device->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="form-control w-full">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
+                  </label>
+                  <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="form-control">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Display Name') }}</span>
+                  </label>
+                  <input type="text" name="display_name" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="John Doe" required />
+                </div>
+
+                <div class="form-control">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Full Name') }}</span>
+                  </label>
+                  <input type="text" name="full_name" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="John Doe" required />
+                </div>
+
+                <div class="form-control">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Organization Name') }}</span>
+                  </label>
+                  <input type="text" name="org_name" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="Example Corp (Optional)" />
+                </div>
+
+                <div class="form-control">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Contact Number') }}</span>
+                  </label>
+                  <input type="text" name="contact_number" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="+62 812 3456 7890" required />
+                </div>
+                
+                <div class="form-control">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('WhatsApp ID (Number Only)') }}</span>
+                  </label>
+                  <input type="text" name="wa_number" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="6281234567890" required />
+                </div>
+              </div>
+
+              <div class="pt-8">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
+                  <span class="font-bold text-lg">{{ __('Send Contact') }}</span>
+                  <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Reaction Tab -->
+          <div x-show="activeTab === 'reaction'" x-cloak class="form-section">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+              <div class="flex items-center gap-5">
+                <div class="w-16 h-16 rounded-2xl gradient-bg flex items-center justify-center shadow-xl shadow-primary/30">
+                  <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words">add_reaction</span>
+                </div>
+                <div>
+                  <h2 class="text-xl md:text-2xl break-words md:text-3xl break-words font-black tracking-tight">{{ __('Send Reaction') }}</h2>
+                  <p class="text-base-content/60 font-medium">{{ __('React to an existing message using Emoji') }}</p>
+                </div>
+              </div>
+            </div>
+
+            <form method="POST" action="{{ url('/user/sent-whatsapp-custom-text/text-with-reaction') }}" class="message-send-form space-y-8">
+              @csrf
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="form-control w-full">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Select Device') }}</span>
+                  </label>
+                  <select name="device" class="select select-bordered select-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" required>
+                    <option value="">{{ __('Choose device...') }}</option>
+                    @foreach($devices ?? [] as $device)
+                      <option value="{{ $device->id }}">{{ $device->name }}</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="form-control w-full">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Recipient Number') }}</span>
+                  </label>
+                  <input type="text" name="phone" autocomplete="on" list="contact-list" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="628xxxxxxxxxx" required />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="form-control">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Target Message ID') }}</span>
+                  </label>
+                  <input type="text" name="target_message_id" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="e.g., 3EB0..." required />
+                </div>
+
+                <div class="form-control">
+                  <label class="label px-1">
+                    <span class="label-text font-bold text-base-content/80">{{ __('Emoji (Reaction)') }}</span>
+                  </label>
+                  <input type="text" name="reaction_emoji" class="input input-bordered input-lg w-full rounded-2xl bg-base-100/80 focus:bg-base-100 transition-all border-base-300" placeholder="💖" required maxlength="5" />
+                </div>
+              </div>
+
+              <div class="form-control mt-4">
+                <label class="cursor-pointer label justify-start gap-4 p-4 bg-base-200/50 rounded-2xl border border-base-300">
+                  <input type="checkbox" name="from_me" value="1" class="checkbox checkbox-primary rounded-lg" />
+                  <span class="label-text font-bold text-base-content/70">{{ __('Message was sent by me (fromMe: true)') }}</span>
+                </label>
+              </div>
+
+              <div class="pt-8">
+                <button type="submit" class="btn btn-primary btn-lg w-full md:w-auto min-w-[240px] h-16 shadow-xl shadow-primary/20 gap-3 group rounded-full">
+                  <span class="font-bold text-lg">{{ __('Send Reaction') }}</span>
                   <span class="material-symbols-outlined transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">send</span>
                 </button>
               </div>

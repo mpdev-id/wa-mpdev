@@ -1,6 +1,20 @@
 {
-  "watch": ["src"], // Hanya pantau folder 'src'
-  "ext": "js,json", // Pantau file dengan ekstensi .js dan .json
-  "ignore": ["tests/*"], // Abaikan folder 'tests'
-  "exec": "node server.js" // Perintah untuk menjalankan server
+  "watch": [
+    "app.js",
+    "whatsapp.js",
+    "routes.js",
+    "controllers",
+    "middlewares",
+    ".env"
+  ],
+  "ext": "js,json,env",
+  "ignore": [
+    "tests/*",
+    "sessions/*",
+    "sessionsc/*",
+    "node_modules/*",
+    "vendor/*",
+    "storage/*"
+  ],
+  "exec": "node app.js"
 }

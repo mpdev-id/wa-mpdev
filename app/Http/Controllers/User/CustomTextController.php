@@ -82,7 +82,7 @@ class CustomTextController extends Controller
 
         if ($type == 'text-with-media') {
             $validated = $request->validate([
-                'file' => 'required|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt,mp4,mov,avi|max:20000',
+                'file' => 'required|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt,mp4,mov,avi,mp3,wav,ogg,m4a,mpga,oga|max:20000',
                 'message' => 'required|max:1000',
             ]);
 
@@ -94,7 +94,7 @@ class CustomTextController extends Controller
             $validated = $request->validate([
                 'display_name' => 'required|max:100',
                 'full_name' => 'required|max:100',
-                'org_name' => 'required|max:100',
+                'org_name' => 'max:100',
                 'contact_number' => ['required', new Phone,'max:20'],
                 'wa_number' => ['required', new Phone,'max:20'],
 
@@ -118,7 +118,7 @@ class CustomTextController extends Controller
                 'footer_text' => 'required|max:100',
                 'buttons.*' => 'required',
                 'message' => 'required|max:1000',
-                'file' => 'nullable|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt,mp4,mov,avi|max:20000',
+                'file' => 'nullable|mimes:jpg,jpeg,png,webp,gif,pdf,docx,xlsx,csv,txt,mp4,mov,avi,mp3,wav,ogg,m4a,mpga,oga|max:20000',
             ]);
 
             if ($request->hasFile('file')) {

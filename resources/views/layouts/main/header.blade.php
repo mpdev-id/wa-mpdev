@@ -110,38 +110,48 @@
             </button>
             
             <script>
-              function toggleTheme() {
-                var currentTheme = localStorage.getItem('app-theme') || 'hacker';
-                var newTheme = currentTheme === 'hacker' ? 'profesional' : 'hacker';
-                localStorage.setItem('app-theme', newTheme);
-                document.documentElement.setAttribute('data-theme', newTheme);
-                updateThemeUI();
-              }
-              
-              function updateThemeUI() {
-                var currentTheme = localStorage.getItem('app-theme') || 'hacker';
-                
-                var icon = document.getElementById('theme-icon');
-                var text = document.getElementById('theme-text');
-                var mobIcon = document.getElementById('mobile-theme-icon');
-                var mobText = document.getElementById('mobile-theme-text');
-                
-                var isPro = currentTheme === 'profesional';
-                
-                if(icon && text) {
-                  icon.textContent = isPro ? 'light_mode' : 'dark_mode';
-                  text.textContent = isPro ? 'Professional (Light)' : 'Hacker (Dark)';
+                const THEMES = [
+                  { id: 'mptheme', icon: 'gamepad', name: 'MP HUD (Light)' },
+                  { id: 'profesional', icon: 'light_mode', name: 'Professional (Light)' },
+                  { id: 'hacker', icon: 'dark_mode', name: 'Hacker (Dark)' },
+                  { id: 'ocean', icon: 'water_drop', name: 'Ocean Breeze (Blue)' },
+                  { id: 'aurora', icon: 'auto_awesome', name: 'Aurora (Eye-Catching)' }
+                ];
+
+                function toggleTheme() {
+                  var currentTheme = localStorage.getItem('app-theme') || 'profesional';
+                  var currentIndex = THEMES.findIndex(t => t.id === currentTheme);
+                  var nextIndex = (currentIndex + 1) % THEMES.length;
+                  var newTheme = THEMES[nextIndex].id;
+                  
+                  localStorage.setItem('app-theme', newTheme);
+                  document.documentElement.setAttribute('data-theme', newTheme);
+                  updateThemeUI();
                 }
                 
-                if(mobIcon && mobText) {
-                  mobIcon.textContent = isPro ? 'light_mode' : 'dark_mode';
-                  mobText.textContent = isPro ? 'Professional (Light)' : 'Hacker (Dark)';
+                function updateThemeUI() {
+                  var currentTheme = localStorage.getItem('app-theme') || 'profesional';
+                  var themeObj = THEMES.find(t => t.id === currentTheme) || THEMES[0];
+                  
+                  var icon = document.getElementById('theme-icon');
+                  var text = document.getElementById('theme-text');
+                  var mobIcon = document.getElementById('mobile-theme-icon');
+                  var mobText = document.getElementById('mobile-theme-text');
+                  
+                  if(icon && text) {
+                    icon.textContent = themeObj.icon;
+                    text.textContent = themeObj.name;
+                  }
+                  
+                  if(mobIcon && mobText) {
+                    mobIcon.textContent = themeObj.icon;
+                    mobText.textContent = themeObj.name;
+                  }
                 }
-              }
-              
-              // Run on load
-              document.addEventListener('DOMContentLoaded', updateThemeUI);
-            </script>
+                
+                // Run on load
+                document.addEventListener('DOMContentLoaded', updateThemeUI);
+              </script>
           </div>
         </div>
         @endif

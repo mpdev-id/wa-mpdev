@@ -40,19 +40,19 @@
   <!-- Page Header -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
     <div>
-      <h1 class="text-xl md:text-2xl break-words md:text-3xl break-words md:text-4xl break-words font-black text-base-content tracking-tight mb-2">{{ __('Bulk Sender') }}</h1>
-      <p class="text-base-content/60 text-lg font-medium">{{ __('Create and launch high-impact messaging campaigns') }}</p>
+      <h1 class="text-2xl md:text-4xl font-black text-base-content tracking-tight mb-2">{{ __('Bulk Sender') }}</h1>
+      <p class="text-base-content/60 text-sm md:text-lg font-medium">{{ __('Create and launch high-impact messaging campaigns') }}</p>
     </div>
-    <div class="flex flex-wrap gap-3">
-      <button onclick="addRecord.showModal()" class="btn btn-primary btn-lg shadow-xl shadow-primary/20 gap-2 px-6 rounded-full">
+    <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full md:w-auto mt-4 md:mt-0">
+      <button onclick="addRecord.showModal()" class="btn btn-primary btn-lg shadow-xl shadow-primary/20 gap-2 px-6 rounded-full w-full sm:w-auto">
         <span class="material-symbols-outlined">add_circle</span>
         <span class="font-bold">{{ __('Add Record') }}</span>
       </button>
-      <button onclick="import_from_contact.showModal()" class="btn btn-secondary btn-lg shadow-xl shadow-secondary/20 gap-2 px-6 rounded-full">
+      <button onclick="import_from_contact.showModal()" class="btn btn-secondary btn-lg shadow-xl shadow-secondary/20 gap-2 px-6 rounded-full w-full sm:w-auto">
         <span class="material-symbols-outlined">group</span>
         <span class="font-bold">{{ __('From Contacts') }}</span>
       </button>
-      <button onclick="exampleModal.showModal()" class="btn btn-accent btn-lg shadow-xl shadow-accent/20 gap-2 px-6 rounded-full">
+      <button onclick="exampleModal.showModal()" class="btn btn-accent btn-lg shadow-xl shadow-accent/20 gap-2 px-6 rounded-full w-full sm:w-auto">
         <span class="material-symbols-outlined">upload_file</span>
         <span class="font-bold">{{ __('Import CSV') }}</span>
       </button>
@@ -103,47 +103,47 @@
     <!-- Main Content -->
     <div class="lg:col-span-9">
       <!-- Control Panel -->
-      <div class="control-panel">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div class="flex items-center gap-6">
-            <div class="w-20 h-20 rounded-3xl bg-primary flex flex-col items-center justify-center text-primary-content shadow-2xl shadow-primary/40">
-              <span class="text-xl md:text-2xl break-words font-black leading-none total_sent">0</span>
+      <div class="control-panel p-6 md:p-8">
+        <div class="flex flex-col xl:flex-row items-center justify-between gap-8">
+          <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full xl:w-auto text-center sm:text-left">
+            <div class="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-primary flex flex-col items-center justify-center text-primary-content shadow-2xl shadow-primary/40 shrink-0">
+              <span class="text-xl md:text-2xl font-black leading-none total_sent">0</span>
               <div class="w-8 h-px bg-primary-content/30 my-1"></div>
               <span class="text-xs font-bold opacity-60 total_records">0</span>
             </div>
             <div>
-              <h3 class="text-xl font-black tracking-tight mb-1">{{ __('Campaign Progress') }}</h3>
-              <p class="text-base-content/50 text-sm font-medium">{{ __('Messages queued for delivery') }}</p>
+              <h3 class="text-lg md:text-xl font-black tracking-tight mb-1">{{ __('Campaign Progress') }}</h3>
+              <p class="text-base-content/50 text-xs md:text-sm font-medium">{{ __('Messages queued for delivery') }}</p>
             </div>
           </div>
 
-          <div class="flex-1 max-w-md w-full">
+          <div class="flex-1 w-full max-w-md mx-auto xl:mx-0">
             <div class="flex items-center justify-between mb-4 px-1">
-              <span class="text-xs font-black uppercase tracking-widest text-base-content/40">{{ __('Delay Interval') }}</span>
+              <span class="text-[10px] md:text-xs font-black uppercase tracking-widest text-base-content/40">{{ __('Delay Interval') }}</span>
               <div class="flex gap-2">
                 <span class="badge badge-primary font-bold"><span id="start_time"></span>s</span>
                 <span class="text-base-content/20 font-black">-</span>
                 <span class="badge badge-primary font-bold"><span id="end_time"></span>s</span>
               </div>
             </div>
-            <div id="slider" class="mx-2"></div>
+            <div id="slider" class="mx-2 mt-2"></div>
           </div>
 
-          <button class="btn btn-primary btn-lg h-20 px-10 shadow-2xl shadow-primary/30 gap-3 group send_now rounded-full">
-            <span class="font-black text-lg uppercase tracking-wider">{{ __('Launch Now') }}</span>
-            <span class="material-symbols-outlined text-xl md:text-2xl break-words md:text-3xl break-words transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">rocket_launch</span>
+          <button class="btn btn-primary btn-lg h-16 md:h-20 px-6 md:px-10 shadow-2xl shadow-primary/30 gap-3 group send_now rounded-full w-full xl:w-auto mt-4 xl:mt-0">
+            <span class="font-black text-base md:text-lg uppercase tracking-wider">{{ __('Launch Now') }}</span>
+            <span class="material-symbols-outlined text-xl md:text-3xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">rocket_launch</span>
           </button>
         </div>
       </div>
 
       <!-- Table Card -->
       <div class="glass-card rounded-[2.5rem] overflow-hidden">
-        <div class="p-8 md:p-10">
+        <div class="p-4 md:p-10">
           <div class="flex items-center gap-4 mb-8">
-            <div class="w-12 h-12 rounded-2xl bg-base-200 flex items-center justify-center">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-base-200 flex items-center justify-center shrink-0">
               <span class="material-symbols-outlined">list_alt</span>
             </div>
-            <h2 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Queue List') }}</h2>
+            <h2 class="text-xl md:text-2xl font-black tracking-tight">{{ __('Queue List') }}</h2>
           </div>
 
           <div class="overflow-x-auto -mx-8 md:-mx-10 px-8 md:px-10">
@@ -171,13 +171,13 @@
 <!-- Modals -->
 <dialog id="exampleModal" class="modal">
   <div class="modal-box glass-card rounded-[2rem] border-0 overflow-hidden shadow-2xl p-0 max-w-2xl max-h-[90vh] flex flex-col">
-    <div class="p-8 overflow-y-auto flex-1">
+    <div class="p-6 md:p-8 overflow-y-auto flex-1">
       <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center text-accent-content shadow-lg shadow-accent/20">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-accent flex items-center justify-center text-accent-content shadow-lg shadow-accent/20 shrink-0">
             <span class="material-symbols-outlined">upload_file</span>
           </div>
-          <h5 class="text-xl md:text-2xl break-words font-black tracking-tight">{{ __('Import from CSV') }}</h5>
+          <h5 class="text-xl md:text-2xl font-black tracking-tight">{{ __('Import from CSV') }}</h5>
         </div>
         <form method="dialog">
           <button class="btn btn-ghost btn-circle rounded-full">

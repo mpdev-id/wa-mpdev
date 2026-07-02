@@ -3,7 +3,7 @@ import { rmSync, readdir } from 'fs';
 import { join } from 'path';
 import pino from 'pino';
 import baileys from '@fizzxydev/baileys-pro';
-const { makeWASocket, useMultiFileAuthState, DisconnectReason, delay, generateWAMessageFromContent, prepareWAMessageMedia, makeInMemoryStore, fetchLatestBaileysVersion } = baileys;
+const { makeWASocket, useMultiFileAuthState, DisconnectReason, delay, generateWAMessageFromContent, prepareWAMessageMedia, makeInMemoryStore, fetchLatestBaileysVersion, Browsers } = baileys;
 import { toDataURL } from 'qrcode';
 import dirname from './dirname.js';
 import sendResponse from './response.js';
@@ -63,7 +63,7 @@ const shouldReconnect = (sessionId) => {
 const createSession = async (sessionId, isLegacy = false, res = null, pairingCode = null) => {
   const sessionPath = (isLegacy ? 'legacy_' : 'md_') + sessionId + (isLegacy ? '' : '');
   // Logger untuk internal Baileys
-  const baileysLogger = pino({ level: 'trace' });
+  const baileysLogger = pino({ level: 'error' });
   const store = (makeInMemoryStore.default || makeInMemoryStore)({ logger: baileysLogger });
 
   let state, saveCreds;
@@ -82,8 +82,12 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
     // IMPORTANT: Must be false for phone pairing
     printQRInTerminal: false,
     logger: baileysLogger,
-    // Use consistent modern browser identifier
-    browser: ['Mac OS', 'Chrome', '120.0.0'],
+    // Use consistent modern browser identifier (Ubuntu is required for Pair Code stability)
+    browser: Browsers.ubuntu('Chrome'),
+    syncFullHistory: false,
+    markOnlineOnConnect: false,
+    connectTimeoutMs: 60000,
+    keepAliveIntervalMs: 10000,
     patchMessageBeforeSending: (message) => {
       const isButton = message.buttonsMessage || message.listMessage;
       if (isButton) {
@@ -121,14 +125,14 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
   sock.ev.on('messages.upsert', async (msg) => {
     try {
       const message = msg.messages[0];
-      
+
       const io = getIo();
       if (io) {
-          io.emit('new_message', {
-              sessionId: sessionId,
-              remoteJid: message.key.remoteJid,
-              message: message
-          });
+        io.emit('new_message', {
+          sessionId: sessionId,
+          remoteJid: message.key.remoteJid,
+          message: message
+        });
       }
 
       if (!message.key.fromMe && msg.type === 'notify') {
@@ -197,9 +201,9 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
                 try {
                   await sock.sendMessage(message.key.remoteJid, {
                     text: aiResponse.data.reply
-                  }, { 
+                  }, {
                     quoted: message,
-                    markAsAi: aiResponse.data.use_ai_label === true 
+                    markAsAi: aiResponse.data.use_ai_label === true
                   });
                   logger.info('AI auto-reply sent', {
                     to: message.key.remoteJid,
@@ -287,7 +291,7 @@ const createSession = async (sessionId, isLegacy = false, res = null, pairingCod
         logger.info('WA is ready. Requesting pairing code for phone number...');
         try {
           const cleanPhone = pairingCode.replace(/[^0-9]/g, '');
-          
+
           // Request pairing code with proper phone number format and empty string to force random code generation
           const code = await sock.requestPairingCode(cleanPhone, "");
           const cleanCode = code.replace(/[^a-zA-Z0-9]/g, '');
